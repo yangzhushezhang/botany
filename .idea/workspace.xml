@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="f2a595bd-6c51-41f9-a623-5a1f8391d4fc" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1yjtAXlgnTOsoGOLqySWwQKrQ6l" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="php.override.implement.member.chooser.php.doc" value="NONE" />
+    <property name="settings.editor.selected.configurable" value="web-ide.project.structure" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f2a595bd-6c51-41f9-a623-5a1f8391d4fc" name="Default Changelist" comment="" />
+      <created>1632776681816</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1632776681816</updated>
+      <workItem from="1632776683621" duration="20701000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="540" y="249" key="#Deployment" timestamp="1632776804775">
+      <screen x="42" y="25" width="1638" height="1025" />
+    </state>
+    <state x="540" y="249" key="#Deployment/42.25.1638.1025@42.25.1638.1025" timestamp="1632776804775" />
+    <state x="524" y="236" key="#SSH_Configurations" timestamp="1632776784659">
+      <screen x="42" y="25" width="1638" height="1025" />
+    </state>
+    <state x="524" y="236" key="#SSH_Configurations/42.25.1638.1025@42.25.1638.1025" timestamp="1632776784659" />
+    <state x="2767" y="282" key="#com.intellij.ide.util.MemberChooser" timestamp="1632790320855">
+      <screen x="1680" y="-111" width="2560" height="1415" />
+    </state>
+    <state x="2767" y="282" key="#com.intellij.ide.util.MemberChooser/1680.-111.2560.1415/41.25.1639.1025@1680.-111.2560.1415" timestamp="1632790320855" />
+    <state x="2656" y="390" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1632790170812">
+      <screen x="1680" y="-111" width="2560" height="1415" />
+    </state>
+    <state x="2656" y="390" key="#com.intellij.ide.util.TreeClassChooserDialog/1680.-111.2560.1415/41.25.1639.1025@1680.-111.2560.1415" timestamp="1632790170812" />
+    <state x="2698" y="355" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1632792465072">
+      <screen x="1680" y="-111" width="2560" height="1415" />
+    </state>
+    <state x="2698" y="355" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/1680.-111.2560.1415/39.25.1641.1025@1680.-111.2560.1415" timestamp="1632779297417" />
+    <state x="2698" y="355" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/1680.-111.2560.1415/41.25.1639.1025@1680.-111.2560.1415" timestamp="1632792465072" />
+    <state x="2660" y="326" key="NewPhpClassDialog" timestamp="1632838120594">
+      <screen x="1680" y="-111" width="2560" height="1415" />
+    </state>
+    <state x="2660" y="326" key="NewPhpClassDialog/1680.-111.2560.1415/39.25.1641.1025@1680.-111.2560.1415" timestamp="1632779886046" />
+    <state x="2660" y="326" key="NewPhpClassDialog/1680.-111.2560.1415/41.25.1639.1025@1680.-111.2560.1415" timestamp="1632838120594" />
+    <state x="2781" y="524" key="NewPhpFileDialog" timestamp="1632784456902">
+      <screen x="1680" y="-111" width="2560" height="1415" />
+    </state>
+    <state x="2781" y="524" key="NewPhpFileDialog/1680.-111.2560.1415/41.25.1639.1025@1680.-111.2560.1415" timestamp="1632784456902" />
+    <state x="449" y="222" key="SettingsEditor" timestamp="1632776703009">
+      <screen x="42" y="25" width="1638" height="1025" />
+    </state>
+    <state x="449" y="222" key="SettingsEditor/42.25.1638.1025@42.25.1638.1025" timestamp="1632776703009" />
+    <state x="846" y="200" key="ftp.server.browser" timestamp="1632776803537">
+      <screen x="42" y="25" width="1638" height="1025" />
+    </state>
+    <state x="846" y="200" key="ftp.server.browser/42.25.1638.1025@42.25.1638.1025" timestamp="1632776803537" />
+    <state x="2625" y="213" width="670" height="676" key="search.everywhere.popup" timestamp="1632783258600">
+      <screen x="1680" y="-111" width="2560" height="1415" />
+    </state>
+    <state x="2625" y="213" width="670" height="676" key="search.everywhere.popup/1680.-111.2560.1415/39.25.1641.1025@1680.-111.2560.1415" timestamp="1632780316927" />
+    <state x="2625" y="213" width="670" height="676" key="search.everywhere.popup/1680.-111.2560.1415/41.25.1639.1025@1680.-111.2560.1415" timestamp="1632783258600" />
+  </component>
+</project>
