@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="botany">
+  <component name="PublishConfigData" autoUpload="Always" serverName="11">
     <serverData>
-      <paths name="botany">
+      <paths name="11">
         <serverdata>
           <mappings>
             <mapping deploy="/www/wwwroot/botany" local="$PROJECT_DIR$" web="/" />

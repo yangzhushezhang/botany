@@ -26,6 +26,10 @@ class Router extends AbstractRouter
          * AccountNumberController.php
          */
         $routeCollector->post('/user/add_account_number', '/User/AccountNumberController/add_account_number');
+        # updated_leWallet
+        $routeCollector->post('/user/updated_leWallet', '/User/AccountNumberController/updated_leWallet');
+        #get_account_numberInformation
+        $routeCollector->post('/user/get_account_numberInformation', '/User/AccountNumberController/get_account_numberInformation');
 
 
         /**

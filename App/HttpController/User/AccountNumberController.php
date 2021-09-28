@@ -5,6 +5,7 @@ namespace App\HttpController\User;
 
 
 use App\Model\AccountNumberModel;
+use App\Tools\Tools;
 use EasySwoole\ORM\DbManager;
 use EasySwoole\ORM\Exception\Exception;
 use EasySwoole\Pool\Exception\PoolEmpty;
@@ -50,32 +51,126 @@ class AccountNumberController extends UserBase
                     $this->writeJson(-101, [], "添加失败");
                     return false;
                 }
-                $this->writeJson(-101, [], "添加成功");
+                $this->writeJson(200, [], "添加成功");
                 return true;
 
             });
         } catch (\Throwable $e) {
             $this->writeJson(-1, [], "添加异常:" . $e->getMessage());
-            return;
+            return false;
         }
     }
 
 
-
-
-
     # 删除植物账号  更新
+    # 获取农场植物信息
+    function get_account_numberInformation()
+    {
+        try {
+            $limit = $this->request()->getParsedBody('limit');
+            $page = $this->request()->getParsedBody('page');
+            $action = $this->request()->getParsedBody('action');
+            if (!$this->check_parameter($limit, "limit") || !$this->check_parameter($page, "page") || !$this->check_parameter($page, "action")) {
+                return false;
+            }
+            DbManager::getInstance()->invoke(function ($client) use ($limit, $page, $action) {
+                if ($action == "select") {
+                    $model = AccountNumberModel::invoke($client)->limit($limit * ($page - 1), $limit)->withTotalCount();
+                    $list = $model->all(['user_id' => $this->who['id'], "status" => 1]);
+                    $result = $model->lastQueryResult();
+                    $total = $result->getTotalCount();
+                    $return_data = [
+                        "code" => 0,
+                        "msg" => '',
+                        'count' => $total,
+                        'data' => $list
+                    ];
+                    $this->response()->write(json_encode($return_data));
+                    return true;
+                }
+
+                $data = [
+                    'updated_at' => time()
+                ];
+                if ($action == "update") {
+                    $id = $this->request()->getParsedBody('id');
+                    if (!$this->check_parameter($id, "账户id")) {
+                        return false;
+                    }
+
+                    $token_value = $this->request()->getParsedBody('token_value');
+                    if (isset($token_value) && !empty($token_value)) {
+                        $data['token_value'] = $token_value;
+                        $data['token_md5'] = md5($token_value);
+                    }
+
+                    $remark = $this->request()->getParsedBody('remark');
+                    if (isset($remark) && !empty($remark)) {
+                        $data['remark'] = $remark;
+                    }
+
+
+                    $status = $this->request()->getParsedBody('status');
+                    if (isset($status) && !empty($status)) {
+                        $data['status'] = $status;
+                    }
+
+                    $one = AccountNumberModel::invoke($client)->where(['id' => $id])->update($data);
+                    if (!$one) {
+                        $this->writeJson(-101, [], "修改失败");
+                        return false;
+                    }
+                    $this->writeJson(-101, [], "修改成功");
+                    return true;
+                }
+
+                $this->writeJson(-101, [], "无效访问");
+                return false;
+
+
+            });
+
+        } catch (\Throwable $e) {
+            $this->writeJson(-1, [], "获取异常:" . $e->getMessage());
+            return;
+        }
+    }
 
 
     #更新能量总的能量
     function updated_leWallet()
     {
 
+        try {
+
+            $id = $this->request()->getRequestParam('id');
+            if (!$this->check_parameter($id, "账户id")) {
+                return false;
+            }
+
+            return DbManager::getInstance()->invoke(function ($client) use ($id) {
+                $one = AccountNumberModel::invoke($client)->get(['id' => $id]);
+                if (!$one) {
+                    $this->writeJson(-101, [], "非法账户");
+                    return false;
+                }
 
 
+                $data = Tools::getLeWallet();
+                if (!$data) {
+                    $this->writeJson(-101, [], "获取失败");
+                    return false;
 
+                }
 
+                $this->writeJson(200, $data, "获取成功");
+                return true;
 
+            });
+        } catch (\Throwable $e) {
+            $this->writeJson(-1, [], "updated_leWallet 异常:" . $e->getMessage());
+            return false;
+        }
     }
 
 

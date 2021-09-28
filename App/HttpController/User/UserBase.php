@@ -77,7 +77,6 @@ class UserBase extends Controller
     {
         try {
             DbManager::getInstance()->invoke(function ($client) use ($user_id, $kind, $content) {
-
                 $data = [
                     'content' => $content,
                     'user_id' => $user_id,
