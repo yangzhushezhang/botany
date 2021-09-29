@@ -129,6 +129,7 @@ class FarmInformationController extends UserBase
     {
 
         $id = $this->request()->getParsedBody('id');
+        $status = $this->request()->getParsedBody('status');
         if ($this->check_parameter($id, "账户id")) {
             return false;
         }
@@ -140,11 +141,11 @@ class FarmInformationController extends UserBase
             return false;
         }
         try {
-            DbManager::getInstance()->invoke(function ($client) use ($limit, $page, $action,$id) {
+            DbManager::getInstance()->invoke(function ($client) use ($limit, $page, $action, $id, $status) {
 
                 if ($action == "select") {
                     $model = FarmModel::invoke($client)->limit($limit * ($page - 1), $limit)->withTotalCount();
-                    $list = $model->all(['account_number_id' => $id, "status" => 1]);
+                    $list = $model->all(['account_number_id' => $id, "status" => $status]);
                     $result = $model->lastQueryResult();
                     $total = $result->getTotalCount();
                     $return_data = [
