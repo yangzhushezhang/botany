@@ -50,7 +50,6 @@ class EasySwooleEvent implements Event
         }
 
 
-
         /**
          * 注册 浇水 进程
          */
@@ -65,7 +64,6 @@ class EasySwooleEvent implements Event
         $PeriodsProcess = (new \App\Process\WateringProcess($processConfig));
         \EasySwoole\Component\Di::getInstance()->set('WateringProcess', $PeriodsProcess->getProcess());
         \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
-
 
 
         /**
@@ -85,11 +83,20 @@ class EasySwooleEvent implements Event
         \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
 
 
+        /**
+         * MonitorFarmProcess 检测检测注册
+         */
+        $processConfig = new  \EasySwoole\Component\Process\Config([
+            'processName' => 'MonitorFarmProcess', // 设置 进程名称为 TickProcess
+            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'arg' => [
 
-
-
-
-
+            ], // 传递参数到自定义进程中
+            'enableCoroutine' => true, // 设置 自定义进程自动开启协程环境
+        ]);
+        $PeriodsProcess = (new \App\Process\MonitorFarmProcess($processConfig));
+        \EasySwoole\Component\Di::getInstance()->set('MonitorFarmProcess', $PeriodsProcess->getProcess());
+        \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
 
 
     }

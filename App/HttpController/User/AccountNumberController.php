@@ -120,7 +120,7 @@ class AccountNumberController extends UserBase
                         $this->writeJson(-101, [], "修改失败");
                         return false;
                     }
-                    $this->writeJson(-101, [], "修改成功");
+                    $this->writeJson(200, [], "修改成功");
                     return true;
                 }
 
@@ -161,6 +161,17 @@ class AccountNumberController extends UserBase
                     $this->writeJson(-101, [], "获取失败");
                     return false;
 
+                }
+
+                if ($data['status'] != 0) {
+                    $this->writeJson(-101, [], "获取失败 status:" . $data['status']);
+                    return false;
+                }
+
+                $two = AccountNumberModel::invoke($client)->where(['id' => $id])->update(['updated_at' => time(), 'leWallet' => $data['data']['leWallet']]);
+                if (!$two) {
+                    $this->writeJson(-101, [], "更新 leWallet 失败");
+                    return false;
                 }
 
                 $this->writeJson(200, $data, "获取成功");

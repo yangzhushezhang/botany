@@ -16,7 +16,7 @@ use EasySwoole\HttpClient\Traits\UriManager;
 use Swoole\Coroutine\Http\Client as CoroutineClient;
 use Swoole\WebSocket\Frame;
 
-class HttpClient
+class HttpClient extends \EasySwoole\Mysqli\Client
 {
     // HTTP 1.0/1.1 标准请求方法
     const METHOD_GET = 'GET';

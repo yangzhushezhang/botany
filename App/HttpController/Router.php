@@ -38,6 +38,9 @@ class Router extends AbstractRouter
         #refresh_botany  刷新农场
         $routeCollector->post('/user/refresh_botany', '/User/FarmInformationController/refresh_botany');
 
+        # get_farmInformation
+        $routeCollector->post('/user/get_farmInformation', '/User/FarmInformationController/get_farmInformation');
+
 
         /**
          * ToolsController.php

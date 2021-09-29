@@ -1,6 +1,10 @@
 <?php
 
 namespace App\Tools;
+
+use App\Model\LoggerModel;
+use EasySwoole\ORM\DbManager;
+
 class Tools
 {
 
@@ -27,8 +31,12 @@ class Tools
                 'accept-language' => 'zh-CN,zh;q=0.9',
                 'if-none-match' => 'W/^\\^99-2xqEFdktsE4xMb9duc5cLOCwO+c^\\^',
             );
-            $client->setHeaders($headers);
+            $client->setHeaders($headers, false, false);
             $response = $client->get();
+            $response = $response->getBody();
+
+//            var_dump($response);
+
             $data = json_decode($response, true);
             if (!$data) {
                 return false;
@@ -36,6 +44,25 @@ class Tools
             return $data;
         } catch (\Throwable $e) {
             return false;
+        }
+    }
+
+
+  static  function WriteLogger($user_id, $kind, $content)
+    {
+        try {
+            DbManager::getInstance()->invoke(function ($client) use ($user_id, $kind, $content) {
+                $data = [
+                    'content' => $content,
+                    'user_id' => $user_id,
+                    'kind' => $kind,
+                    'updated_at' => time(),
+                    'created_at' => time()
+                ];
+                LoggerModel::invoke($client)->data($data)->save();
+            });
+        } catch (\Throwable $e) {
+            log("写日志异常:" . $e->getMessage());
         }
     }
 

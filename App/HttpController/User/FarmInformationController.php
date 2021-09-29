@@ -7,6 +7,8 @@ namespace App\HttpController\User;
 use App\Model\AccountNumberModel;
 use App\Model\FarmModel;
 use EasySwoole\ORM\DbManager;
+use EasySwoole\ORM\Exception\Exception;
+use EasySwoole\Pool\Exception\PoolEmpty;
 
 /**
  * Class FarmInformationController
@@ -76,7 +78,6 @@ class FarmInformationController extends UserBase
                         $hasSeed = 2;
                         if ($value['needWater']) {
                             # 需要浇水  让进程去做这件事情
-
                             $needWater = 1;
                         }
                         if ($value['hasSeed']) {
@@ -90,7 +91,9 @@ class FarmInformationController extends UserBase
                             'harvestTime' => strtotime($unix),
                             'needWater' => $needWater,
                             'hasSeed' => $hasSeed,
-                            'updated_at' => time()
+                            'plant_type' => $value['plant']['type'],
+                            'updated_at' => time(),
+                            'stage' => $value['stage']  #paused 说明暂停 了 有乌鸦
                         ];
                         #存在 只需要 做更新操作
                         if ($one) {
@@ -121,6 +124,44 @@ class FarmInformationController extends UserBase
     }
 
 
+    #  获取农场信息
+    function get_farmInformation()
+    {
 
+        $id = $this->request()->getParsedBody('id');
+        if ($this->check_parameter($id, "账户id")) {
+            return false;
+        }
+
+        $limit = $this->request()->getParsedBody('limit');
+        $page = $this->request()->getParsedBody('page');
+        $action = $this->request()->getParsedBody('action');
+        if (!$this->check_parameter($limit, "limit") || !$this->check_parameter($page, "page") || !$this->check_parameter($page, "action")) {
+            return false;
+        }
+        try {
+            DbManager::getInstance()->invoke(function ($client) use ($limit, $page, $action,$id) {
+
+                if ($action == "select") {
+                    $model = FarmModel::invoke($client)->limit($limit * ($page - 1), $limit)->withTotalCount();
+                    $list = $model->all(['account_number_id' => $id, "status" => 1]);
+                    $result = $model->lastQueryResult();
+                    $total = $result->getTotalCount();
+                    $return_data = [
+                        "code" => 0,
+                        "msg" => '',
+                        'count' => $total,
+                        'data' => $list
+                    ];
+                    $this->response()->write(json_encode($return_data));
+                    return true;
+                }
+            });
+
+        } catch (\Throwable $e) {
+        }
+
+
+    }
 
 }

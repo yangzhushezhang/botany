@@ -18,7 +18,7 @@ class WateringProcess extends AbstractProcess
         var_dump("这是一个浇水的进程");
         go(function () {
 
-
+           # \co::sleep(30 * 60);  # 30分钟 检查一次
         });
     }
 }
