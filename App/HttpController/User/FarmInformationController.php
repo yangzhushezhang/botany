@@ -93,7 +93,8 @@ class FarmInformationController extends UserBase
                             'hasSeed' => $hasSeed,
                             'plant_type' => $value['plant']['type'],
                             'updated_at' => time(),
-                            'stage' => $value['stage']  #paused 说明暂停 了 有乌鸦
+                            'stage' => $value['stage'], #paused 说明暂停 了 有乌鸦
+                            'totalHarvest' => $value['totalHarvest']
                         ];
                         #存在 只需要 做更新操作
                         if ($one) {
@@ -130,10 +131,9 @@ class FarmInformationController extends UserBase
 
         $id = $this->request()->getParsedBody('id');
         $status = $this->request()->getParsedBody('status');
-        if ($this->check_parameter($id, "账户id")) {
+        if (!$this->check_parameter($id, "账户id")) {
             return false;
         }
-
         $limit = $this->request()->getParsedBody('limit');
         $page = $this->request()->getParsedBody('page');
         $action = $this->request()->getParsedBody('action');
@@ -141,8 +141,7 @@ class FarmInformationController extends UserBase
             return false;
         }
         try {
-            DbManager::getInstance()->invoke(function ($client) use ($limit, $page, $action, $id, $status) {
-
+            return DbManager::getInstance()->invoke(function ($client) use ($limit, $page, $action, $id, $status) {
                 if ($action == "select") {
                     $model = FarmModel::invoke($client)->limit($limit * ($page - 1), $limit)->withTotalCount();
                     $list = $model->all(['account_number_id' => $id, "status" => $status]);
@@ -157,9 +156,16 @@ class FarmInformationController extends UserBase
                     $this->response()->write(json_encode($return_data));
                     return true;
                 }
+
+                $this->writeJson(-1, [], "非法参数");
+                return false;
+
             });
 
         } catch (\Throwable $e) {
+
+            $this->writeJson(-1, [], "异常:" . $e->getMessage());
+            return false;
         }
 
 

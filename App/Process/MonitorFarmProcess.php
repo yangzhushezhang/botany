@@ -9,6 +9,7 @@ use App\Model\FarmModel;
 use App\Tools\Tools;
 use EasySwoole\Component\Process\AbstractProcess;
 use EasySwoole\ORM\DbManager;
+use EasySwoole\RedisPool\RedisPool;
 
 
 /**
@@ -16,7 +17,7 @@ use EasySwoole\ORM\DbManager;
  * @package App\Process
  *   检测 进程
  *
- *  该进程 只负责 检查   是否有乌鸦
+ *  该进程 负责 监听  乌鸦  收获 铲除
  */
 class MonitorFarmProcess extends AbstractProcess
 {
@@ -55,54 +56,74 @@ class MonitorFarmProcess extends AbstractProcess
                             $result = $response->getBody();
 
                             $data = json_decode($result, true);
+
+
                             if (!$data) {
-                                Tools::WriteLogger($re['user_id'], 2, "MonitorFarmProcess 进程请求 账号:" . $re['id'] . " 请求返回的解析参数失败");
+                                Tools::WriteLogger($re['user_id'], 2, "MonitorFarmProcess 进程请求 账号:" . $re['id'] . " 请求返回的解析参数失败 result:" . $result);
                                 # 这个地方再做处理
-                                break;
+                                continue;
                             }
-
-
-
 
                             # 判断是否 有乌鸦  影响 农作物
                             foreach ($data['data'] as $value) {
                                 # 判断 农场 没有有 这个 种子 id
                                 $one = FarmModel::invoke($client)->get(['account_number_id' => $re['id'], 'farm_id' => $value['_id']]);
-                                $unix = str_replace(array('T', 'Z'), ' ', $value['harvestTime']);
-                                $value['stage'] ;
 
 
-
-
-
-                                if ($value['stage']=="cancelled"){
-                                    var_dump($value['_id']);
-                                    var_dump( $value['harvestTime']);
-                                    var_dump(strtotime($unix)+8*60*60);
-                                    var_dump(time());
-
-                                    # 这里一说明  种子已经
-
+                                if (isset($value['harvestTime'])) {
+                                    $unix = str_replace(array('T', 'Z'), ' ', $value['harvestTime']);
+                                    $harvestTime = strtotime($unix) + 8 * 60 * 60;
+                                } else {
+                                    $harvestTime = 0;
                                 }
 
 
+                                if ($value['stage'] == "new") {
+                                    # 这个是 就去放 盆
+                                    var_dump("放花盆");
+                                    $redis = RedisPool::defer('redis');
+                                    if ($one) {
+                                        var_dump($one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);
+                                        $redis->rPush("PutPot", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']); #
+                                    }
 
 
+                                }
 
+                                #  农作物已经 成熟
+                                if ($value['stage'] == "cancelled") {
+                                    # 判断种子 是否可以 收获
+                                    if ($value['totalHarvest'] == 0) {
+                                        # 这个 已经收获过了 直接去铲除
+                                        var_dump("----------------");
+                                        var_dump("已经收获过了!");
+                                        $redis = RedisPool::defer("redis");
+                                        $redis->rPush("RemoveSeed", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);  #种子的 id 种子的  账户id
+                                        Tools::WriteLogger($re['user_id'], 1, '推送 账户id:' . $one['account_number_id'] . " 种子id:" . $one['farm_id'] . "到 RemoveSeedProcess 后勤");
 
+                                    } else {
+                                        # 说明这个 可以去收获  直接 push  到  收获进程去
+                                        $redis = RedisPool::defer("redis");
+                                        $redis->rPush("Harvest_Fruit", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);  #种子的 id 种子的  账户id
+                                        var_dump("账户:" . $one['farm_id'] . "已经推送到后勤任务");
+                                        Tools::WriteLogger($re['user_id'], 1, '推送 账户id:' . $one['account_number_id'] . " 种子id:" . $one['farm_id'] . "到 HarvestFruitProcess 后勤");
 
+                                    }
+
+                                }
 
                                 $needWater = 2;
-                                $hasSeed = 2;
-
-
-                                if ($value['stage'] == "pause") {
+                                $hasSeed = 2;  # 暂停
+                                if ($value['stage'] == "paused") {
                                     # 这个种子的时间停止了   说明已经有乌鸦了 .我怕需要 用 稻草人去吓退乌鸦
                                     var_dump("发现了 停止的种子 :" . $value['_id']);
+                                    $redis = RedisPool::defer("redis");
+                                    $redis->rPush("CROW_IDS", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);  #种子的 id 种子的  账户id
                                     Tools::WriteLogger($re['user_id'], 2, "在种子:" . $value['_id'] . "发现了乌鸦....需要去清除他");
                                 } else {
-                                    var_dump("检查......" . $value['stage']);
+                                    #var_dump("检查......" . $value['stage']);
                                 }
+
 
                                 if ($value['needWater']) {
                                     # 需要浇水  让进程去做这件事情     需要给浇水的进程去
@@ -113,12 +134,11 @@ class MonitorFarmProcess extends AbstractProcess
                                     $hasSeed = 1;
                                 }
 
-
                                 # 这里需要判断 有没有乌鸦    如果有乌鸦 我需要 仍在 进程里面来做这件事!!!!
                                 $add = [
                                     'account_number_id' => $re['id'],
                                     'farm_id' => $value['_id'],
-                                    'harvestTime' => strtotime($unix)+8*60*60,
+                                    'harvestTime' => $harvestTime,
                                     'needWater' => $needWater,
                                     'hasSeed' => $hasSeed,
                                     'plant_type' => $value['plant']['type'],
@@ -129,7 +149,7 @@ class MonitorFarmProcess extends AbstractProcess
                                 if ($one) {
                                     $two = FarmModel::invoke($client)->where(['account_number_id' => $re['id'], 'farm_id' => $value['_id']])->update($add);
                                     if (!$two) {
-                                        Tools::WriteLogger($this->who['id'], 2, "接口 refresh_botany 更新数据的时候出错误");
+                                        Tools::WriteLogger($re['user_id'], 2, "接口 refresh_botany 更新数据的时候出错误");
                                     }
                                 } else {
                                     # 插入操作

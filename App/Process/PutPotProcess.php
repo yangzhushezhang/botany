@@ -1,6 +1,8 @@
 <?php
 
+
 namespace App\Process;
+
 
 use App\Model\AccountNumberModel;
 use App\Model\FarmModel;
@@ -9,19 +11,18 @@ use App\Tools\Tools;
 use EasySwoole\Component\Process\AbstractProcess;
 use EasySwoole\ORM\DbManager;
 
-
-/**
- * Class WateringProcess
- * @package App\Process
- * 浇水
- */
-class WateringProcess extends AbstractProcess
+class PutPotProcess extends AbstractProcess
 {
 
+
+    /**
+     * @param $arg
+     * @return mixed
+     */
     protected function run($arg)
     {
         go(function () {
-            var_dump("这是一个浇水的进程");
+            var_dump("放花盆进程");
             while (true) {
                 \EasySwoole\RedisPool\RedisPool::invoke(function (\EasySwoole\Redis\Redis $redis) {
                     # 监听 赶乌鸦的接口
@@ -99,7 +100,7 @@ class WateringProcess extends AbstractProcess
                                 Tools::WriteLogger($id_array[2], 1, "账户id:" . $id_array[1] . " 种子id:" . $two['farm_id'] . "放花盆....." . $response);
                                 #
                                 $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
-
+                                $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
 
                             }
 

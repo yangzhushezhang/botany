@@ -5,6 +5,9 @@ namespace App\Process;
 
 
 use App\Model\AccountNumberModel;
+use App\Model\FarmModel;
+use App\Model\ToolsModel;
+use App\Tools\Tools;
 use EasySwoole\Component\Process\AbstractProcess;
 use EasySwoole\ORM\DbManager;
 use EasySwoole\RedisPool\RedisPool;
@@ -22,7 +25,6 @@ class ExpelRavenProcess extends AbstractProcess
         var_dump("这里一个驱逐乌鸦的进程");
         go(function () {
             while (true) {
-
                 \EasySwoole\RedisPool\RedisPool::invoke(function (\EasySwoole\Redis\Redis $redis) {
                     # 监听 赶乌鸦的接口
                     $id = $redis->rPop("CROW_IDS");
@@ -32,10 +34,13 @@ class ExpelRavenProcess extends AbstractProcess
                             $array_data = explode('@', $id);
                             if (count($array_data) == 3) {
                                 # 属于那个 账号
-                                $one = AccountNumberModel::invoke($client)->get(['id' => $array_data[0]]);
-                                if ($one) {
-                                    $token_value = $one['token_value'];
+                                $one = AccountNumberModel::invoke($client)->get(['id' => $array_data[1]]); #farm_id   account_number_id user_id
+                                $two = ToolsModel::invoke($client)->get(['account_number_id' => $array_data[1]]);
+                                $there = FarmModel::invoke($client)->get(['id' => $array_data[0]]);
 
+//                                if ($two['scarecrow']<)
+                                if ($one && $two && $there) {
+                                    $token_value = $one['token_value'];
                                     $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms/apply-tool');
                                     $headers = array(
                                         'authority' => 'backend-farm.plantvsundead.com',
@@ -53,18 +58,26 @@ class ExpelRavenProcess extends AbstractProcess
                                         'referer' => 'https://marketplace.plantvsundead.com/',
                                         'accept-language' => 'zh-CN,zh;q=0.9',
                                     );
-
                                     $client_http->setHeaders($headers, false, false);
-                                    $data = '{"farmId":"' . $array_data[1] . '","toolId":4,"token":{"challenge":"default","seccode":"default","validate":"default"}}';
+                                    $data = '{"farmId":"' . $there['farm_id'] . '","toolId":4,"token":{"challenge":"default","seccode":"default","validate":"default"}}';
                                     $response = $client_http->post($data);
+                                    $response = $response->getBody();
+                                    $data = json_decode($response, true);
+                                    if (!$data) {
+                                        # 解析失败 赶跑乌鸦失败
+                                        Tools::WriteLogger($array_data[2], 2, "账户id:" . $array_data[1] . " 种子id:" . $one['farm_id'] . "赶走乌鸦失败.....json解析失败");
+                                        return false;
+                                    }
+                                    if ($data['status'] != 0) {
+                                        Tools::WriteLogger($array_data[2], 2, "账户id:" . $array_data[1] . " 种子id:" . $one['farm_id'] . "赶走乌鸦失败....." . $response);
+                                        return false;
+                                    }
+                                    Tools::WriteLogger($array_data[2], 1, "账户id:" . $array_data[1] . " 种子id:" . $one['farm_id'] . "赶走乌鸦成功....." . $response);
 
-
-
-
+                                    #
 
 
                                 }
-
 
                             }
 

@@ -5,7 +5,9 @@ namespace App\HttpController\User;
 
 
 use App\Model\AccountNumberModel;
+use App\Model\FarmModel;
 use App\Model\ToolsModel;
+use App\Tools\Tools;
 use EasySwoole\ORM\DbManager;
 use EasySwoole\ORM\Exception\Exception;
 use EasySwoole\Pool\Exception\PoolEmpty;
@@ -128,12 +130,29 @@ class ToolsController extends UserBase
     }
 
 
+    # 获取工具信息
+    function get_tools()
+    {
+        $id = $this->request()->getParsedBody('id'); #需要刷新的 账号
+        if (!$this->check_parameter($id, "账号id")) {
+            return false;
+        }
+        try {
+            return DbManager::getInstance()->invoke(function ($client) use ($id) {
+                $res = ToolsModel::invoke($client)->get(['account_number_id' => $id]);
+                $this->writeJson(200, $res, "获取成功");
+                return true;
 
 
+            });
 
+        } catch (\Throwable $e) {
+            $this->writeJson(-1, [], $e->getMessage());
+            return false;
 
+        }
 
-
+    }
 
 
 }

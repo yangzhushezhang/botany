@@ -99,5 +99,73 @@ class EasySwooleEvent implements Event
         \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
 
 
+        /**
+         * 收获进程 HarvestFruitProcess
+         */
+        $processConfig = new  \EasySwoole\Component\Process\Config([
+            'processName' => 'HarvestFruitProcess', // 设置 进程名称为 TickProcess
+            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'arg' => [
+
+            ], // 传递参数到自定义进程中
+            'enableCoroutine' => true, // 设置 自定义进程自动开启协程环境
+        ]);
+        $PeriodsProcess = (new \App\Process\HarvestFruitProcess($processConfig));
+        \EasySwoole\Component\Di::getInstance()->set('HarvestFruitProcess', $PeriodsProcess->getProcess());
+        \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
+
+
+        /**
+         * RemoveSeedProcess  移除废弃种子 进程
+         */
+        $processConfig = new  \EasySwoole\Component\Process\Config([
+            'processName' => 'RemoveSeedProcess', // 设置 进程名称为 TickProcess
+            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'arg' => [
+
+            ], // 传递参数到自定义进程中
+            'enableCoroutine' => true, // 设置 自定义进程自动开启协程环境
+        ]);
+        $PeriodsProcess = (new \App\Process\RemoveSeedProcess($processConfig));
+        \EasySwoole\Component\Di::getInstance()->set('RemoveSeedProcess', $PeriodsProcess->getProcess());
+        \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
+
+
+        /**
+         * PlantSeedProcess 种植 放盆波
+         */
+
+        $processConfig = new  \EasySwoole\Component\Process\Config([
+            'processName' => 'PlantSeedProcess', // 设置 进程名称为 TickProcess
+            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'arg' => [
+
+            ], // 传递参数到自定义进程中
+            'enableCoroutine' => true, // 设置 自定义进程自动开启协程环境
+        ]);
+        $PeriodsProcess = (new \App\Process\PlantSeedProcess($processConfig));
+        \EasySwoole\Component\Di::getInstance()->set('PlantSeedProcess', $PeriodsProcess->getProcess());
+        \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
+
+
+        /**
+         * 方盆  进程
+         * PutPotProcess
+         */
+        $processConfig = new  \EasySwoole\Component\Process\Config([
+            'processName' => 'PutPotProcess', // 设置 进程名称为 TickProcess
+            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'arg' => [
+
+            ], // 传递参数到自定义进程中
+            'enableCoroutine' => true, // 设置 自定义进程自动开启协程环境
+        ]);
+        $PeriodsProcess = (new \App\Process\PutPotProcess($processConfig));
+        \EasySwoole\Component\Di::getInstance()->set('PutPotProcess', $PeriodsProcess->getProcess());
+        \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
+
+
+
+
     }
 }
