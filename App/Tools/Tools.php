@@ -48,7 +48,7 @@ class Tools
     }
 
 
-  static  function WriteLogger($user_id, $kind, $content)
+    static function WriteLogger($user_id, $kind, $content)
     {
         try {
             DbManager::getInstance()->invoke(function ($client) use ($user_id, $kind, $content) {

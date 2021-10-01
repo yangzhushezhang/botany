@@ -57,26 +57,41 @@ class MonitorFarmProcess extends AbstractProcess
 
                             $data = json_decode($result, true);
 
-
                             if (!$data) {
                                 Tools::WriteLogger($re['user_id'], 2, "MonitorFarmProcess 进程请求 账号:" . $re['id'] . " 请求返回的解析参数失败 result:" . $result);
                                 # 这个地方再做处理
                                 continue;
                             }
 
+                            if ($data['status']!=0){
+                                Tools::WriteLogger($re['user_id'], 2, "MonitorFarmProcess 进程请求 账号:" . $re['id'] . " 请求返回的数据错误 result:" . $result);
+                                continue ;
+                            }
+
+
+
+                            $if_add_new = false;
+                            $if_sunflowerId_2 = false;
+                            if ($data['total'] != 6) {
+                                $if_add_new = true;
+                            }
+
                             # 判断是否 有乌鸦  影响 农作物
                             foreach ($data['data'] as $value) {
+
+
+                                if ($value['plant']['sunflowerId'] == 2) {
+                                    $if_sunflowerId_2 = true;
+                                }
+
                                 # 判断 农场 没有有 这个 种子 id
                                 $one = FarmModel::invoke($client)->get(['account_number_id' => $re['id'], 'farm_id' => $value['_id']]);
-
-
                                 if (isset($value['harvestTime'])) {
                                     $unix = str_replace(array('T', 'Z'), ' ', $value['harvestTime']);
                                     $harvestTime = strtotime($unix) + 8 * 60 * 60;
                                 } else {
                                     $harvestTime = 0;
                                 }
-
 
                                 if ($value['stage'] == "new") {
                                     # 这个是 就去放 盆
@@ -86,8 +101,6 @@ class MonitorFarmProcess extends AbstractProcess
                                         var_dump($one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);
                                         $redis->rPush("PutPot", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']); #
                                     }
-
-
                                 }
 
                                 #  农作物已经 成熟
@@ -128,6 +141,23 @@ class MonitorFarmProcess extends AbstractProcess
                                 if ($value['needWater']) {
                                     # 需要浇水  让进程去做这件事情     需要给浇水的进程去
                                     $needWater = 1;
+                                    #判断需要浇 几滴水
+                                    if (count($value['activeTools']) == 1) {
+                                        if ($one) {
+                                            $redis = RedisPool::defer('redis');
+                                            $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
+
+                                            \EasySwoole\Component\Timer::getInstance()->after(10 * 6 * 30 * 1000, function () use ($one, $re, $redis) { # 30秒后进行
+                                                $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
+                                            });
+
+                                            var_dump("浇两滴水");
+                                        }
+                                    } else if (count($value['activeTools']) == 2) {
+                                        $redis = RedisPool::defer('redis');
+                                        $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
+                                        var_dump("浇一滴水");
+                                    }
                                 }
                                 if ($value['hasSeed']) {
                                     #需要 放种子
@@ -161,13 +191,32 @@ class MonitorFarmProcess extends AbstractProcess
                                 }
                             }
 
+
+                            if ($if_add_new) {
+                                # 去添加 播种进程
+                                $p = 6 - $data['total'];
+                                for ($i = 0; $i < $p; $i++) {
+                                    $redis = RedisPool::defer('redis');
+                                    if ($i == 0 && !$if_sunflowerId_2) {
+                                        # 添加向日葵
+                                        var_dump("向日葵");
+                                        $redis->rPush("Seed_Fruit", $re['id'] . "@" . 2 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
+
+                                    } else {
+                                        # 添加普通种子
+                                        var_dump("普通种子");
+                                        $redis->rPush("Seed_Fruit", $re['id'] . "@" . 1 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
+                                    }
+
+                                }
+                            }
+
                             \co::sleep(5);   # 每个账号直接 休息时间是  5秒
                         }
 
-
                     }
                 });
-                \co::sleep(30 * 60);  # 30分钟 检查一次
+                \co::sleep(40 * 60);  # 30分钟 检查一次
             }
         });
     }

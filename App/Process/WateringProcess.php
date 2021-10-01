@@ -25,35 +25,28 @@ class WateringProcess extends AbstractProcess
             while (true) {
                 \EasySwoole\RedisPool\RedisPool::invoke(function (\EasySwoole\Redis\Redis $redis) {
                     # 监听 赶乌鸦的接口
-                    $id = $redis->rPop("PutPot");
+                    $id = $redis->rPop("Watering");
                     if ($id) {
                         #  已经 收获过了  改移除种子了
                         DbManager::getInstance()->invoke(function ($client) use ($id, $redis) {
                             $id_array = explode('@', $id);  # 农场id 账户id  用户 id
                             if (count($id_array) == 3) {
                                 # 属于那个 账号
-
-
-
-
                                 $one = AccountNumberModel::invoke($client)->get(['id' => $id_array[1]]); #farm_id   account_number_id user_id
-
                                 $two = FarmModel::invoke($client)->get(['id' => $id_array[0]]);
-
                                 $three = ToolsModel::invoke($client)->get(['account_number_id' => $id_array[1]]);  #查询工具
 
-                                # 判断是花盆个数够吗?
+                                if ($three['water'] < 1) {
+                                    var_dump("水量不足");
+                                    return false;
+                                }
+
+
+                                # 判断水滴 够吗?
                                 if (!$one || !$two) {
-                                    Tools::WriteLogger($id_array[2], 2, "PutPotProcess 账户id:" . $id_array[1] . "不存在 ");
+                                    Tools::WriteLogger($id_array[2], 2, "WateringProcess 账户id:" . $id_array[1] . "不存在 ");
                                     return false;
                                 }
-
-                                if ($two['stage'] != "new") {
-                                    # 说明这个种子还没有收获 不可以移除
-                                    Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . "  不要重复的放花盆 种子id:" . $one['farm_id']);
-                                    return false;
-                                }
-
 
                                 # 种子放花盆
                                 $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms/apply-tool');
@@ -74,32 +67,51 @@ class WateringProcess extends AbstractProcess
                                     'accept-language' => 'zh-CN,zh;q=0.9',
                                 );
                                 $client_http->setHeaders($headers, false, false);
-                                $data = '{"farmId":"' . $two['farm_id'] . '","toolId":1,"token":{"challenge":"default","seccode":"default","validate":"default"}}';
+                                $data = '{"farmId":"' . $two['farm_id'] . '","toolId":3,"token":{"challenge":"default","seccode":"default","validate":"default"}}';
                                 $response = $client_http->post($data);
                                 $response = $response->getBody();
                                 $data = json_decode($response, true);
 
+
+
+                                #  556 验证码
+
                                 if (!$data) {
                                     # 解析失败 收获失败
-                                    Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . " 种子id:" . $two['farm_id'] . "放花盆.....json解析失败");
+                                    \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
+                                        $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
+                                    });
+                                    Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . " 种子id:" . $two['farm_id'] . "浇水.....json解析失败");
                                     return false;
                                 }
 
                                 if ($data['status'] != 0) {
-                                    Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . " 种子id:" . $two['farm_id'] . "放花盆....." . $response);
-                                    return false;
+
+                                    if ($data['status']==556){
+                                        # 说明出验证码
+                                        var_dump("验证码出现...准备去处理它");
+                                        Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . " 种子id:" . $two['farm_id'] . "浇水失败  出现了验证码" . $response);
+                                        return false;
+                                    }else{
+                                        \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
+                                            $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
+                                        });
+                                        Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . " 种子id:" . $two['farm_id'] . "浇水....." . $response);
+                                        return false;
+                                    }
+
                                 }
 
 
-                                var_dump("放花盆成功");
-
+                                var_dump("浇水成功");
                                 # 更新 农作物状态
                                 FarmModel::invoke($client)->where(['id' => $id_array[0]])->update(['stage' => 'farming', 'updated_at' => time()]);
-                                # 放 花盆成功
-                                Tools::WriteLogger($id_array[2], 1, "账户id:" . $id_array[1] . " 种子id:" . $two['farm_id'] . "放花盆....." . $response);
-                                #
-                                $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
+                                # 浇水成功
+                                Tools::WriteLogger($id_array[2], 1, "账户id:" . $id_array[1] . " 种子id:" . $two['farm_id'] . "浇水....." . $response);
 
+                                #$redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
+                                $new = $three['water'] - 1;
+                                ToolsModel::invoke($client)->where(['account_number_id' => $id_array[1]])->update(['updated_at' => time(), 'water' => $new]); # 更新工具
 
                             }
 

@@ -38,7 +38,12 @@ class ExpelRavenProcess extends AbstractProcess
                                 $two = ToolsModel::invoke($client)->get(['account_number_id' => $array_data[1]]);
                                 $there = FarmModel::invoke($client)->get(['id' => $array_data[0]]);
 
-//                                if ($two['scarecrow']<)
+                                if ($two['scarecrow'] < 20) {
+                                    var_dump("稻草人数量不足");
+                                    return false;
+                                }
+
+
                                 if ($one && $two && $there) {
                                     $token_value = $one['token_value'];
                                     $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms/apply-tool');
@@ -65,6 +70,10 @@ class ExpelRavenProcess extends AbstractProcess
                                     $data = json_decode($response, true);
                                     if (!$data) {
                                         # 解析失败 赶跑乌鸦失败
+                                        \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
+                                            $redis->rPush("CROW_IDS", $id);  # account_number_id  种子类型 user_id
+                                        });
+
                                         Tools::WriteLogger($array_data[2], 2, "账户id:" . $array_data[1] . " 种子id:" . $one['farm_id'] . "赶走乌鸦失败.....json解析失败");
                                         return false;
                                     }

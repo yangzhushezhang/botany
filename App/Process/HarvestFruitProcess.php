@@ -30,7 +30,7 @@ class HarvestFruitProcess extends AbstractProcess
                     $id_array = explode("@", $id);  # farm_id   account_number_id user_id
                     if (count($id_array) == 3) {  # 数组长度为2
                         if ($id) {
-                            DbManager::getInstance()->invoke(function ($client) use ($id_array, $redis) {
+                            DbManager::getInstance()->invoke(function ($client) use ($id_array, $redis,$id) {
                                 # 获取这个  农作物的详情
                                 $one = FarmModel::invoke($client)->get(['id' => $id_array[0]]);
                                 $two = AccountNumberModel::invoke($client)->get(['id' => $id_array[1]]);
@@ -71,6 +71,10 @@ class HarvestFruitProcess extends AbstractProcess
                                 $data = json_decode($result, true);
                                 if (!$data) {
                                     # 解析失败 收获失败
+                                    \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
+                                        $redis->rPush("Harvest_Fruit", $id);  # account_number_id  种子类型 user_id
+                                    });
+
                                     Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . " 种子id:" . $one['farm_id'] . "收获失败.....json解析失败");
                                     return false;
                                 }

@@ -40,9 +40,9 @@ class ToolsController extends UserBase
                     'authority' => 'backend-farm.plantvsundead.com',
                     'sec-ch-ua' => '^\\^Google',
                     'accept' => 'application/json, text/plain, */*',
-                    'authorization' => 'Bearer Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWJsaWNBZGRyZXNzIjoiMHg5M2IzOTVmYzViNDcwZDYyMDJiZGQ4OTE2OWJjYTQ1MTU2MTU1M2Q5IiwibG9naW5UaW1lIjoxNjMyNzM5Nzk2NDg5LCJjcmVhdGVEYXRlIjoiMjAyMS0wOS0yMiAwMToyMzowMiIsImlhdCI6MTYzMjczOTc5Nn0.AuCOfM9OISlQmSA9oy6lz78KMsYl5ocYS4GZY44o9FA',
+                    'authorization' => $one['token_value'],
                     'sec-ch-ua-mobile' => '?0',
-                    'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
+                    'user-agent' => $token_value,
                     'sec-ch-ua-platform' => '^\\^Windows^\\^',
                     'origin' => 'https://marketplace.plantvsundead.com',
                     'sec-fetch-site' => 'same-site',
@@ -60,7 +60,6 @@ class ToolsController extends UserBase
                 $data_json = json_decode($result, true);
 
                 if (!$data_json) {
-
                     $this->WriteLogger($this->who['id'], 2, "接口 refresh_tools json 解析失败");
                     $this->writeJson(-101, [], "接口  refresh_tools json 解析失败");
                     return false;
@@ -75,7 +74,6 @@ class ToolsController extends UserBase
 
                     #判断是否存在这个账号的
                     $one = ToolsModel::invoke($client)->get(['account_number_id' => $id]);
-
                     $update_data = [
                         'account_number_id' => $id
                     ];

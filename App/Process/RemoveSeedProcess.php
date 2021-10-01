@@ -44,20 +44,15 @@ class RemoveSeedProcess extends AbstractProcess
                                     Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . "不存在 ");
                                     return false;
                                 }
-
                                 if ($two['status'] != 2) {
                                     # 说明这个种子还没有收获 不可以移除
                                     Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . "  不要移除没有成熟的种子 收获种子id:" . $one['farm_id']);
                                     return false;
                                 }
-
-
                                 if ($two['remove'] == 2) {
                                     Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . "  不要重复移除 种子id:" . $one['farm_id']);
                                     return false;
                                 }
-
-
                                 #准备去收获 种子
                                 $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms/' . $two['farm_id'] . '/deactivate');
                                 $headers = array(
@@ -84,6 +79,9 @@ class RemoveSeedProcess extends AbstractProcess
 
                                 if (!$data) {
                                     # 解析失败 收获失败
+                                    \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
+                                        $redis->rPush("RemoveSeed", $id);  # account_number_id  种子类型 user_id
+                                    });
                                     Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . " 种子id:" . $two['farm_id'] . "移除失败.....json解析失败");
                                     return false;
                                 }
@@ -97,7 +95,7 @@ class RemoveSeedProcess extends AbstractProcess
                                 # 移除成功   # 准备去种种子
                                 Tools::WriteLogger($id_array[2], 1, "账户id:" . $id_array[1] . " 种子id:" . $two['farm_id'] . "移除成功....." . $result);
                                 # 铲除成功后 需要 去 推入 放种子  浇水的 进程
-                                $redis->rPush("Seed_Fruit", $id_array[1], "@" . $two['plant_type'] . "@" . $one['user_id']);  # account_number_id  种子类型 user_id
+                                $redis->rPush("Seed_Fruit", $id_array[1]. "@" . $two['plant_type'] . "@" . $one['user_id']);  # account_number_id  种子类型 user_id
 
 
                             }

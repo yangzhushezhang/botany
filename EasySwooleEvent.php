@@ -166,6 +166,33 @@ class EasySwooleEvent implements Event
 
 
 
+        #WateringProcess
+        $processConfig = new  \EasySwoole\Component\Process\Config([
+            'processName' => 'WateringProcess', // 设置 进程名称为 TickProcess
+            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'arg' => [
+
+            ], // 传递参数到自定义进程中
+            'enableCoroutine' => true, // 设置 自定义进程自动开启协程环境
+        ]);
+        $PeriodsProcess = (new \App\Process\WateringProcess($processConfig));
+        \EasySwoole\Component\Di::getInstance()->set('WateringProcess', $PeriodsProcess->getProcess());
+        \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
+
+
+
+        #MonitorTools
+        $processConfig = new  \EasySwoole\Component\Process\Config([
+            'processName' => 'MonitorTools', // 设置 进程名称为 TickProcess
+            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'arg' => [
+
+            ], // 传递参数到自定义进程中
+            'enableCoroutine' => true, // 设置 自定义进程自动开启协程环境
+        ]);
+        $PeriodsProcess = (new \App\Process\MonitorTools($processConfig));
+        \EasySwoole\Component\Di::getInstance()->set('MonitorTools', $PeriodsProcess->getProcess());
+        \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
 
     }
 }
