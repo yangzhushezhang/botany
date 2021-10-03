@@ -160,15 +160,12 @@ class MonitorTools extends AbstractProcess
 
                             if (!$data) {
                                 Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $data, $six['id'], 9);
-                                return false;
+                                continue;
                             }
                             if ($data['status'] != 0) {
                                 Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     result: status ", $six['id'], 9);
-                                return false;
+                                continue;
                             }
-
-
-
 
 
                             $update = [
@@ -190,13 +187,15 @@ class MonitorTools extends AbstractProcess
                             $data = Tools::getLeWallet($token_value);
                             if (!$data) {
                                 Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $data, $six['id'], 9);
-                                return false;
-                            }
-                            if ($data['status'] == 0) {
-                                Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     result: status ", $six['id'], 9);
-                                return false;
+                                continue;
                             }
 
+                            if ($data['status'] != 0) {
+                                Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     result: status ".$data['status'], $six['id'], 9);
+                                continue;
+                            }
+
+                          #  var_dump("更新  all_sapling 账号:".$six['id']);
                             $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update(['updated_at' => time(), 'leWallet' => $data['data']['leWallet']]);
 
                         }
