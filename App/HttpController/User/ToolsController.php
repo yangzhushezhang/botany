@@ -50,7 +50,7 @@ class ToolsController extends UserBase
                     'sec-fetch-dest' => 'empty',
                     'referer' => 'https://marketplace.plantvsundead.com/',
                     'accept-language' => 'zh-CN,zh;q=0.9',
-                    'if-none-match' => 'W/^\\^32c-sAwO7sU/nng0IT4QwrYVX61WsEY^\\^',
+                  #  'if-none-match' => 'W/^\\^32c-sAwO7sU/nng0IT4QwrYVX61WsEY^\\^',
                 );
                 $client->setHeaders($headers, false, false);
                 $response = $client->get();

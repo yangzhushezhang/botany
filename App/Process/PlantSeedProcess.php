@@ -41,7 +41,16 @@ class PlantSeedProcess extends AbstractProcess
                                     return false;
                                 }
 
-                                # 种种子
+
+
+
+
+
+
+                                # 种子的 个数 是否 够
+
+
+
                                 $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms');
                                 $headers = array(
                                     'authority' => 'backend-farm.plantvsundead.com',

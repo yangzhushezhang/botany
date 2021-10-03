@@ -20,16 +20,21 @@ class LoggerController extends UserBase
         $variety = $this->request()->getParsedBody('variety');
         $account_number_id = $this->request()->getParsedBody('account_number_id');
 
-        if (!$this->check_parameter($limit, "limit") || !$this->check_parameter($page, "page")) {
+
+
+
+        if (!$this->check_parameter($limit, "limit") || !$this->check_parameter($page, "page") ) {
             return false;
         }
         try {
-            return DbManager::getInstance()->invoke(function ($client) use ($limit, $page) {
+            return DbManager::getInstance()->invoke(function ($client) use ($limit, $page,$variety,$account_number_id) {
                 $model = LoggerModel::invoke($client)->limit($limit * ($page - 1), $limit)->withTotalCount();
-                if (isset($variety)) {
+
+
+                if (isset($variety) && !empty($variety)) {
                     $model = $model->where(['variety' => $variety]);
                 }
-                if (isset($account_number_id)) {
+                if (isset($account_number_id) && !empty($account_number_id)) {
                     $model = $model->where(['account_number_id' => $account_number_id]);
                 }
 

@@ -199,7 +199,7 @@ class MonitorFarmProcess extends AbstractProcess
 
                                     } else {
                                         # 添加普通种子
-                                        var_dump("普通种子");
+                                       # var_dump("普通种子");
                                         $redis->rPush("Seed_Fruit", $re['id'] . "@" . 1 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
                                     }
 

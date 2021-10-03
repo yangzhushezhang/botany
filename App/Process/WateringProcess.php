@@ -35,9 +35,8 @@ class WateringProcess extends AbstractProcess
                                 $one = AccountNumberModel::invoke($client)->get(['id' => $id_array[1]]); #farm_id   account_number_id user_id
                                 $two = FarmModel::invoke($client)->get(['id' => $id_array[0]]);
                                 $three = ToolsModel::invoke($client)->get(['account_number_id' => $id_array[1]]);  #查询工具
-
                                 # 判断水滴 够吗?
-                                if ($three['water'] < 1) {
+                                if ($three['water'] && $three['water'] < 1) {
                                     var_dump("水量不足");
                                     Tools::WriteLogger($id_array[2], 2, "进程 WateringProcess 账号的水量不足,无法浇水", $id_array[1], 1);
                                     return false;
@@ -109,8 +108,6 @@ class WateringProcess extends AbstractProcess
                                     }
 
                                 }
-
-
 
 
                                 var_dump("浇水成功");

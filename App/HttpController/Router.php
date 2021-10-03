@@ -30,6 +30,8 @@ class Router extends AbstractRouter
         $routeCollector->post('/user/updated_leWallet', '/User/AccountNumberController/updated_leWallet');
         #get_account_numberInformation
         $routeCollector->post('/user/get_account_numberInformation', '/User/AccountNumberController/get_account_numberInformation');
+        # update_sunflowers
+        $routeCollector->post('/user/update_sunflowers', '/User/AccountNumberController/update_sunflowers');
 
 
         /**
@@ -42,7 +44,6 @@ class Router extends AbstractRouter
 
         # get_farmAccountInformation
         $routeCollector->post('/user/get_farmAccountInformation', '/User/FarmInformationController/get_farmAccountInformation');
-
 
 
         /**
@@ -66,10 +67,6 @@ class Router extends AbstractRouter
          */
         #getLogger
         $routeCollector->post('/user/getLogger', '/User/LoggerController/getLogger');
-
-
-
-
 
 
         $routeCollector->get('/closure', function (Request $request, Response $response) {

@@ -52,7 +52,7 @@ class AccountNumberController extends UserBase
                     $this->writeJson(-101, [], "添加失败");
                     return false;
                 }
-                $this->writeJson(200, [], "添加成功");
+                $this->writeJson(200, $two, "添加成功");
                 return true;
 
             });
@@ -170,6 +170,72 @@ class AccountNumberController extends UserBase
                 }
 
                 $two = AccountNumberModel::invoke($client)->where(['id' => $id])->update(['updated_at' => time(), 'leWallet' => $data['data']['leWallet']]);
+                if (!$two) {
+                    $this->writeJson(-101, [], "更新 leWallet 失败");
+                    return false;
+                }
+
+                $this->writeJson(200, $data, "获取成功");
+                return true;
+
+            });
+        } catch (\Throwable $e) {
+            $this->writeJson(-1, [], "updated_leWallet 异常:" . $e->getMessage());
+            return false;
+        }
+    }
+
+
+    # 更新 种子 和向日葵 个数
+    function update_sunflowers()
+    {
+
+        try {
+
+            $id = $this->request()->getRequestParam('id');
+            if (!$this->check_parameter($id, "账户id")) {
+                return false;
+            }
+
+            return DbManager::getInstance()->invoke(function ($client) use ($id) {
+                $one = AccountNumberModel::invoke($client)->get(['id' => $id]);
+                if (!$one) {
+                    $this->writeJson(-101, [], "非法账户");
+                    return false;
+                }
+
+
+                $data = Tools::getSunflowers($one['token_value']);
+                if (!$data) {
+                    $this->writeJson(-101, [], "获取失败");
+                    return false;
+
+                }
+
+                if ($data['status'] != 0) {
+                    $this->writeJson(-101, [], "获取失败 status:" . $data['status']);
+                    return false;
+                }
+
+
+                $update = [
+                    'updated_at' => time()
+                ];
+                foreach ($data['data'] as $datum) {
+                    if ($datum['plantType'] = 1) {
+                        $update['all_sapling'] = $datum['usages'];
+                        $update['already_sapling'] = $datum['total'];
+
+                    }
+
+                    if ($datum['plantType'] == 2) {
+                        $update['all_sunflower'] = $datum['usages'];
+                        $update['already_sunflower'] = $datum['total'];
+                    }
+                }
+
+
+                $two = AccountNumberModel::invoke($client)->where(['id' => $id])->update(['updated_at' => time(), 'all_sapling' => $data['data']['leWallet']]);
                 if (!$two) {
                     $this->writeJson(-101, [], "更新 leWallet 失败");
                     return false;
