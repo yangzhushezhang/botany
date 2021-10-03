@@ -90,6 +90,7 @@ class Tools
     static function WriteLogger($user_id, $kind, $content, $account_number_id = 0, $variety = 0)
     {
         try {
+
             DbManager::getInstance()->invoke(function ($client) use ($user_id, $kind, $content, $account_number_id, $variety) {
                 $data = [
                     'content' => $content,

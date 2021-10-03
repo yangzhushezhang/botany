@@ -10,6 +10,7 @@ use App\Tools\Tools;
 use EasySwoole\Component\Process\AbstractProcess;
 use EasySwoole\HttpClient\Exception\InvalidUrl;
 use EasySwoole\ORM\DbManager;
+use PHPUnit\Framework\Constraint\IsFalse;
 
 class MonitorTools extends AbstractProcess
 {
@@ -31,15 +32,15 @@ class MonitorTools extends AbstractProcess
                             # 检查
                             if ($re['water'] < 12) {
                                 # 购买水
-                                $this->Shop_tools(3, $one['token_value'], $one['user_id'], $one['id']);
+                                $this->Shop_tools(3, $one['token_value'], $one['user_id'], $one['id'], $one['leWallet']);
                             }
                             if ($re['samll_pot'] < 6) {
                                 #购买盆
-                                $this->Shop_tools(1, $one['token_value'], $one['user_id'], $one['id']);
+                                $this->Shop_tools(1, $one['token_value'], $one['user_id'], $one['id'], $one['leWallet']);
                             }
                             if ($re['scarecrow'] < 10) {
                                 # 购买乌鸦
-                                $this->Shop_tools(4, $one['token_value'], $one['user_id'], $one['id']);
+                                $this->Shop_tools(4, $one['token_value'], $one['user_id'], $one['id'], $one['leWallet']);
                             }
                             # 请求工具接口
                         }
@@ -192,11 +193,28 @@ class MonitorTools extends AbstractProcess
     }
 
 
-    function Shop_tools($id, $token_value, $user_id, $account_number_id)
+    function Shop_tools($id, $token_value, $user_id, $account_number_id, $leWallet)
     {
 
         try {
+
             # 判断 自己的能量值是否 足够
+            if ($id == 1 || $id == 3) {
+                if ($leWallet < 50) {
+                    Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  能量不够", $account_number_id, 6);
+                    return false;
+                }
+            }
+
+
+            if ($id==4){
+                if ($leWallet < 20) {
+                    Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  能量不够", $account_number_id, 6);
+                    return false;
+                }
+            }
+
+
             $client = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/buy-tools');
             $headers = array(
                 'authority' => 'backend-farm.plantvsundead.com',
