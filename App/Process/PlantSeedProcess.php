@@ -41,7 +41,6 @@ class PlantSeedProcess extends AbstractProcess
                                     return false;
                                 }
 
-
                                 # 种子的 个数 是否 够
                                 if ($id_array[1] == 1) {
                                     if ($one['all_sapling'] < 1) {

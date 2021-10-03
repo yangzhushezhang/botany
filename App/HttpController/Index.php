@@ -4,6 +4,7 @@
 namespace App\HttpController;
 
 
+use App\Model\AccountNumberModel;
 use App\Task\GetAnswerTask;
 use EasySwoole\Http\AbstractInterface\Controller;
 
@@ -21,9 +22,11 @@ class Index extends Controller
 
     function test()
     {
-        $task = \EasySwoole\EasySwoole\Task\TaskManager::getInstance();
+//        $task = \EasySwoole\EasySwoole\Task\TaskManager::getInstance();
+//
+//        $task->async(new GetAnswerTask(['user' => 'custom']));
 
-        $task->async(new GetAnswerTask(['user' => 'custom']));
+        $two = AccountNumberModel::create()->where(['id' => 4])->update($update);
 
 
     }

@@ -77,10 +77,11 @@ class Tools
                 if (!$data) {
                     continue;
                 }
+
+
                 return $data;
             }
             return false;
-
         } catch (\Throwable $e) {
             return false;
         }

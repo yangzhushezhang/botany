@@ -118,7 +118,7 @@ class PutPotProcess extends AbstractProcess
                                 $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
                                 $new = $three['samll_pot'] - 1;
                                 ToolsModel::invoke($client)->where(['account_number_id' => $id_array[1]])->update(['updated_at' => time(), 'samll_pot' => $new]); # 更新工具
-                                \EasySwoole\Component\Timer::getInstance()->after(10 * 6 * 30 * 1000, function () use ($id, $redis) {
+                                \EasySwoole\Component\Timer::getInstance()->after(60* 1000, function () use ($id, $redis) {
                                     $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
                                 });
 

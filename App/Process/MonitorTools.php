@@ -45,8 +45,6 @@ class MonitorTools extends AbstractProcess
                             # 请求工具接口
                         }
                     }
-
-
                     $fix = AccountNumberModel::invoke($client)->all(['status' => 1]);
                     if ($fix) {
                         # 更新 鼠标 和 向日葵 个数
@@ -155,18 +153,24 @@ class MonitorTools extends AbstractProcess
                                 }
                             }
 
-
                             $token_value = $six['token_value'];
                             # 更新我的 种子 个数
                             $data = Tools::getSunflowers($token_value);
+
+
                             if (!$data) {
                                 Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $data, $six['id'], 9);
                                 return false;
                             }
-                            if ($data['status'] == 0) {
+                            if ($data['status'] != 0) {
                                 Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     result: status ", $six['id'], 9);
                                 return false;
                             }
+
+
+
+
+
                             $update = [
                                 'updated_at' => time()
                             ];
@@ -180,15 +184,13 @@ class MonitorTools extends AbstractProcess
                                     $update['already_sunflower'] = $datum['total'];
                                 }
                             }
+
                             $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update($update);
-
-
                             # 获取 账号的能量
                             $data = Tools::getLeWallet($token_value);
                             if (!$data) {
                                 Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $data, $six['id'], 9);
                                 return false;
-
                             }
                             if ($data['status'] == 0) {
                                 Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     result: status ", $six['id'], 9);
@@ -200,8 +202,6 @@ class MonitorTools extends AbstractProcess
                         }
                         \co::sleep(3); # 每个账号之间 间隔 5 秒钟
                     }
-
-
                 });
                 \co::sleep(60 * 10); # 10 分钟执行一次
             }
@@ -273,7 +273,6 @@ class MonitorTools extends AbstractProcess
         }
 
     }
-
 
 
     protected function onException(\Throwable $throwable, ...$args)
