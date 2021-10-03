@@ -173,23 +173,16 @@ class MonitorTools extends AbstractProcess
                             ];
 
 
-
-
                             foreach ($data['data'] as $datum) {
-
-
                                 if ($datum['plantType'] == 1) {
                                     $update['all_sapling'] = $datum['usages'];
                                     $update['already_sapling'] = $datum['total'];
                                 }
-
-
                                 if ($datum['plantType'] == 2) {
                                     $update['all_sunflower'] = $datum['usages'];
                                     $update['already_sunflower'] = $datum['total'];
                                 }
                             }
-
                             $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update($update);
                             # 获取 账号的能量
                             $data = Tools::getLeWallet($token_value);
