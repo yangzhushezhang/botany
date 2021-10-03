@@ -187,9 +187,9 @@ class FarmInformationController extends UserBase
                 $model = AccountNumberModel::invoke($client)->limit($limit * ($page - 1), $limit)->withTotalCount();
                 $list = $model->all(['user_id'=>$this->who['id']]);
                 foreach ($list as $k => $value) {
-                    $list[$k]['total'] = FarmModel::invoke($client)->where(['account_number_id' => $value['id'],'status'=>2])->count();
-                    $list[$k]['plant_type_one_total'] = FarmModel::invoke($client)->where(['account_number_id' => $value['id'], 'plant_type' => 1,'status'=>2])->count();
-                    $list[$k]['plant_type_two_total'] = FarmModel::invoke($client)->where(['account_number_id' => $value['id'], 'plant_type' => 2,'status'=>2])->count();
+                    $list[$k]['total'] = FarmModel::invoke($client)->where(['account_number_id' => $value['id'],'status'=>1])->count();
+                    $list[$k]['plant_type_one_total'] = FarmModel::invoke($client)->where(['account_number_id' => $value['id'], 'plant_type' => 1,'status'=>1])->count();
+                    $list[$k]['plant_type_two_total'] = FarmModel::invoke($client)->where(['account_number_id' => $value['id'], 'plant_type' => 2,'status'=>1])->count();
                 }
                 $result = $model->lastQueryResult();
                 $total = $result->getTotalCount();
