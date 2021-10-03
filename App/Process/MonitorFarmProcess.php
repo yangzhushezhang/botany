@@ -202,11 +202,17 @@ class MonitorFarmProcess extends AbstractProcess
 
                                 }
                             }
-
                             \co::sleep(5);   # 每个账号直接 休息时间是  5秒
                         }
 
+
+
+                       #  Tools::WriteLogger($re['user_id'], 2, "接口 refresh_botany 插入数据的时候出错误");
+
                     }
+
+
+
                 });
                 \co::sleep(40 * 60);  # 30分钟 检查一次
             }

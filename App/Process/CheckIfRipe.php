@@ -27,10 +27,9 @@ class CheckIfRipe extends AbstractProcess
     protected function run($arg)
     {
         go(function () {
+            var_dump("CheckIfRipe 进程 检查成熟果实和乌鸦");
             while (true) {
-
                 DbManager::getInstance()->invoke(function ($client) {
-
                     $res = FarmModel::invoke($client)->all(['status' => 1]);
                     if ($res) {
                         foreach ($res as $k => $re) {

@@ -42,13 +42,18 @@ class PlantSeedProcess extends AbstractProcess
                                 }
 
 
-
-
-
-
-
                                 # 种子的 个数 是否 够
-
+                                if ($id_array[1] == 1) {
+                                    if ($one['all_sapling'] < 1) {
+                                        Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  没有树苗可以种植了! ", $id_array[0], 2);
+                                        return false;
+                                    }
+                                } else if ($id_array[1] == 2) {
+                                    if ($one['all_sunflower'] < 1) {
+                                        Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  没有向日葵可以种植了! ", $id_array[0], 2);
+                                        return false;
+                                    }
+                                }
 
 
                                 $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms');

@@ -29,6 +29,7 @@ class ExpelRavenProcess extends AbstractProcess
                     # 监听 赶乌鸦的接口
                     $id = $redis->rPop("CROW_IDS");
                     if ($id) {
+                        var_dump("有乌鸦进来了!!");
                         # 说明 已经有 出现了  乌鸦了
                         DbManager::getInstance()->invoke(function ($client) use ($id, $redis) {
                             $array_data = explode('@', $id);
@@ -37,8 +38,7 @@ class ExpelRavenProcess extends AbstractProcess
                                 $one = AccountNumberModel::invoke($client)->get(['id' => $array_data[1]]); #farm_id   account_number_id user_id
                                 $two = ToolsModel::invoke($client)->get(['account_number_id' => $array_data[1]]);
                                 $there = FarmModel::invoke($client)->get(['id' => $array_data[0]]);
-
-                                if ($two && $two['scarecrow'] < 20) {
+                                if ($two && $two['scarecrow'] < 1) {
                                     Tools::WriteLogger($array_data[2], 2, "进程 ExpelRavenProcess 稻草人数量不足", $array_data[1], 9);
                                     return false;
                                 }
