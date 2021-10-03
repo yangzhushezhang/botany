@@ -194,5 +194,17 @@ class EasySwooleEvent implements Event
         \EasySwoole\Component\Di::getInstance()->set('MonitorTools', $PeriodsProcess->getProcess());
         \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
 
+        # 验证码 DecryptCaptchaProcess
+        $processConfig = new  \EasySwoole\Component\Process\Config([
+            'processName' => 'DecryptCaptchaProcess', // 设置 进程名称为 TickProcess
+            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'arg' => [
+
+            ], // 传递参数到自定义进程中
+            'enableCoroutine' => true, // 设置 自定义进程自动开启协程环境
+        ]);
+        $PeriodsProcess = (new \App\Process\DecryptCaptchaProcess($processConfig));
+        \EasySwoole\Component\Di::getInstance()->set('DecryptCaptchaProcess', $PeriodsProcess->getProcess());
+        \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
     }
 }

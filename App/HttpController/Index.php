@@ -4,6 +4,7 @@
 namespace App\HttpController;
 
 
+use App\Task\GetAnswerTask;
 use EasySwoole\Http\AbstractInterface\Controller;
 
 class Index extends Controller
@@ -20,7 +21,11 @@ class Index extends Controller
 
     function test()
     {
-        $this->response()->write('this is test');
+        $task = \EasySwoole\EasySwoole\Task\TaskManager::getInstance();
+
+        $task->async(new GetAnswerTask(['user' => 'custom']));
+
+
     }
 
     protected function actionNotFound(?string $action)

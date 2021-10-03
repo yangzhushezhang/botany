@@ -73,7 +73,6 @@ class WateringProcess extends AbstractProcess
                                 $data = json_decode($response, true);
 
 
-
                                 #  556 验证码
 
                                 if (!$data) {
@@ -87,12 +86,21 @@ class WateringProcess extends AbstractProcess
 
                                 if ($data['status'] != 0) {
 
-                                    if ($data['status']==556){
+                                    if ($data['status'] == 556) {
                                         # 说明出验证码
                                         var_dump("验证码出现...准备去处理它");
+
+                                        #判断是否已经在处理验证码了!
+                                        $IfDoingVerification = $redis->get("IfDoingVerification");
+                                        if (!$IfDoingVerification) {
+                                            #  不存在 就去处理
+
+                                            $redis->rPush("DecryptCaptcha", $id_array[1] . "@" . $id_array[2]);
+                                            $redis->set("IfDoingVerification", 1, 600);# 10分钟
+                                        }
                                         Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . " 种子id:" . $two['farm_id'] . "浇水失败  出现了验证码" . $response);
                                         return false;
-                                    }else{
+                                    } else {
                                         \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
                                             $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
                                         });

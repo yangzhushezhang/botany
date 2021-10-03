@@ -88,10 +88,19 @@ class PutPotProcess extends AbstractProcess
 
                                 if ($data['status'] != 0) {
                                     #  这里需要 是否存在 验证码
-
-
-                                    Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . " 种子id:" . $two['farm_id'] . "放花盆....." . $response);
-                                    return false;
+                                    if ($data['status'] == 556) {
+                                        $IfDoingVerification = $redis->get("IfDoingVerification");
+                                        if (!$IfDoingVerification) {
+                                            #  不存在 就去处理
+                                            $redis->rPush("DecryptCaptcha", $id_array[1] . "@" . $id_array[2]);
+                                            $redis->set("IfDoingVerification", 1, 600);# 10分钟
+                                        }
+                                        Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . " 种子id:" . $two['farm_id'] . "放花盆  出现了验证码" . $response);
+                                        return false;
+                                    }else{
+                                        Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . " 种子id:" . $two['farm_id'] . "放花盆....." . $response);
+                                        return false;
+                                    }
                                 }
 
                                 var_dump("放花盆成功");
@@ -103,7 +112,7 @@ class PutPotProcess extends AbstractProcess
                                 $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
 
                                 $new = $three['samll_pot'] - 1;
-                                ToolsModel::invoke($client)->where(['account_number_id' => $id_array[1]])->update(['updated_at' => time(), 'water' => $new]); # 更新工具
+                                ToolsModel::invoke($client)->where(['account_number_id' => $id_array[1]])->update(['updated_at' => time(), 'samll_pot' => $new]); # 更新工具
                                 \EasySwoole\Component\Timer::getInstance()->after(10 * 6 * 30 * 1000, function () use ($id, $redis) {
                                     $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
                                 });

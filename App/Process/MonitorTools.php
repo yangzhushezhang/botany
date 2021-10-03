@@ -77,7 +77,7 @@ class MonitorTools extends AbstractProcess
                             $result = $response->getBody();
                             $data_json = json_decode($result, true);
                             if (!$data_json) {
-                                Tools::WriteLogger($one['user_id'], 2, "MonitorTools 进程  解析失败");
+                                Tools::WriteLogger($one['user_id'], 2, "MonitorTools 进程  解析失败  result:" . $result);
                                 return false;
                             }
                             if ($data_json['status'] != 0) {
