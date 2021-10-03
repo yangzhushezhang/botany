@@ -38,9 +38,8 @@ class ExpelRavenProcess extends AbstractProcess
                                 $two = ToolsModel::invoke($client)->get(['account_number_id' => $array_data[1]]);
                                 $there = FarmModel::invoke($client)->get(['id' => $array_data[0]]);
 
-                                if ($two['scarecrow'] < 20) {
+                                if ($two && $two['scarecrow'] < 20) {
                                     Tools::WriteLogger($array_data[2], 2, "进程 ExpelRavenProcess 稻草人数量不足", $array_data[1], 9);
-
                                     return false;
                                 }
 

@@ -146,13 +146,12 @@ class MonitorFarmProcess extends AbstractProcess
                                             \EasySwoole\Component\Timer::getInstance()->after(10 * 6 * 30 * 1000, function () use ($one, $re, $redis) { # 30秒后进行
                                                 $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
                                             });
-
-                                            var_dump("浇两滴水");
+                                         #   var_dump("浇两滴水");
                                         }
                                     } else if (count($value['activeTools']) == 2) {
                                         $redis = RedisPool::defer('redis');
                                         $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
-                                        var_dump("浇一滴水");
+                                        # var_dump("浇一滴水");
                                     }
                                 }
                                 if ($value['hasSeed']) {

@@ -36,7 +36,7 @@ class PutPotProcess extends AbstractProcess
                                 $one = AccountNumberModel::invoke($client)->get(['id' => $id_array[1]]); #farm_id   account_number_id user_id
                                 $two = FarmModel::invoke($client)->get(['id' => $id_array[0]]);
                                 $three = ToolsModel::invoke($client)->get(['account_number_id' => $id_array[1]]);  #查询工具
-                                if ($three['samll_pot'] < 1) {
+                                if ($three && $three['samll_pot'] < 1) {
                                     Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 花盆的数量不足 ", $id_array[1], 3);
                                     return false;
                                 }
