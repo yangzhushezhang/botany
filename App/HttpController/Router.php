@@ -40,6 +40,10 @@ class Router extends AbstractRouter
         # get_farmInformation
         $routeCollector->post('/user/get_farmInformation', '/User/FarmInformationController/get_farmInformation');
 
+        # get_farmAccountInformation
+        $routeCollector->post('/user/get_farmAccountInformation', '/User/FarmInformationController/get_farmAccountInformation');
+
+
 
         /**
          * ToolsController.php
@@ -48,6 +52,23 @@ class Router extends AbstractRouter
         $routeCollector->post('/user/refresh_tools', '/User/ToolsController/refresh_tools');
         #get_tools
         $routeCollector->post('/user/get_tools', '/User/ToolsController/get_tools');
+
+
+        /**
+         * LoginController.php
+         */
+        $routeCollector->post('/user/login', '/User/LoginController/login');
+        #set_API_KEY
+        $routeCollector->post('/user/set_API_KEY', '/User/LoginController/set_API_KEY');
+
+        /**
+         * LoggerController
+         */
+        #getLogger
+        $routeCollector->post('/user/getLogger', '/User/LoggerController/getLogger');
+
+
+
 
 
 

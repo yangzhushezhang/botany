@@ -171,4 +171,43 @@ class FarmInformationController extends UserBase
 
     }
 
+
+    # 所有账号 农场的信息
+    function get_farmAccountInformation()
+    {
+
+        $limit = $this->request()->getParsedBody('limit');
+        $page = $this->request()->getParsedBody('page');
+        if (!$this->check_parameter($limit, "limit") || !$this->check_parameter($page, "page") || !$this->check_parameter($page, "action")) {
+            return false;
+        }
+
+        try {
+            return DbManager::getInstance()->invoke(function ($client) use ($limit, $page) {
+                $model = AccountNumberModel::invoke($client)->limit($limit * ($page - 1), $limit)->withTotalCount();
+                $list = $model->all(['user_id']);
+                foreach ($list as $k => $value) {
+                    $list[$k]['total'] = FarmModel::invoke($client)->where(['account_number_id' => $value['id']])->count();
+                    $list[$k]['plant_type_one_total'] = FarmModel::invoke($client)->where(['account_number_id' => $value['id'], 'plant_type' => 1])->count();
+                    $list[$k]['plant_type_two_total'] = FarmModel::invoke($client)->where(['account_number_id' => $value['id'], 'plant_type' => 2])->count();
+
+                }
+                $result = $model->lastQueryResult();
+                $total = $result->getTotalCount();
+                $return_data = [
+                    "code" => 0,
+                    "msg" => '',
+                    'count' => $total,
+                    'data' => $list
+                ];
+                $this->response()->write(json_encode($return_data));
+                return true;
+            });
+
+        } catch (\Throwable $e) {
+            $this->writeJson(-1, [], "异常:" . $e->getMessage());
+            return false;
+        }
+    }
+
 }

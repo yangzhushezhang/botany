@@ -117,6 +117,12 @@ class MonitorTools extends AbstractProcess
     {
 
         try {
+            # 判断 自己的能量值是否 足够
+
+
+
+
+
             $client = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/buy-tools');
             $headers = array(
                 'authority' => 'backend-farm.plantvsundead.com',

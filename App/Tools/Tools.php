@@ -10,7 +10,7 @@ class Tools
 
 
     # 获取账号的 能量
-    static function getLeWallet()
+    static function getLeWallet($token_value)
     {
 
         try {
@@ -19,7 +19,7 @@ class Tools
                 'authority' => 'backend-farm.plantvsundead.com',
                 'sec-ch-ua' => '^\\^Google',
                 'accept' => 'application/json, text/plain, */*',
-                'authorization' => 'Bearer Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwdWJsaWNBZGRyZXNzIjoiMHg1YzY3NjBhMGUxZTBlMzQzMzk3OGIwMDBhNmQ4YWFiNDkyY2M1M2Q5IiwibG9naW5UaW1lIjoxNjMyNzM5ODEzNjQ5LCJjcmVhdGVEYXRlIjoiMjAyMS0wOS0yMiAwMToyMjoyOSIsImlhdCI6MTYzMjczOTgxM30.hm94dqSSSvQ-e95wCqElkER281EMRmyEBEbsvw6UAHo',
+                'authorization' => $token_value,
                 'sec-ch-ua-mobile' => '?0',
                 'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
                 'sec-ch-ua-platform' => '^\\^Windows^\\^',

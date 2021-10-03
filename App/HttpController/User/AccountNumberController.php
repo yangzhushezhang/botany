@@ -43,7 +43,8 @@ class AccountNumberController extends UserBase
                     'status' => 1,
                     'remark' => $remark,
                     'created_at' => time(),
-                    'updated_at' => time()
+                    'updated_at' => time(),
+
                 ];
 
                 $two = AccountNumberModel::invoke($client)->data($data)->save();
@@ -156,7 +157,7 @@ class AccountNumberController extends UserBase
                 }
 
 
-                $data = Tools::getLeWallet();
+                $data = Tools::getLeWallet($one['token_value']);
                 if (!$data) {
                     $this->writeJson(-101, [], "获取失败");
                     return false;

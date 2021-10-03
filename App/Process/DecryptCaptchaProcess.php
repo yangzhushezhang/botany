@@ -26,7 +26,7 @@ class DecryptCaptchaProcess extends AbstractProcess
     protected function run($arg)
     {
         var_dump("监听验证码进程");
-        $redis=RedisPool::defer("redis");
+        $redis = RedisPool::defer("redis");
         $redis->del("DecryptCaptcha");
         go(function () {
 
@@ -86,7 +86,6 @@ class DecryptCaptchaProcess extends AbstractProcess
                                 }
 
 
-
                                 if ($data['status'] != 0) {
                                     Tools::WriteLogger($one['user_id'], 2, "DecryptCaptchaProcess 进程请求  获取验证码 错误 账号:" . $one['id'] . " 请求返回的解析参数失败 result:" . $response);
                                     # 重新吧 值 推到 进程重新解析
@@ -106,7 +105,7 @@ class DecryptCaptchaProcess extends AbstractProcess
                                 $method = "geetest";
                                 $pageUrl = "https://marketplace.plantvsundead.com/#/farm/";
                                 $api_server = "yumchina.geetest.com";
-                                $captcha_url = "https://2captcha.com/in.php?key=" . $API_KEY . "&method=" . $method . "&gt=" . $gt . "&challenge=" . $challenge . "&json=1&pageurl=" . $pageUrl . "&api_server=" . $api_server ;
+                                $captcha_url = "https://2captcha.com/in.php?key=" . $API_KEY . "&method=" . $method . "&gt=" . $gt . "&challenge=" . $challenge . "&json=1&pageurl=" . $pageUrl . "&api_server=" . $api_server;
                                 $client_http = new \EasySwoole\HttpClient\HttpClient($captcha_url);
                                 $response_two = $client_http->get();
                                 $response_two = $response_two->getBody();
@@ -125,15 +124,15 @@ class DecryptCaptchaProcess extends AbstractProcess
 
 
                                 # 上传验证码 成功   推进一个  一个是 任务
-                                var_dump("验证码上传成功...........".$response);
-                                var_dump("验证码上传成功...........".$response_two);
+                                #  var_dump("验证码上传成功...........".$response);
+                                # var_dump("验证码上传成功...........".$response_two);
                                 $task = \EasySwoole\EasySwoole\Task\TaskManager::getInstance();
                                 $task->async(new GetAnswerTask([
                                     'user_id' => $one['user_id'],
                                     'api_key' => $API_KEY,
                                     'id' => $data_two['request'],
                                     'token_value' => $one['token_value'],
-                                    'account_number_id'=>$one['id']
+                                    'account_number_id' => $one['id']
                                 ]));
 
 
