@@ -72,7 +72,6 @@ class HarvestFruitProcess extends AbstractProcess
                                     \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
                                         $redis->rPush("Harvest_Fruit", $id);  # account_number_id  种子类型 user_id
                                     });
-
                                     Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . " 种子id:" . $one['farm_id'] . "收获失败.....json解析失败",$id_array[1],8);
                                     return false;
                                 }

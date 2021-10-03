@@ -43,7 +43,6 @@ class CheckIfRipe extends AbstractProcess
                                     continue;
                                 }
 
-
                                 for ($i = 0; $i < 3; $i++) {
                                     $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms?limit=10&offset=0');
                                     $headers = array(
@@ -60,7 +59,7 @@ class CheckIfRipe extends AbstractProcess
                                         'sec-fetch-dest' => 'empty',
                                         'referer' => 'https://marketplace.plantvsundead.com/',
                                         'accept-language' => 'zh-CN,zh;q=0.9',
-                                        'if-none-match' => 'W/"1bf5-RySZLkdJ7uwQuWZ+zLfe+hxM36c"',
+                                      #  'if-none-match' => 'W/"1bf5-RySZLkdJ7uwQuWZ+zLfe+hxM36c"',
                                     );
                                     $client_http->setHeaders($headers, false, false);
                                     $response = $client_http->get();
