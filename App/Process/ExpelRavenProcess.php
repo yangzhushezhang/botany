@@ -33,7 +33,6 @@ class ExpelRavenProcess extends AbstractProcess
                         # 说明 已经有 出现了  乌鸦了
                         DbManager::getInstance()->invoke(function ($client) use ($id, $redis) {
                             $array_data = explode('@', $id);
-                            var_dump(count($array_data));
                             if (count($array_data) == 3) {
                                 # 属于那个 账号
                                 $one = AccountNumberModel::invoke($client)->get(['id' => $array_data[1]]); #farm_id   account_number_id user_id
