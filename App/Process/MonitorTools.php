@@ -171,11 +171,19 @@ class MonitorTools extends AbstractProcess
                             $update = [
                                 'updated_at' => time()
                             ];
+
+
+
+
                             foreach ($data['data'] as $datum) {
-                                if ($datum['plantType'] = 1) {
+
+
+                                if ($datum['plantType'] == 1) {
                                     $update['all_sapling'] = $datum['usages'];
                                     $update['already_sapling'] = $datum['total'];
                                 }
+
+
                                 if ($datum['plantType'] == 2) {
                                     $update['all_sunflower'] = $datum['usages'];
                                     $update['already_sunflower'] = $datum['total'];
@@ -191,11 +199,11 @@ class MonitorTools extends AbstractProcess
                             }
 
                             if ($data['status'] != 0) {
-                                Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     result: status ".$data['status'], $six['id'], 9);
+                                Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     result: status " . $data['status'], $six['id'], 9);
                                 continue;
                             }
 
-                          #  var_dump("更新  all_sapling 账号:".$six['id']);
+                            #  var_dump("更新  all_sapling 账号:".$six['id']);
                             $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update(['updated_at' => time(), 'leWallet' => $data['data']['leWallet']]);
 
                         }
