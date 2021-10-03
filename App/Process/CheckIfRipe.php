@@ -59,7 +59,7 @@ class CheckIfRipe extends AbstractProcess
                                         'sec-fetch-dest' => 'empty',
                                         'referer' => 'https://marketplace.plantvsundead.com/',
                                         'accept-language' => 'zh-CN,zh;q=0.9',
-                                      #  'if-none-match' => 'W/"1bf5-RySZLkdJ7uwQuWZ+zLfe+hxM36c"',
+                                        #  'if-none-match' => 'W/"1bf5-RySZLkdJ7uwQuWZ+zLfe+hxM36c"',
                                     );
                                     $client_http->setHeaders($headers, false, false);
                                     $response = $client_http->get();
@@ -70,13 +70,11 @@ class CheckIfRipe extends AbstractProcess
                                         # 这个地方再做处理
                                         continue;
                                     }
-
                                     if ($data['status'] != 0) {
                                         Tools::WriteLogger($one['user_id'], 2, "CheckIfRipe 进程请求 账号:" . $one['id'] . " 请求返回的数据错误 result:" . $result);
                                         # 这个地方再做处理
                                         continue;
                                     }
-
                                     foreach ($data['data'] as $datum) {
                                         if ($datum['_id'] == $re['farm_id']) {
                                             # 说明可以收获了
@@ -94,9 +92,7 @@ class CheckIfRipe extends AbstractProcess
 
                                         }
                                     }
-
                                     break;
-
                                 }
                             }
                         }

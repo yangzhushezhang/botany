@@ -55,8 +55,6 @@ class MonitorTools extends AbstractProcess
                             if (!$one) {
                                 # 不存在这个 账号的工具 就 插入
                                 # 更新 我的工具
-
-
                                 for ($i = 0; $i < 5; $i++) {
                                     $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/my-tools');
                                     $headers = array(
@@ -87,7 +85,6 @@ class MonitorTools extends AbstractProcess
                                         Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools json status!=0  :" . $result, $six['id'], 9);
                                         continue;
                                     }
-
                                     $update_data = [
                                         'updated_at' => time()
                                     ];
@@ -105,15 +102,10 @@ class MonitorTools extends AbstractProcess
                                     ToolsModel::invoke($client)->data($update_data)->save();
                                     break;
                                 }
-
-
                             } else {
                                 # 更新
                                 $token_value = $six['token_value'];
-
                                 for ($i = 0; $i < 5; $i++) {
-
-
                                     $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/my-tools');
                                     $headers = array(
                                         'authority' => 'backend-farm.plantvsundead.com',
@@ -137,11 +129,11 @@ class MonitorTools extends AbstractProcess
                                     $data_json = json_decode($result, true);
                                     if (!$data_json) {
                                         Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $result, $six['id'], 9);
-                                        continue ;
+                                        continue;
                                     }
                                     if ($data_json['status'] != 0) {
                                         Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools json status!=0  :" . $result, $six['id'], 9);
-                                        continue ;
+                                        continue;
                                     }
                                     $update_data = [
                                         'updated_at' => time()
@@ -170,7 +162,6 @@ class MonitorTools extends AbstractProcess
                             if (!$data) {
                                 Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $data, $six['id'], 9);
                                 return false;
-
                             }
                             if ($data['status'] == 0) {
                                 Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     result: status ", $six['id'], 9);
@@ -192,9 +183,7 @@ class MonitorTools extends AbstractProcess
                             $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update($update);
 
 
-
-
-                             # 获取 账号的能量
+                            # 获取 账号的能量
                             $data = Tools::getLeWallet($token_value);
                             if (!$data) {
                                 Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $data, $six['id'], 9);
@@ -206,9 +195,7 @@ class MonitorTools extends AbstractProcess
                                 return false;
                             }
 
-
                             $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update(['updated_at' => time(), 'leWallet' => $data['data']['leWallet']]);
-
 
                         }
                         \co::sleep(3); # 每个账号之间 间隔 5 秒钟

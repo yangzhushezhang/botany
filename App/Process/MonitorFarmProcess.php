@@ -75,7 +75,6 @@ class MonitorFarmProcess extends AbstractProcess
                                     Tools::WriteLogger($re['user_id'], 2, "MonitorFarmProcess 进程请求 账号:" . $re['id'] . " 请求返回的数据错误 result:" . $result);
                                     continue;
                                 }
-
                                 $if_add_new = false;
                                 $if_sunflowerId_2 = false;
                                 if ($data['total'] != 6) {
@@ -200,13 +199,11 @@ class MonitorFarmProcess extends AbstractProcess
                                             # 添加向日葵
                                             var_dump("向日葵");
                                             $redis->rPush("Seed_Fruit", $re['id'] . "@" . 2 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
-
                                         } else {
                                             # 添加普通种子
                                             # var_dump("普通种子");
                                             $redis->rPush("Seed_Fruit", $re['id'] . "@" . 1 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
                                         }
-
                                     }
                                 }
                                 $success++;
@@ -215,16 +212,11 @@ class MonitorFarmProcess extends AbstractProcess
                             }
                             \co::sleep(5);   # 每个账号直接 休息时间是  5秒
                         }
-
-
                         $pp = count($res) - $success;
                         Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 本轮检查 成功:" . $success . "个 ,失败:" . $pp . "个");
-
                     }
-
-
                 });
-                \co::sleep(40 * 60);  # 30分钟 检查一次
+                \co::sleep(30 * 60);  # 30分钟 检查一次
             }
         });
     }
