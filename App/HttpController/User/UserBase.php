@@ -73,16 +73,18 @@ class UserBase extends Controller
     }
 
 
-    function WriteLogger($user_id, $kind, $content)
+    function WriteLogger($user_id, $kind, $content, $account_number_id = 0, $variety = 0)
     {
         try {
-            DbManager::getInstance()->invoke(function ($client) use ($user_id, $kind, $content) {
+            DbManager::getInstance()->invoke(function ($client) use ($user_id, $kind, $content, $account_number_id, $variety) {
                 $data = [
                     'content' => $content,
                     'user_id' => $user_id,
                     'kind' => $kind,
                     'updated_at' => time(),
-                    'created_at' => time()
+                    'created_at' => time(),
+                    'account_number_id' => $account_number_id,
+                    'variety' => $variety
                 ];
                 LoggerModel::invoke($client)->data($data)->save();
             });

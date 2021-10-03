@@ -38,12 +38,14 @@ class GetAnswerTask implements TaskInterface
             $client_http = new \EasySwoole\HttpClient\HttpClient("http://2captcha.com/res.php?key=" . $this->data['api_key'] . "&action=get&id=" . $this->data['id'] . "&json=1");
             $response_two = $client_http->get();
             $response_two = $response_two->getBody();
-            var_dump("获取答案...".$response_two);
+
+
             #解析
             $data_two = json_decode($response_two, true);
 
-
             if ($data_two && $data_two['status'] == 1) {
+                Tools::WriteLogger($this->data['user_id'], 2, "GetAnswerTask 获取答案成功 result:" . $response_two, $this->data['account_number_id'], 5);
+
                 # 获取答案成功
                 $geetest_challenge = $data_two['request']['geetest_challenge'];
                 $validate = $data_two['request']['geetest_validate'];
@@ -69,8 +71,10 @@ class GetAnswerTask implements TaskInterface
                 $client_http->setHeaders($headers, false, false);
                 $data = '{"challenge":"' . $geetest_challenge . '","seccode":"' . $validate . '","validate":"' . $validate . '"}';
                 $response = $client_http->post($data);
-                $response=$response->getBody();
-                var_dump("上传答案:".$response);
+                $response = $response->getBody();
+                var_dump("上传答案:" . $response);
+
+
                 $response_json = json_decode($response, true);
                 if (!$response_json || $response_json['status'] != 0) {
                     Tools::WriteLogger($this->data['user_id'], 2, "GetAnswerTask 上传验证码 返回错误或者没有破解数据...." . $response);
@@ -78,7 +82,7 @@ class GetAnswerTask implements TaskInterface
                     $redis = RedisPool::defer("redis");
                     $redis->rPush("DecryptCaptcha", $this->data['account_number_id'] . "@" . $this->data['user_id']); # 账户名    用户名
                     $redis->set("IfDoingVerification", 1, 600);# 时间重置
-                    Tools::WriteLogger($this->data['user_id'], 2, "GetAnswerTask 验证码打码失败..." . $response);
+                    Tools::WriteLogger($this->data['user_id'], 2, "GetAnswerTask 验证码打码失败..." . $response, $this->data['account_number_id'], 5);
                     return false;
                 }
 
@@ -86,7 +90,7 @@ class GetAnswerTask implements TaskInterface
                 # 验证码 破解成功
                 $redis = RedisPool::defer("redis");
                 $redis->del("IfDoingVerification");
-                Tools::WriteLogger($this->data['user_id'], 2, "GetAnswerTask 验证码打码成功..." . $response);
+                Tools::WriteLogger($this->data['user_id'], 2, "GetAnswerTask 验证码打码成功..." . $response, $this->data['account_number_id'], 5);
                 return true;
             }
             \co::sleep(1); # 30 秒
@@ -97,9 +101,7 @@ class GetAnswerTask implements TaskInterface
         $redis = RedisPool::defer("redis");
         $redis->rPush("DecryptCaptcha", $this->data['account_number_id'] . "@" . $this->data['user_id']); # 账户名    用户名
         $redis->set("IfDoingVerification", 1, 600);# 时间重置
-        Tools::WriteLogger($this->data['user_id'], 2, "GetAnswerTask 打码超时 重新打码");
-
-        Tools::WriteLogger($this->data['user_id'], 2, "GetAnswerTask 破解验证码失败,准备重新请求....");
+        Tools::WriteLogger($this->data['user_id'], 2, "GetAnswerTask 打码超时 重新打码", $this->data['account_number_id'], 5);
         return false;
 
 

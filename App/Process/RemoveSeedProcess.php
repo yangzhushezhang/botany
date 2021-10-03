@@ -25,7 +25,6 @@ class RemoveSeedProcess extends AbstractProcess
      */
     protected function run($arg)
     {
-        // TODO: Implement run() method.
         var_dump("移除废弃种子进程");
         go(function () {
             while (true) {
@@ -41,16 +40,16 @@ class RemoveSeedProcess extends AbstractProcess
                                 $one = AccountNumberModel::invoke($client)->get(['id' => $id_array[1]]); #farm_id   account_number_id user_id
                                 $two = FarmModel::invoke($client)->get(['id' => $id_array[0]]);
                                 if (!$one || !$two) {
-                                    Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . "不存在 ");
+                                    Tools::WriteLogger($id_array[2], 2, "进程 RemoveSeedProcess 账号不存在", $id_array[1], 4);
                                     return false;
                                 }
                                 if ($two['status'] != 2) {
                                     # 说明这个种子还没有收获 不可以移除
-                                    Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . "  不要移除没有成熟的种子 收获种子id:" . $one['farm_id']);
+                                    Tools::WriteLogger($id_array[2], 2, "进程 RemoveSeedProcess 种子:" . $one['farm_id'] . " 不可以移除,原因:改种子还没有收获", $id_array[1], 4);
                                     return false;
                                 }
                                 if ($two['remove'] == 2) {
-                                    Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . "  不要重复移除 种子id:" . $one['farm_id']);
+                                    Tools::WriteLogger($id_array[2], 2, "进程 RemoveSeedProcess 种子:" . $one['farm_id'] . " 不可以移除,原因:已经移除过了", $id_array[1], 4);
                                     return false;
                                 }
                                 #准备去收获 种子
@@ -82,22 +81,20 @@ class RemoveSeedProcess extends AbstractProcess
                                     \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
                                         $redis->rPush("RemoveSeed", $id);  # account_number_id  种子类型 user_id
                                     });
-                                    Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . " 种子id:" . $two['farm_id'] . "移除失败.....json解析失败");
+                                    Tools::WriteLogger($id_array[2], 2, "进程 RemoveSeedProcess 种子:" . $one['farm_id'] . " 移除失败,原因:json解析失败 result:" . $result, $id_array[1], 4);
                                     return false;
                                 }
 
                                 if ($data['status'] != 0) {
-                                    Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . " 种子id:" . $two['farm_id'] . "移除失败....." . $result);
+                                    Tools::WriteLogger($id_array[2], 2, "进程 RemoveSeedProcess 种子:" . $one['farm_id'] . " 移除失败,原因: result:" . $result, $id_array[1], 4);
                                     return false;
                                 }
 
                                 FarmModel::invoke($client)->where(['id' => $id_array[0]])->update(['remove' => 2, 'updated_at' => time()]);
                                 # 移除成功   # 准备去种种子
-                                Tools::WriteLogger($id_array[2], 1, "账户id:" . $id_array[1] . " 种子id:" . $two['farm_id'] . "移除成功....." . $result);
+                                Tools::WriteLogger($id_array[2], 1, "进程 RemoveSeedProcess 种子:" . $one['farm_id'] . " 移除成功 result:" . $result, $id_array[1], 4);
                                 # 铲除成功后 需要 去 推入 放种子  浇水的 进程
-                                $redis->rPush("Seed_Fruit", $id_array[1]. "@" . $two['plant_type'] . "@" . $one['user_id']);  # account_number_id  种子类型 user_id
-
-
+                                $redis->rPush("Seed_Fruit", $id_array[1] . "@" . $two['plant_type'] . "@" . $one['user_id']);  # account_number_id  种子类型 user_id
                             }
 
                         });

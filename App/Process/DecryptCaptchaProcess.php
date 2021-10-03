@@ -33,22 +33,20 @@ class DecryptCaptchaProcess extends AbstractProcess
             while (true) {
 
                 \EasySwoole\RedisPool\RedisPool::invoke(function (\EasySwoole\Redis\Redis $redis) {
-
                     $id = $redis->rPop("DecryptCaptcha");  # 账户id  用户id
-
                     if ($id) {
                         $array_ids = explode("@", $id);
                         if (count($array_ids) == 2) {
                             DbManager::getInstance()->invoke(function ($client) use ($array_ids, $redis, $id) {
                                 $one = AccountNumberModel::invoke($client)->get(['id' => $array_ids[0]]);
                                 if (!$one) {
-                                    Tools::WriteLogger($one['user_id'], 2, "DecryptCaptchaProcess 进程请求 账号:" . $array_ids[0] . " 不存在");
+                                    Tools::WriteLogger($one['user_id'], 2, "DecryptCaptchaProcess 进程请求 账号:" . $array_ids[0] . " 不存在", $one['id'], 5);
                                     return false;
                                 }
 
                                 $two = UserModel::invoke($client)->get(['id' => $array_ids[1]]);
                                 if (!$two || !isset($two['API_KEY']) || empty($two['API_KEY'])) {
-                                    Tools::WriteLogger($one['user_id'], 2, "DecryptCaptchaProcess 进程请求 用户:" . $array_ids[1] . " 不存在");
+                                    Tools::WriteLogger($one['user_id'], 2, "DecryptCaptchaProcess 进程请求 用户:" . $array_ids[1] . " 不存在", $one['id'], 5);
                                     return false;
                                 }
 
@@ -75,7 +73,7 @@ class DecryptCaptchaProcess extends AbstractProcess
                                 $response = $response->getBody();
                                 $data = json_decode($response, true);
                                 if (!$data) {
-                                    Tools::WriteLogger($one['user_id'], 2, "DecryptCaptchaProcess 进程请求  获取验证码 错误 账号:" . $one['id'] . " 请求返回的解析参数失败 result:" . $response);
+                                    Tools::WriteLogger($one['user_id'], 2, "DecryptCaptchaProcess 进程请求  获取验证码 错误 账号:" . $one['id'] . " 请求返回的解析参数失败 result:" . $response, $one['id'], 5);
                                     # 重新吧 值 推到 进程重新解析
                                     \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {  # 10 秒后
                                         $redis->rpush("DecryptCaptcha", $id);
@@ -87,7 +85,7 @@ class DecryptCaptchaProcess extends AbstractProcess
 
 
                                 if ($data['status'] != 0) {
-                                    Tools::WriteLogger($one['user_id'], 2, "DecryptCaptchaProcess 进程请求  获取验证码 错误 账号:" . $one['id'] . " 请求返回的解析参数失败 result:" . $response);
+                                    Tools::WriteLogger($one['user_id'], 2, "DecryptCaptchaProcess 进程请求  获取验证码 错误 账号:" . $one['id'] . " 请求返回的解析参数失败 result:" . $response, $one['id'], 5);
                                     # 重新吧 值 推到 进程重新解析
                                     \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {  # 10 秒后
                                         $redis->rpush("DecryptCaptcha", $id);
@@ -97,6 +95,8 @@ class DecryptCaptchaProcess extends AbstractProcess
                                     return false;
                                 }
 
+
+                                Tools::WriteLogger($one['user_id'], 2, "DecryptCaptchaProcess 进程请求  请求验证码成功  result:" . $response, $one['id'], 5);
 
                                 # 把值 传给 2captcha
                                 $gt = $data['data']['gt'];
@@ -113,7 +113,7 @@ class DecryptCaptchaProcess extends AbstractProcess
                                 $data_two = json_decode($response_two, true);
                                 if (!$data_two || $data_two['status'] != 1) {
                                     # 验证码上传失败
-                                    Tools::WriteLogger($one['user_id'], 2, "DecryptCaptchaProcess 进程请求  上传验证码 错误 账号:" . $one['id'] . " 请求返回的解析参数失败 result:" . $response_two);
+                                    Tools::WriteLogger($one['user_id'], 2, "DecryptCaptchaProcess 进程请求  上传验证码 错误 账号:" . $one['id'] . " 请求返回的解析参数失败 result:" . $response_two, $one['id'], 5);
                                     # 验证码 错误 重新请求
                                     \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {  # 10 秒后
                                         $redis->rpush("DecryptCaptcha", $id);
@@ -126,6 +126,7 @@ class DecryptCaptchaProcess extends AbstractProcess
                                 # 上传验证码 成功   推进一个  一个是 任务
                                 #  var_dump("验证码上传成功...........".$response);
                                 # var_dump("验证码上传成功...........".$response_two);
+                                Tools::WriteLogger($one['user_id'], 2, "DecryptCaptchaProcess 进程请求  验证码上传成功 :" . $response_two . $response_two, $one['id'], 5);
                                 $task = \EasySwoole\EasySwoole\Task\TaskManager::getInstance();
                                 $task->async(new GetAnswerTask([
                                     'user_id' => $one['user_id'],

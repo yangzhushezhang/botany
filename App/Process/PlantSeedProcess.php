@@ -37,7 +37,7 @@ class PlantSeedProcess extends AbstractProcess
                                 # 属于那个 账号
                                 $one = AccountNumberModel::invoke($client)->get(['id' => $id_array[0]]);
                                 if (!$one) {
-                                    Tools::WriteLogger($id_array[2], 2, "PlantSeedProcess 账户id:" . $id_array[0] . "不存在 ");
+                                    Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  账户不存在 ", $id_array[0], 2);
                                     return false;
                                 }
 
@@ -65,25 +65,25 @@ class PlantSeedProcess extends AbstractProcess
                                 $result = $response->getBody();
                                 $data = json_decode($result, true);
 
-                                var_dump("种植成功");
 
                                 if (!$data) {
                                     # 解析失败 收获失败
-
                                     # 重新种植 10秒后
                                     \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
                                         $redis->rPush("Seed_Fruit", $id);  # account_number_id  种子类型 user_id
                                     });
 
-                                    Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[0] . "种植失败  json 解析失败");
+                                    Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  种植失败 json解析失败: result" . $result, $id_array[0], 2);
                                     return false;
                                 }
 
                                 if ($data['status'] != 0) {
-                                    Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[0] . " 种植失败.." . $result);
+                                    Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  种植失败 : result" . $result, $id_array[0], 2);
                                     return false;
                                 }
 
+
+                                var_dump("种植成功");
                                 $add = [
                                     'account_number_id' => $id_array[0],
                                     'farm_id' => $data['data']['_id'],
@@ -97,14 +97,11 @@ class PlantSeedProcess extends AbstractProcess
                                     'status' => 1,
                                     'remove' => 1
                                 ];
-
                                 $res = FarmModel::invoke($client)->data($add)->save();
                                 if (!$res) {
-                                    Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[0] . " PlantSeedProcess 插入数据库失败" . $result);
+                                    Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  插入数据失败 种子id: " . $add['farm_id'], $id_array[0], 2);
                                 }
-
-
-                                Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[0] . " PlantSeedProcess 种植成功 种子:" . $result);
+                                Tools::WriteLogger($id_array[2], 1, "账户id:" . $id_array[0] . " PlantSeedProcess 种植成功 种子:" . $result);
                                 #需要 去放小盆
                                 $redis->rPush("PutPot", $res . "@" . $id_array[0] . "@" . $one['user_id']);
 

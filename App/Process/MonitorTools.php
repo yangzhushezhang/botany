@@ -30,26 +30,21 @@ class MonitorTools extends AbstractProcess
                         if ($one && $one['status'] == 1) {
                             # 检查
                             if ($re['water'] < 12) {
-                                var_dump($re['water']);
-                                var_dump("购买水");
+
                                 # 购买水
-                                $this->Shop_tools(3, $one['token_value'], $one['user_id']);
+                                $this->Shop_tools(3, $one['token_value'], $one['user_id'], $one['id']);
                             }
 
 
                             if ($re['samll_pot'] < 6) {
                                 #购买盆
-                                var_dump($re['samll_pot']);
-                                var_dump("samll_pot");
-                                $this->Shop_tools(1, $one['token_value'], $one['user_id']);
+                                $this->Shop_tools(1, $one['token_value'], $one['user_id'], $one['id']);
                             }
 
 
                             if ($re['scarecrow'] < 10) {
                                 # 购买乌鸦
-                                var_dump($re['scarecrow']);
-                                var_dump("scarecrow");
-                                $this->Shop_tools(4, $one['token_value'], $one['user_id']);
+                                $this->Shop_tools(4, $one['token_value'], $one['user_id'], $one['id']);
                             }
 
 
@@ -77,7 +72,7 @@ class MonitorTools extends AbstractProcess
                             $result = $response->getBody();
                             $data_json = json_decode($result, true);
                             if (!$data_json) {
-                                Tools::WriteLogger($one['user_id'], 2, "MonitorTools 进程  解析失败  result:" . $result);
+                                Tools::WriteLogger($one['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $result);
                                 return false;
                             }
                             if ($data_json['status'] != 0) {
@@ -99,9 +94,7 @@ class MonitorTools extends AbstractProcess
                                 }
                             }
                             ToolsModel::invoke($client)->where(['account_number_id' => $re['account_number_id']])->update($update_data);
-
                         }
-
                         \co::sleep(5); # 每个账号之间 间隔 5 秒钟
                     }
                 });
@@ -113,16 +106,11 @@ class MonitorTools extends AbstractProcess
     }
 
 
-    function Shop_tools($id, $token_value, $user_id)
+    function Shop_tools($id, $token_value, $user_id, $account_number_id)
     {
 
         try {
             # 判断 自己的能量值是否 足够
-
-
-
-
-
             $client = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/buy-tools');
             $headers = array(
                 'authority' => 'backend-farm.plantvsundead.com',
@@ -146,16 +134,16 @@ class MonitorTools extends AbstractProcess
             $result = $response->getBody();
             $data_json = json_decode($result, true);
             if (!$data_json) {
-                Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  原因:解析失败");
+                Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  原因:解析失败", $account_number_id, 6);
                 return false;
             }
             if ($data_json['status'] != 0) {
-                Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  原因:" . $result);
+                Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  原因:" . $result, $account_number_id, 6);
                 return false;
             }
-            Tools::WriteLogger($user_id, 1, "购买工具 :" . $id . "成功");
+            Tools::WriteLogger($user_id, 1, "购买工具 :" . $id . "成功", $account_number_id, 6);
         } catch (InvalidUrl $e) {
-            Tools::WriteLogger($user_id, 1, "购买 异常:" . $e->getMessage());
+            Tools::WriteLogger($user_id, 2, "购买 异常:" . $e->getMessage(), $account_number_id, 6);
 
         }
 

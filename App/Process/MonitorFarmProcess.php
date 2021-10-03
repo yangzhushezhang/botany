@@ -58,16 +58,15 @@ class MonitorFarmProcess extends AbstractProcess
                             $data = json_decode($result, true);
 
                             if (!$data) {
-                                Tools::WriteLogger($re['user_id'], 2, "MonitorFarmProcess 进程请求 账号:" . $re['id'] . " 请求返回的解析参数失败 result:" . $result);
+                                Tools::WriteLogger($re['user_id'], 2, "进程 MonitorFarmProcess 进程请求 账号:" . $re['id'] . " 请求返回的解析参数失败 result:" . $result);
                                 # 这个地方再做处理
                                 continue;
                             }
 
-                            if ($data['status']!=0){
+                            if ($data['status'] != 0) {
                                 Tools::WriteLogger($re['user_id'], 2, "MonitorFarmProcess 进程请求 账号:" . $re['id'] . " 请求返回的数据错误 result:" . $result);
-                                continue ;
+                                continue;
                             }
-
 
 
                             $if_add_new = false;
@@ -78,12 +77,9 @@ class MonitorFarmProcess extends AbstractProcess
 
                             # 判断是否 有乌鸦  影响 农作物
                             foreach ($data['data'] as $value) {
-
-
                                 if ($value['plant']['sunflowerId'] == 2) {
                                     $if_sunflowerId_2 = true;
                                 }
-
                                 # 判断 农场 没有有 这个 种子 id
                                 $one = FarmModel::invoke($client)->get(['account_number_id' => $re['id'], 'farm_id' => $value['_id']]);
                                 if (isset($value['harvestTime'])) {

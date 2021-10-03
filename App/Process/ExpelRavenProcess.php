@@ -39,7 +39,8 @@ class ExpelRavenProcess extends AbstractProcess
                                 $there = FarmModel::invoke($client)->get(['id' => $array_data[0]]);
 
                                 if ($two['scarecrow'] < 20) {
-                                    var_dump("稻草人数量不足");
+                                    Tools::WriteLogger($array_data[2], 2, "进程 ExpelRavenProcess 稻草人数量不足", $array_data[1], 9);
+
                                     return false;
                                 }
 
@@ -73,15 +74,14 @@ class ExpelRavenProcess extends AbstractProcess
                                         \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
                                             $redis->rPush("CROW_IDS", $id);  # account_number_id  种子类型 user_id
                                         });
-
-                                        Tools::WriteLogger($array_data[2], 2, "账户id:" . $array_data[1] . " 种子id:" . $one['farm_id'] . "赶走乌鸦失败.....json解析失败");
+                                        Tools::WriteLogger($array_data[2], 2, "账户id:" . $array_data[1] . " 种子id:" . $one['farm_id'] . "赶走乌鸦失败.....json解析失败", $array_data[1], 9);
                                         return false;
                                     }
                                     if ($data['status'] != 0) {
-                                        Tools::WriteLogger($array_data[2], 2, "账户id:" . $array_data[1] . " 种子id:" . $one['farm_id'] . "赶走乌鸦失败....." . $response);
+                                        Tools::WriteLogger($array_data[2], 2, "账户id:" . $array_data[1] . " 种子id:" . $one['farm_id'] . "赶走乌鸦失败....." . $response, $array_data[1], 9);
                                         return false;
                                     }
-                                    Tools::WriteLogger($array_data[2], 1, "账户id:" . $array_data[1] . " 种子id:" . $one['farm_id'] . "赶走乌鸦成功....." . $response);
+                                    Tools::WriteLogger($array_data[2], 1, "账户id:" . $array_data[1] . " 种子id:" . $one['farm_id'] . "赶走乌鸦成功....." . $response, $array_data[1], 9);
 
                                     #
 
