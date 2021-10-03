@@ -79,9 +79,7 @@ class Tools
                 }
                 return $data;
             }
-
             return false;
-
 
         } catch (\Throwable $e) {
             return false;

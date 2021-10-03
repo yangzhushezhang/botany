@@ -217,7 +217,8 @@ class MonitorFarmProcess extends AbstractProcess
                         }
 
 
-                        Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 本轮检查 成功:" . $success . "个 ,失败:" . count($res) - $success . "个");
+                        $pp = count($res) - $success;
+                        Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 本轮检查 成功:" . $success . "个 ,失败:" . $pp . "个");
 
                     }
 
