@@ -49,12 +49,13 @@ class MonitorFarmProcess extends AbstractProcess
                                 'sec-fetch-dest' => 'empty',
                                 'referer' => 'https://marketplace.plantvsundead.com/',
                                 'accept-language' => 'zh-CN,zh;q=0.9',
-                                'if-none-match' => 'W/"1bf5-RySZLkdJ7uwQuWZ+zLfe+hxM36c"',
+                               # 'if-none-match' => 'W/"1bf5-RySZLkdJ7uwQuWZ+zLfe+hxM36c"',
                             );
                             $client_http->setHeaders($headers, false, false);
                             $response = $client_http->get();
                             $result = $response->getBody();
                             $data = json_decode($result, true);
+
                             if (!$data) {
                                 Tools::WriteLogger($re['user_id'], 2, "进程 MonitorFarmProcess 进程请求 账号:" . $re['id'] . " 请求返回的解析参数失败 result:" . $result);
                                 # 这个地方再做处理
