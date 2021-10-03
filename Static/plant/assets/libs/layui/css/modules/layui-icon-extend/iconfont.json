@@ -1,0 +1,184 @@
+{
+  "id": "2844667",
+  "name": "layui-plant",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "5044544",
+      "name": "植物",
+      "font_class": "zhiwu3",
+      "unicode": "e605",
+      "unicode_decimal": 58885
+    },
+    {
+      "icon_id": "5107324",
+      "name": "植物",
+      "font_class": "zhiwu4",
+      "unicode": "e61d",
+      "unicode_decimal": 58909
+    },
+    {
+      "icon_id": "5163699",
+      "name": "水生植物-01",
+      "font_class": "shuishengzhiwu-",
+      "unicode": "e65b",
+      "unicode_decimal": 58971
+    },
+    {
+      "icon_id": "5163700",
+      "name": "藤类植物-01",
+      "font_class": "tengleizhiwu-",
+      "unicode": "e65c",
+      "unicode_decimal": 58972
+    },
+    {
+      "icon_id": "5214857",
+      "name": "植物",
+      "font_class": "zhiwu5",
+      "unicode": "e61e",
+      "unicode_decimal": 58910
+    },
+    {
+      "icon_id": "5725897",
+      "name": "farm",
+      "font_class": "farm",
+      "unicode": "e607",
+      "unicode_decimal": 58887
+    },
+    {
+      "icon_id": "5725918",
+      "name": "farm-1",
+      "font_class": "farm-",
+      "unicode": "e60c",
+      "unicode_decimal": 58892
+    },
+    {
+      "icon_id": "5725938",
+      "name": "farm-2",
+      "font_class": "farm-1",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
+      "icon_id": "5961303",
+      "name": "风车",
+      "font_class": "fengche",
+      "unicode": "ec4f",
+      "unicode_decimal": 60495
+    },
+    {
+      "icon_id": "6440516",
+      "name": "植物园",
+      "font_class": "zhiwuyuan",
+      "unicode": "e6a6",
+      "unicode_decimal": 59046
+    },
+    {
+      "icon_id": "8523603",
+      "name": "大植物",
+      "font_class": "dazhiwu",
+      "unicode": "e69f",
+      "unicode_decimal": 59039
+    },
+    {
+      "icon_id": "8805246",
+      "name": "Farmer",
+      "font_class": "Farmer",
+      "unicode": "e90f",
+      "unicode_decimal": 59663
+    },
+    {
+      "icon_id": "10056816",
+      "name": "日志",
+      "font_class": "rizhi1",
+      "unicode": "e612",
+      "unicode_decimal": 58898
+    },
+    {
+      "icon_id": "11486692",
+      "name": "bitcoin-farm",
+      "font_class": "bitcoin-farm",
+      "unicode": "e608",
+      "unicode_decimal": 58888
+    },
+    {
+      "icon_id": "11994110",
+      "name": "bitcoin-farm",
+      "font_class": "bitcoin-farm1",
+      "unicode": "e800",
+      "unicode_decimal": 59392
+    },
+    {
+      "icon_id": "12331679",
+      "name": "日志",
+      "font_class": "rizhi2",
+      "unicode": "e668",
+      "unicode_decimal": 58984
+    },
+    {
+      "icon_id": "19463525",
+      "name": "花花 花 花朵 植物",
+      "font_class": "huahuahuahuaduozhiwu",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
+      "icon_id": "23419627",
+      "name": "土地",
+      "font_class": "a-agriculturefarmingfarmorganicfield",
+      "unicode": "e8a4",
+      "unicode_decimal": 59556
+    },
+    {
+      "icon_id": "24051717",
+      "name": "02_农场",
+      "font_class": "a-02_nongchang",
+      "unicode": "e698",
+      "unicode_decimal": 59032
+    },
+    {
+      "icon_id": "1101",
+      "name": "植物",
+      "font_class": "zhiwu",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "1409",
+      "name": "花盆",
+      "font_class": "huapen",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "435944",
+      "name": "日志",
+      "font_class": "rizhi",
+      "unicode": "e7c3",
+      "unicode_decimal": 59331
+    },
+    {
+      "icon_id": "3859311",
+      "name": "植物",
+      "font_class": "zhiwu1",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
+      "icon_id": "3896851",
+      "name": "植物icon-荷花",
+      "font_class": "ziyuan",
+      "unicode": "e604",
+      "unicode_decimal": 58884
+    },
+    {
+      "icon_id": "4513256",
+      "name": "植物",
+      "font_class": "zhiwu2",
+      "unicode": "e732",
+      "unicode_decimal": 59186
+    }
+  ]
+}

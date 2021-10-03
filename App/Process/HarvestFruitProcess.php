@@ -23,9 +23,7 @@ class HarvestFruitProcess extends AbstractProcess
         var_dump("种子收获进程开启..");
         go(function () {
             while (true) {
-
                 \EasySwoole\RedisPool\RedisPool::invoke(function (\EasySwoole\Redis\Redis $redis) {
-
                     $id = $redis->rPop("Harvest_Fruit");
                     $id_array = explode("@", $id);  # farm_id   account_number_id user_id
                     if (count($id_array) == 3) {  # 数组长度为2

@@ -44,15 +44,9 @@ class MonitorTools extends AbstractProcess
                             # 请求工具接口
                         }
                     }
-
-
                     $fix = AccountNumberModel::invoke($client)->all(['status' => 1]);
                     if ($fix) {
-
-
                         # 更新 鼠标 和 向日葵 个数
-
-
                         foreach ($fix as $six) {
                             $one = ToolsModel::invoke($client)->get(['account_number_id' => $six['id']]);
                             if (!$one) {

@@ -1,0 +1,566 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>账单</title>
+    <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
+
+    <style>
+
+        .currSerachBtn{
+            box-shadow: 0 15px 18px -6px rgb(45 140 240 / 65%) !important;
+        }
+
+        .currReloadBtn{
+            box-shadow: 0 15px 18px -6px rgb(146 109 222 / 65%) !important;
+        }
+
+        .layui-table-cell{
+            height:46px;
+            line-height: 46px;
+        }
+
+        .images_tool{
+
+            width: 50px;
+        }
+    </style>
+
+
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <!-- 表格工具栏 -->
+            <form class="layui-form toolbar">
+<!--                style="margin-left: -45px"-->
+                <div class="layui-form-item" >
+                    <div class="layui-inline" style="margin-left: -30px;">
+                        <label class="layui-form-label">账号列表:</label>
+                        <div class="layui-input-inline">
+                            <select name="plant_account_id" id="plant_account_id"  lay-filter="play_kindS">
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="layui-inline">&emsp;
+                        <button class="layui-btn icon-btn currReloadBtn" lay-filter="userTbSearch" lay-submit style="background-color: #926dde;border-color: #926dde;">
+                            <i class="layui-icon layui-icon-refresh"></i>刷新数据
+                        </button>
+                    </div>
+
+                    <div class="layui-inline" style="float: right;margin-right: 20px">
+                        <image src="../../assets/images/xp.jpg" class="images_tool"></image>
+                        <span id="xp">0</span>
+                        <image src="../../assets/images/dp.jpg" class="images_tool"></image>
+                        <span id="dp">0</span>
+                        <image src="../../assets/images/s.jpg" class="images_tool"></image>
+                        <span id="s">0</span>
+                        <image src="../../assets/images/ws.jpg" class="images_tool"></image>
+                        <span id="ws">0</span>
+                        <image src="../../assets/images/wy.jpg" class="images_tool"></image>
+                        <span id="wy">0</span>
+                    </div>
+                </div>
+            </form>
+            <!-- 数据表格 -->
+            <table id="userTable" lay-filter="userTable" style="margin-top:10px"></table>
+        </div>
+    </div>
+</div>
+
+<!-- js部分 -->
+<script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="../../assets/js/common.js?v=318"></script>
+
+<script type="text/javascript" src="../../assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="../../assets/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="../../assets/js/config.url.js"></script>
+
+<!--数据表格操作工具栏-->
+<script type="text/html" id="orderListBar">
+
+<!--    <a class="layui-btn layui-btn-normal layui-btn-radius" lay-event="addplaydetailbtn" style="background-color: #337ab7"><i class="layui-icon layui-icon-add-1"></i>添加具体玩法</a>-->
+<!--    <a class="layui-btn layui-btn-normal layui-btn-radius" lay-event="lookplaydetailbtn" style="background-color: #FF09E5;"><i class="layui-icon layui-icon-screen-full"></i>查看具体玩法</a>-->
+<!--    <a class="layui-btn layui-btn-normal layui-btn-radius" lay-event="changebtn"><i class="layui-icon layui-icon-edit"></i>修改</a>-->
+<!--    <a class="layui-btn layui-btn-normal layui-btn-danger layui-btn-radius" lay-event="delbtn"><i class="layui-icon">&#x1006;</i>删除</a>-->
+
+</script>
+<script>
+
+    var mybck= $.cookie('tokenMyb');
+    //alert(document.cookie);
+    //console.log(mybck)
+    if(mybck == "" || mybck == null){
+
+        window.top.location.href="../../login.html";
+
+    }else{
+        global_token = mybck
+
+        var jsondata ;
+        var playKindsArray;
+        var playKindsOneArray;
+        var playKindsOneNewArray;
+        var arrsData;
+        var arrsAllData=[];
+        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect','notice','treeTable'], function () {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var form = layui.form;
+            var table = layui.table;
+            var util = layui.util;
+            var admin = layui.admin;
+            var xmSelect = layui.xmSelect;
+            var notice = layui.notice;
+            var treeTable = layui.treeTable;
+
+
+
+            var get_playKind_request_param = {};
+            // get_playKind_request_param['token']= $.cookie('tokenMyb');
+
+            // get_playKind_request_param['min_Time']= 0;
+            get_playKind_request_param['status']= 2;
+            get_playKind_request_param['id']= 99999999;
+            get_playKind_request_param['action']= 'select';
+
+            /* 普通table-渲染表格 */
+            var insTb = table.render({
+                elem: '#userTable',
+                url: global_request_get_farmInformation+"?token="+global_token,
+                // url: "www.baidu.com",
+                method: 'post',
+                where:get_playKind_request_param,
+                // toolbar: ['<p>',
+                //     '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
+                //     '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
+                //     '</p>'].join(''),
+                cellMinWidth: 100,
+                page :  { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                    layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                    //,curr: 5 //设定初始在第 5 页
+                    ,groups: 10 //只显示 1 个连续页码
+                    ,first: "首页" //不显示首页
+                    ,last: "尾页"//不显示尾页
+                },
+                height : "full-100",
+                limit : 15,
+                limits : [15,30,50,100] ,
+                // response: {
+                //     statusName: 'code' //规定数据状态的字段名称，默认：code
+                //     ,statusCode: 200 //规定成功的状态码，默认：0
+                //     // ,msgName: 'hint' //规定状态信息的字段名称，默认：msg
+                //     // ,countName: 'total' //规定数据总数的字段名称，默认：count
+                //     ,dataName: 'result' //规定数据列表的字段名称，默认：data
+                // },
+                // id : "systemLog",
+                cols: [[
+                    {type: 'checkbox'},
+                    {field: 'id',title:'ID',sort: true,align:"center",width:130},
+                    {field: 'farm_id', title: '植物ID', sort: true,align:"center"},
+
+                    {field: 'needWater', title: '需要浇水', sort: true,align:"center"},
+                    {field: 'hasSeed', title: '需要种子', sort: true,align:"center"},
+
+                    {field: 'totalHarvest', title: '能量值', sort: true,align:"center"},
+
+                    {field: 'harvestTime', title: '收货时间',width:235, sort: true,align:"center", templet: function (d) {
+                            return util.toDateString(d.harvestTime* 1000);
+                        }, sort: true
+                    },
+                    {field: 'plant_type', title: '植物类型', sort: true,align:"center",templet:function(d){
+
+                           if(d.plant_type == 1){
+                               return '<div><img src="../../assets/images/sm.png" ' + 'alt="" width="40px" height="40px"></a></div>';
+                           }else if(d.plant_type == 2){
+                               return '<div><img src="../../assets/images/mm.png" ' + 'alt="" width="40px" height="40px"></a></div>';
+                           }
+
+                    }},
+
+                    {field: 'stage', title: '植物状态', sort: true,align:"center",templet:function(d){
+
+                            //news new ?? 新种植
+                            //farming 正在耕种
+                            //paused 铲除
+                            //cancelled 取消
+
+                            if(d.stage == "new"){
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #926dde;border-color: #926dde;">'+'新种植'+'</button>'
+                            }else if(d.stage == "farming"){
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #57c7d4;border-color: #57c7d4;">'+'运作中'+'</button>'
+                            }else if(d.stage == "paused"){
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #465161;border-color: #465161;">'+'暂停,有乌鸦'+'</button>'
+                            }else if(d.stage == "cancelled"){
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #33CABB;border-color: #33CABB;">'+'耕种完'+'</button>'
+                            }else{
+                                return ''
+                            }
+                        }},
+
+                    // {field: 'date', title: '日期', sort: true,align:"center",templet:function(d){
+                    //
+                    //         return d.date
+                    //         // return '<span>1:'+'<span style="color: red">'+d.per_value+'</span>'+'</span>'
+                    //
+                    // }},
+
+                    // {field: 'profit', title: '亏损额', sort: true,align:"center",templet:function(d){
+                    //
+                    //
+                    //         if(parseInt(d.profit) == 0){
+                    //
+                    //             return d.profit
+                    //
+                    //         }else{
+                    //             if(d.profit.indexOf('-') == -1){
+                    //
+                    //                 return '<span style="color: green">'+d.profit+'</span>'
+                    //
+                    //             }else{
+                    //                 return '<span style="color: red">'+d.profit+'</span>'
+                    //             }
+                    //         }
+                    //
+                    //     }},
+                    // {field: 'result', title: '开奖结果', sort: true,align:"center",templet:function(d){
+                    //
+                    //
+                    //         if(d.status == 4){
+                    //
+                    //             return '<span style="color: red;font-size: 18px;font-weight: bold">'+'无效'+'</span>'
+                    //
+                    //         }else{
+                    //
+                    //             if(d.result == '' || d.result == null ){
+                    //                 return '<span style="color: green;font-size: 18px;font-weight: bold">'+'还未结算'+'</span>'
+                    //             }else{
+                    //                 return '<span style="color: green;font-size: 18px;font-weight: bold">'+d.result+'</span>'
+                    //             }
+                    //
+                    //         }
+                    //
+                    //
+                    //
+                    // }},
+
+
+                    // {field: 'min_bet', title: '最小投注', sort: true,align:"center",templet:function(d){
+                    //
+                    // 		return '<span style="color: red">'+d.min_bet+'</span>'
+                    //
+                    // }},
+                    //
+                    //
+                    // {field: 'max_bet', title: '最大投注', sort: true,align:"center",templet:function(d){
+                    //
+                    // 		return '<span style="color: darkgreen">'+d.max_bet+'</span>'
+                    //
+                    // }},
+
+                    // {field: 'time', title: '倒计时', sort: true,align:"center",templet:function(a){
+                    //
+                    //         // var configTime = parseInt(resultData.result.group_task_recall_time);
+                    //
+                    //         if(a.status == "1"){//开盘
+                    //
+                    //             var configTime = a.time;
+                    //
+                    //             if(a.created_at == "" || a.created_at == null){
+                    //
+                    //                 // return '<button class="layui-btn layui-bg-black layui-btn-xs">'+'未接任务()'+'</button>'
+                    //
+                    //                 return '';
+                    //             }
+                    //
+                    //             // var abc = 1616427900;*60
+                    //             // var endTime = Math.floor((abc + configTime * 60));
+                    //             var endTime = Math.floor((a.created_at + configTime));
+                    //
+                    //             console.log("计算时间:"+endTime);
+                    //             // 计算 剩下的秒，即留给审批的时间
+                    //             var curTime = Math.round(new Date().getTime()  / 1000);
+                    //             // console.log("系统当前时间："+curTime);
+                    //             var t = endTime -  curTime
+                    //             // var t = endTime - Math.floor(new Date().getTime() / 1000);
+                    //             // 设置每一条数据唯一的key
+                    //             var key = 'key_' + a.id;
+                    //             // 判断是否逾期
+                    //             if(t <= 0){
+                    //
+                    //                 // return
+                    //
+                    //                 // changeStatusList(a.id);
+                    //                 //已逾期，直接返回，提示已逾期
+                    //
+                    //                 var min_Time = new Date(new Date().toLocaleDateString()).getTime()/1000
+                    //                 var maxTime = new Date(new Date().toLocaleDateString()).getTime()/1000 + 24 * 60 * 60  - 1
+                    //
+                    //
+                    //                 insTb.reload({
+                    //                     url:js_global_requestAddress_get_periods,
+                    //                     method: 'post',
+                    //                     where: {
+                    //                         token:$.cookie('tokenMyb'),
+                    //                         status:1,
+                    //                         min_Time:min_Time,
+                    //                         max_Time:maxTime,
+                    //                         play_kinds_id:currKindsID,
+                    //                         action:'GET'
+                    //                     }
+                    //                 },false);
+                    //
+                    //
+                    //
+                    //
+                    //                 return `<label  id=${key} style="color: red">已过期!</label>`;
+                    //             }
+                    //             //未逾期 > 开始处理剩余时间，将秒转为n日n时n分n秒的形式，代码在下方88-108行
+                    //             var left_time =  secondToStr(t);
+                    //             var html = `<label id=${key} style="color: red;">${left_time}</label>`;
+                    //             addTask(key, function () {
+                    //                 t--;
+                    //                 var left =  secondToStr(t);
+                    //                 $('#' + key).text(left);
+                    //                 if (t == 0) {
+                    //                     //倒计时结束，删除定时任务
+                    //                     $('#' + key).css("color","black");
+                    //                     $('#' + key).text("已失效.");
+                    //                     $(".layui-laypage-btn")[0].click()
+                    //                     delTask(key);
+                    //                     // 可根据情况，进行逾期之后的操作
+                    //                     //...........
+                    //                     console.log("倒计时结束");
+                    //
+                    //                     // changeStatusList(a.id);
+                    //                 }
+                    //             });
+                    //             return html;
+                    //
+                    //
+                    //         }else{
+                    //             return `<label  id=${key} style="color: red">已过期!</label>`;
+                    //         }
+                    //
+                    //
+                    //
+                    //     }},
+
+
+                    // {field: 'loss_per_cent_id', title: '当前赔率', sort: true,align:"center"},
+                    {field: 'status', title: '状态', sort: true,align:"center",width:130,templet:function(d){
+
+                            if(d.status == "2"){//正常
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #faa64b;border-color: #faa64b;">'+'收货'+'</button>'
+                            }else{
+                                return ''
+                            }
+                    }},
+                    // {
+                    //     field: 'created_at', title: '创建时间',align:"center",width:175, templet: function (d) {
+                    //         return util.toDateString(d.created_at* 1000);
+                    //     }, sort: true
+                    // },
+                    {
+                    	field: 'updated_at', title: '更新时间',align:"center",width:175, templet: function (d) {
+                    		return util.toDateString(d.updated_at* 1000);
+                    	}, sort: true
+                    },
+
+                    // {title: '操作', width:250, templet:'#orderListBar',fixed:"right",align:"center"}
+                ]],
+                done: function (res, curr, count) {
+
+                    currDataResS = count;
+                    $('tr').css({'background-color': '#fff', 'color': '#191a1c'});
+                }
+            });
+
+
+            var param={};
+            // param['token']= $.cookie('tokenMyb');
+            // param['status']= '1';
+            param['page']= '1';
+            param['limit']= '3000';
+            param['action']= 'select';
+
+            //获取账号列表添加到下拉框中
+            $.ajax({
+                url: global_request_get_account_numberInformation+"?token="+global_token,
+                dataType: 'json',
+                type: 'post',
+                data: param,
+                success: function (dataArray) {
+
+                    if (dataArray.code != 0) {
+
+                        // console.log(dataArray.msg)
+                        // layer.msg(dataArray.msg);
+
+                        return false;
+
+                    }
+
+
+                    var returnDataArray = dataArray.data
+
+                    var currAccountID = returnDataArray[0].id
+
+                    // console.log("returnDataArray",returnDataArray)
+
+                    $("#plant_account_id").empty();
+
+                    $.each(returnDataArray, function (index, item) {
+                        $('#plant_account_id').append(new Option(item.remark, item.id));// 下拉菜单里添加元素
+                    });
+
+                    //重新渲染 固定写法
+                    form.render("select");
+
+                    var param={};
+                    param['id']= currAccountID;
+                    //获取工具数据到下拉框中
+                    $.ajax({
+                        url: global_request_get_tools+"?token="+global_token,
+                        dataType: 'json',
+                        type: 'post',
+                        data: param,
+                        success: function (dataArray) {
+
+                            if (dataArray.code != 200) {
+
+                                // console.log(dataArray.msg)
+                                // layer.msg(dataArray.msg);
+
+                                return false;
+
+                            }
+
+
+
+                            $("#s").text(dataArray.result.water)
+                            $("#xp").text(dataArray.result.samll_pot)
+                            $("#wy").text(dataArray.result.scarecrow)
+                            // $("#s").text(dataArray.result.water)
+                            // $("#s").text(dataArray.result.water)
+
+                        }
+                    })
+
+
+                    insTb.reload({
+                        // url:js_global_requestAddress_get_periods,
+                        method: 'post',
+                        where: {
+                            id:currAccountID,
+                            action:'select'
+                        }
+                    },false);
+
+
+                    // get_playKind_request_param['token']= $.cookie('tokenMyb');
+                    // get_playKind_request_param['status']= 1;
+                    // get_playKind_request_param['min_Time']= 0;
+                    // get_playKind_request_param['max_Time']= 0;
+                    // get_playKind_request_param['play_kinds_id']= 0;
+                    // get_playKind_request_param['action']= 'GET';
+                    //
+                    // insTb.reload({
+                    //     // url:js_global_requestAddress_get_periods,
+                    //     method: 'post',
+                    //     where: {
+                    //         token:$.cookie('tokenMyb'),
+                    //         status:1,
+                    //         min_Time:0,
+                    //         max_Time:0.,
+                    //         play_kinds_id:currKindsID,
+                    //         action:'GET'
+                    //     }
+                    // },false);
+
+
+                }
+            })
+
+
+
+
+
+
+
+            /* 下拉框选中事件 */
+            form.on('select(play_kindS)', function (data) {
+
+
+                var currSelectReturnID = data.value
+
+                var param={};
+                param['id']= currSelectReturnID;
+                //获取工具数据到下拉框中
+                $.ajax({
+                    url: global_request_get_tools+"?token="+global_token,
+                    dataType: 'json',
+                    type: 'post',
+                    data: param,
+                    success: function (dataArray) {
+
+                        if (dataArray.code != 200) {
+
+                            // console.log(dataArray.msg)
+                            // layer.msg(dataArray.msg);
+
+                            return false;
+
+                        }
+
+
+
+                        $("#s").text(dataArray.result.water)
+                        $("#xp").text(dataArray.result.samll_pot)
+                        $("#wy").text(dataArray.result.scarecrow)
+                        // $("#s").text(dataArray.result.water)
+                        // $("#s").text(dataArray.result.water)
+
+                    }
+                })
+
+
+                //重载列表
+                insTb.reload({
+                    // url:js_global_requestAddress_get_periods,
+                    method: 'post',
+                    where: {
+                        status:2,
+                        id:currSelectReturnID,
+                        action:'select'
+                    }
+                },false);
+
+
+
+
+                return false;
+            });
+
+
+
+        });
+
+    }
+
+
+
+</script>
+</body>
+</html>

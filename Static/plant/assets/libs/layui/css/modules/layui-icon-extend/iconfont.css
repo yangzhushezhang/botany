@@ -1,0 +1,115 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 2844667 */
+  src: url('iconfont.woff2?t=1632923995011') format('woff2'),
+       url('iconfont.woff?t=1632923995011') format('woff'),
+       url('iconfont.ttf?t=1632923995011') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-zhiwu3:before {
+  content: "\e605";
+}
+
+.icon-zhiwu4:before {
+  content: "\e61d";
+}
+
+.icon-shuishengzhiwu-:before {
+  content: "\e65b";
+}
+
+.icon-tengleizhiwu-:before {
+  content: "\e65c";
+}
+
+.icon-zhiwu5:before {
+  content: "\e61e";
+}
+
+.icon-farm:before {
+  content: "\e607";
+}
+
+.icon-farm-:before {
+  content: "\e60c";
+}
+
+.icon-farm-1:before {
+  content: "\e616";
+}
+
+.icon-fengche:before {
+  content: "\ec4f";
+}
+
+.icon-zhiwuyuan:before {
+  content: "\e6a6";
+}
+
+.icon-dazhiwu:before {
+  content: "\e69f";
+}
+
+.icon-Farmer:before {
+  content: "\e90f";
+}
+
+.icon-rizhi1:before {
+  content: "\e612";
+}
+
+.icon-bitcoin-farm:before {
+  content: "\e608";
+}
+
+.icon-bitcoin-farm1:before {
+  content: "\e800";
+}
+
+.icon-rizhi2:before {
+  content: "\e668";
+}
+
+.icon-huahuahuahuaduozhiwu:before {
+  content: "\e624";
+}
+
+.icon-a-agriculturefarmingfarmorganicfield:before {
+  content: "\e8a4";
+}
+
+.icon-a-02_nongchang:before {
+  content: "\e698";
+}
+
+.icon-zhiwu:before {
+  content: "\e600";
+}
+
+.icon-huapen:before {
+  content: "\e601";
+}
+
+.icon-rizhi:before {
+  content: "\e7c3";
+}
+
+.icon-zhiwu1:before {
+  content: "\e606";
+}
+
+.icon-ziyuan:before {
+  content: "\e604";
+}
+
+.icon-zhiwu2:before {
+  content: "\e732";
+}
+

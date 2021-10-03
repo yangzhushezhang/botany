@@ -54,15 +54,12 @@ class MonitorFarmProcess extends AbstractProcess
                             $client_http->setHeaders($headers, false, false);
                             $response = $client_http->get();
                             $result = $response->getBody();
-
                             $data = json_decode($result, true);
-
                             if (!$data) {
                                 Tools::WriteLogger($re['user_id'], 2, "进程 MonitorFarmProcess 进程请求 账号:" . $re['id'] . " 请求返回的解析参数失败 result:" . $result);
                                 # 这个地方再做处理
                                 continue;
                             }
-
                             if ($data['status'] != 0) {
                                 Tools::WriteLogger($re['user_id'], 2, "MonitorFarmProcess 进程请求 账号:" . $re['id'] . " 请求返回的数据错误 result:" . $result);
                                 continue;

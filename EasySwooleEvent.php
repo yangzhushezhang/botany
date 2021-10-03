@@ -165,7 +165,6 @@ class EasySwooleEvent implements Event
         \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
 
 
-
         #WateringProcess
         $processConfig = new  \EasySwoole\Component\Process\Config([
             'processName' => 'WateringProcess', // 设置 进程名称为 TickProcess
@@ -179,9 +178,10 @@ class EasySwooleEvent implements Event
         \EasySwoole\Component\Di::getInstance()->set('WateringProcess', $PeriodsProcess->getProcess());
         \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
 
+        /***
+         *  #MonitorTools
+         */
 
-
-        #MonitorTools
         $processConfig = new  \EasySwoole\Component\Process\Config([
             'processName' => 'MonitorTools', // 设置 进程名称为 TickProcess
             'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
@@ -194,7 +194,10 @@ class EasySwooleEvent implements Event
         \EasySwoole\Component\Di::getInstance()->set('MonitorTools', $PeriodsProcess->getProcess());
         \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
 
-        # 验证码 DecryptCaptchaProcess
+
+        /**
+         *   # 验证码 DecryptCaptchaProcess
+         */
         $processConfig = new  \EasySwoole\Component\Process\Config([
             'processName' => 'DecryptCaptchaProcess', // 设置 进程名称为 TickProcess
             'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
@@ -206,5 +209,23 @@ class EasySwooleEvent implements Event
         $PeriodsProcess = (new \App\Process\DecryptCaptchaProcess($processConfig));
         \EasySwoole\Component\Di::getInstance()->set('DecryptCaptchaProcess', $PeriodsProcess->getProcess());
         \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
+
+        /***
+         *
+         * CheckIfRipe   单独检查
+         */
+        $processConfig = new  \EasySwoole\Component\Process\Config([
+            'processName' => 'CheckIfRipe', // 设置 进程名称为 TickProcess
+            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'arg' => [
+
+            ], // 传递参数到自定义进程中
+            'enableCoroutine' => true, // 设置 自定义进程自动开启协程环境
+        ]);
+        $PeriodsProcess = (new \App\Process\CheckIfRipe($processConfig));
+        \EasySwoole\Component\Di::getInstance()->set('CheckIfRipe', $PeriodsProcess->getProcess());
+        \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
+
+
     }
 }
