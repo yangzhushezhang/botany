@@ -51,38 +51,7 @@ class MonitorTools extends AbstractProcess
                             $one = ToolsModel::invoke($client)->get(['account_number_id' => $six['id']]);
                             if (!$one) {
                                 # 不存在这个 账号的工具 就 插入
-                                $token_value = $six['token_value'];
-                                # 更新我的 种子 个数
-                                $data = Tools::getSunflowers($token_value);
-                                if (!$data) {
-                                    Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $data);
-                                    return false;
-
-                                }
-                                if ($data['status'] != 0) {
-                                    Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     result:" . $data);
-                                    return false;
-                                }
-
-                                $update = [
-                                    'updated_at' => time()
-                                ];
-                                foreach ($data['data'] as $datum) {
-                                    if ($datum['plantType'] = 1) {
-                                        $update['all_sapling'] = $datum['usages'];
-                                        $update['already_sapling'] = $datum['total'];
-                                    }
-                                    if ($datum['plantType'] == 2) {
-                                        $update['all_sunflower'] = $datum['usages'];
-                                        $update['already_sunflower'] = $datum['total'];
-                                    }
-                                }
-                                $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update(['updated_at' => time(), 'all_sapling' => $data['data']['leWallet']]);
-
-
                                 # 更新 我的工具
-
-
                                 $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/my-tools');
                                 $headers = array(
                                     'authority' => 'backend-farm.plantvsundead.com',
@@ -109,7 +78,7 @@ class MonitorTools extends AbstractProcess
                                     return false;
                                 }
                                 if ($data_json['status'] != 0) {
-                                    Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools json status!=0  :" . $result);
+                                    Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools json status!=0  :" . $result, $six['id'], 9);
                                     return false;
                                 }
 
@@ -154,11 +123,11 @@ class MonitorTools extends AbstractProcess
                                 $result = $response->getBody();
                                 $data_json = json_decode($result, true);
                                 if (!$data_json) {
-                                    Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $result);
+                                    Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $result, $six['id'], 9);
                                     return false;
                                 }
                                 if ($data_json['status'] != 0) {
-                                    Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools json status!=0  :" . $result);
+                                    Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools json status!=0  :" . $result, $six['id'], 9);
                                     return false;
                                 }
                                 $update_data = [
@@ -176,7 +145,38 @@ class MonitorTools extends AbstractProcess
                                     }
                                 }
                                 ToolsModel::invoke($client)->where(['account_number_id' => $six['id']])->update($update_data);
+
+
                             }
+
+
+                            $token_value = $six['token_value'];
+                            # 更新我的 种子 个数
+                            $data = Tools::getSunflowers($token_value);
+                            if (!$data) {
+                                Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $data, $six['id'], 9);
+                                return false;
+
+                            }
+                            if ($data['status'] == 0) {
+                                Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     result: status ", $six['id'], 9);
+                                return false;
+                            }
+                            $update = [
+                                'updated_at' => time()
+                            ];
+                            foreach ($data['data'] as $datum) {
+                                if ($datum['plantType'] = 1) {
+                                    $update['all_sapling'] = $datum['usages'];
+                                    $update['already_sapling'] = $datum['total'];
+                                }
+                                if ($datum['plantType'] == 2) {
+                                    $update['all_sunflower'] = $datum['usages'];
+                                    $update['already_sunflower'] = $datum['total'];
+                                }
+                            }
+                            $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update(['updated_at' => time(), 'all_sapling' => $data['data']['leWallet']]);
+
 
                         }
                         \co::sleep(3); # 每个账号之间 间隔 5 秒钟

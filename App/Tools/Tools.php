@@ -68,7 +68,7 @@ class Tools
                 'sec-fetch-dest' => 'empty',
                 'referer' => 'https://marketplace.plantvsundead.com/',
                 'accept-language' => 'zh-CN,zh;q=0.9',
-                'if-none-match' => 'W/^\\^99-2xqEFdktsE4xMb9duc5cLOCwO+c^\\^',
+                #'if-none-match' => 'W/^\\^99-2xqEFdktsE4xMb9duc5cLOCwO+c^\\^',
             );
             $client->setHeaders($headers, false, false);
             $response = $client->get();
