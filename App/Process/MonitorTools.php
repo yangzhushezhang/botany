@@ -75,7 +75,7 @@ class MonitorTools extends AbstractProcess
                                                 $this->Shop_tools(3, $six['token_value'], $six['user_id'], $six['id'], $six['leWallet']);
                                             }
                                         }
-                                        if ($value['type'] == "POT") {
+                                        if ($value['toolId'] == 1) {
                                             $update_data['samll_pot'] = $value['usages'];
                                             if ($value['usages'] < 1) {
                                                 $this->Shop_tools(1, $six['token_value'], $six['user_id'], $six['id'], $six['leWallet']);
