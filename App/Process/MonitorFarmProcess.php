@@ -26,53 +26,17 @@ class MonitorFarmProcess extends AbstractProcess
     {
         var_dump("检测进程开启");
         go(function () {
-            $time = 0;
             while (true) {
                 # 遍历所有的
-                DbManager::getInstance()->invoke(function ($client) use ($time) {
+                DbManager::getInstance()->invoke(function ($client) {
                     # 查询所有 账户
-                    var_dump("进程 MonitorFarmProcess 成功运行 :" . $time . "次");
                     $res = AccountNumberModel::invoke($client)->all(['status' => 1]);
                     if ($res) {
                         $success = 0;
-                        $fail = 0;
-                        Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 开始,本次检查的账号 总共有 " . count($res) . "个");
+                        Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 开始,本次检查的账号 总共有 " . count($res) . "个", "", 11);
                         foreach ($res as $k => $re) {
-
-                            for ($j = 0; $j < 5; $j++) {
-                                $token_value = $re['token_value'];
-                                $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms?limit=10&offset=0');
-                                $headers = array(
-                                    'authority' => 'backend-farm.plantvsundead.com',
-                                    'sec-ch-ua' => '"Google Chrome";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
-                                    'accept' => 'application/json, text/plain, */*',
-                                    'authorization' => $token_value,
-                                    'sec-ch-ua-mobile' => '?0',
-                                    'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
-                                    'sec-ch-ua-platform' => '"Windows"',
-                                    'origin' => 'https://marketplace.plantvsundead.com',
-                                    'sec-fetch-site' => 'same-site',
-                                    'sec-fetch-mode' => 'cors',
-                                    'sec-fetch-dest' => 'empty',
-                                    'referer' => 'https://marketplace.plantvsundead.com/',
-                                    'accept-language' => 'zh-CN,zh;q=0.9',
-                                    # 'if-none-match' => 'W/"1bf5-RySZLkdJ7uwQuWZ+zLfe+hxM36c"',
-                                );
-                                $client_http->setHeaders($headers, false, false);
-                                $response = $client_http->get();
-                                $result = $response->getBody();
-                                $data = json_decode($result, true);
-
-                                # 请求 失败了 扔到 任务里面进行  保证每次数据的准确性
-                                if (!$data) {
-                                    Tools::WriteLogger($re['user_id'], 2, "进程 MonitorFarmProcess 进程请求 账号:" . $re['id'] . " 请求返回的解析参数失败 result:" . $result);
-                                    # 这个地方再做处理
-                                    continue;
-                                }
-                                if ($data['status'] != 0) {
-                                    Tools::WriteLogger($re['user_id'], 2, "MonitorFarmProcess 进程请求 账号:" . $re['id'] . " 请求返回的数据错误 result:" . $result);
-                                    continue;
-                                }
+                            $data = $this->GetFarms($re['token_value'], $re['user_id'], $re['id']);
+                            if ($data) {
                                 $if_add_new = false;
                                 $if_sunflowerId_2 = false;
                                 if ($data['total'] != 6) {
@@ -91,7 +55,6 @@ class MonitorFarmProcess extends AbstractProcess
                                     } else {
                                         $harvestTime = 0;
                                     }
-
                                     if ($value['stage'] == "new") {
                                         # 这个是 就去放 盆
                                         var_dump("放花盆");
@@ -100,6 +63,7 @@ class MonitorFarmProcess extends AbstractProcess
                                             var_dump($one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);
                                             $redis->rPush("PutPot", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']); #
                                         }
+                                        Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  发现需要放花盆的种子:" . $one['farm_id'], $re['id'], 11);
                                     }
 
                                     #  农作物已经 成熟
@@ -110,14 +74,14 @@ class MonitorFarmProcess extends AbstractProcess
                                             var_dump("已经收获过了!");
                                             $redis = RedisPool::defer("redis");
                                             $redis->rPush("RemoveSeed", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);  #种子的 id 种子的  账户id
-                                            Tools::WriteLogger($re['user_id'], 1, '推送 账户id:' . $one['account_number_id'] . " 种子id:" . $one['farm_id'] . "到 RemoveSeedProcess 后勤");
+                                            Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要铲除的种子:' . $one['farm_id'] . "并且推送到RemoveSeedProcess 后勤", $re['id'], 11);
 
                                         } else {
                                             # 说明这个 可以去收获  直接 push  到  收获进程去
                                             $redis = RedisPool::defer("redis");
                                             $redis->rPush("Harvest_Fruit", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);  #种子的 id 种子的  账户id
                                             var_dump("账户:" . $one['farm_id'] . "已经推送到后勤任务");
-                                            Tools::WriteLogger($re['user_id'], 1, '推送 账户id:' . $one['account_number_id'] . " 种子id:" . $one['farm_id'] . "到 HarvestFruitProcess 后勤");
+                                            Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要收获的种子:' . $one['farm_id'] . "并且推送到 HarvestFruitProcess后勤", $re['id'], 11);
 
                                         }
 
@@ -130,9 +94,7 @@ class MonitorFarmProcess extends AbstractProcess
                                         var_dump("发现了 停止的种子 :" . $value['_id']);
                                         $redis = RedisPool::defer("redis");
                                         $redis->rPush("CROW_IDS", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);  #种子的 id 种子的  账户id
-                                        Tools::WriteLogger($re['user_id'], 2, "在种子:" . $value['_id'] . "发现了乌鸦....需要去清除他");
-                                    } else {
-                                        #var_dump("检查......" . $value['stage']);
+                                        Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要赶走乌鸦的的种子:' . $one['farm_id'] . "并且推送到ExpelRavenProcess后勤", $re['id'], 11);
                                     }
 
 
@@ -140,20 +102,17 @@ class MonitorFarmProcess extends AbstractProcess
                                         # 需要浇水  让进程去做这件事情     需要给浇水的进程去
                                         $needWater = 1;
                                         #判断需要浇 几滴水
-                                        if (count($value['activeTools']) == 1) {
+                                        if (count($value['activeTools']) == 1) { #需要浇两滴水
                                             if ($one) {
                                                 $redis = RedisPool::defer('redis');
                                                 $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
-
                                                 \EasySwoole\Component\Timer::getInstance()->after(10 * 6 * 30 * 1000, function () use ($one, $re, $redis) { # 30秒后进行
                                                     $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
                                                 });
-                                                #   var_dump("浇两滴水");
                                             }
-                                        } else if (count($value['activeTools']) == 2) {
+                                        } else if (count($value['activeTools']) == 2) {  # 需要浇1滴水
                                             $redis = RedisPool::defer('redis');
                                             $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
-                                            # var_dump("浇一滴水");
                                         }
                                     }
                                     if ($value['hasSeed']) {
@@ -176,15 +135,17 @@ class MonitorFarmProcess extends AbstractProcess
                                     if ($one) {
                                         $two = FarmModel::invoke($client)->where(['account_number_id' => $re['id'], 'farm_id' => $value['_id']])->update($add);
                                         if (!$two) {
-                                            Tools::WriteLogger($re['user_id'], 2, "接口 refresh_botany 更新数据的时候出错误");
+                                            Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 更新种子:' . $one['farm_id'] . "失败", $re['id'], 11);
                                         }
+                                        Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 更新种子:' . $one['farm_id'] . "成功", $re['id'], 11);
                                     } else {
                                         # 插入操作
                                         $add['created_at'] = time();
                                         $two = FarmModel::invoke($client)->data($add)->save();
                                         if (!$two) {
-                                            Tools::WriteLogger($re['user_id'], 2, "接口 refresh_botany 插入数据的时候出错误");
+                                            Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 插入种子:' . $value['_id'] . "失败", $re['id'], 11);
                                         }
+                                        Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 插入种子:' . $value['_id'] . "成功", $re['id'], 11);
                                     }
                                 }
                                 if ($if_add_new) {
@@ -196,37 +157,79 @@ class MonitorFarmProcess extends AbstractProcess
                                             # 添加向日葵
                                             var_dump("向日葵");
                                             $redis->rPush("Seed_Fruit", $re['id'] . "@" . 2 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
+                                            Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要播种向日葵 并且 把账号推入到 PlantSeedProcess进程', $re['id'], 11);
                                         } else {
                                             # 添加普通种子
-                                           # var_dump("账号: " . $re['id'] . "普通种子");
                                             $redis->rPush("Seed_Fruit", $re['id'] . "@" . 1 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
+                                            Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要播种普通种子 并且 把账号推入到 PlantSeedProcess进程', $re['id'], 11);
                                         }
                                     }
                                 }
                                 $success++;
-                                \co::sleep(3);   # 每个账号直接 休息时间是  5秒
-                                break;
                             }
                             \co::sleep(5);   # 每个账号直接 休息时间是  5秒
                         }
                         $pp = count($res) - $success;
-                        Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 本轮检查 成功:" . $success . "个 ,失败:" . $pp . "个");
+                        Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 本轮检查 成功:" . $success . "个 ,失败:" . $pp . "个", "", 11);
                     }
                 });
-                $time++;
-                \co::sleep(20 * 60);  # 30分钟 检查一次
+                \co::sleep(20 * 60);  # 20分钟 检查一次
 
             }
         });
     }
 
 
+    /**
+     * @param $token_value
+     * @param $user_id
+     * @param $account_number_id
+     */
+    function GetFarms($token_value, $user_id, $account_number_id)
+    {
+
+        try {
+            for ($i = 0; $i < 5; $i++) {
+                $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms?limit=10&offset=0');
+                $headers = array(
+                    'authority' => 'backend-farm.plantvsundead.com',
+                    'sec-ch-ua' => '"Google Chrome";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
+                    'accept' => 'application/json, text/plain, */*',
+                    'authorization' => $token_value,
+                    'sec-ch-ua-mobile' => '?0',
+                    'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
+                    'sec-ch-ua-platform' => '"Windows"',
+                    'origin' => 'https://marketplace.plantvsundead.com',
+                    'sec-fetch-site' => 'same-site',
+                    'sec-fetch-mode' => 'cors',
+                    'sec-fetch-dest' => 'empty',
+                    'referer' => 'https://marketplace.plantvsundead.com/',
+                    'accept-language' => 'zh-CN,zh;q=0.9',
+                    # 'if-none-match' => 'W/"1bf5-RySZLkdJ7uwQuWZ+zLfe+hxM36c"',
+                );
+                $client_http->setHeaders($headers, false, false);
+                $response = $client_http->get();
+                $result = $response->getBody();
+                $data = json_decode($result, true);
+                if ($data && $data['status'] == 0) {   #返回了 0
+                    Tools::WriteLogger($user_id, 2, "进程 MonitorFarmProcess 方法 GetFarms 返回数据成功", $account_number_id, 11);
+                    return $data;
+                }
+                \co::sleep(1);
+            }
+            Tools::WriteLogger($user_id, 2, "进程 MonitorFarmProcess 方法 GetFarms 返回数据格式错误:", $account_number_id, 11);
+            return false;
+        } catch (\Throwable $exception) {
+            Tools::WriteLogger($user_id, 2, "进程 MonitorFarmProcess 方法 GetFarms 异常:" . $exception->getMessage(), $account_number_id, 11);
+            return false;
+        }
+    }
+
     protected function onException(\Throwable $throwable, ...$args)
     {
         Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 异常:" . $throwable->getMessage());
         parent::onException($throwable, $args); // TODO: Change the autogenerated stub
     }
-
 
     protected function onShutDown()
     {

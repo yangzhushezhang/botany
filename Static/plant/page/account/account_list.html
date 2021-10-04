@@ -170,6 +170,7 @@
                     //
                     // }},
 
+
                     {field: 'remark', title: '名字', sort: true,align:"center"},
                     {field: 'leWallet', title: '能量', sort: true,align:"center"},
                     {field: 'token_md5', title: 'token', sort: true,align:"center"},
@@ -204,15 +205,15 @@
                     //             return ''
                     //         }
                     // }},
-                    {
-                        field: 'created_at', title: '创建时间',align:"center", templet: function (d) {
-                            return util.toDateString(d.created_at* 1000);
-                        }, sort: true
-                    },
+                    // {
+                    //     field: 'created_at', title: '创建时间',align:"center", templet: function (d) {
+                    //         return util.toDateString(d.created_at* 1000);
+                    //     }, sort: true
+                    // },
                     {
                         field: 'updated_at', title: '更新时间',align:"center", templet: function (d) {
                             return util.toDateString(d.updated_at* 1000);
-                        }, sort: true
+                        }, sort: true,width:165
                     },
                     {title: '操作', width:475, templet:'#orderListBar',fixed:"right",align:"center"}
                 ]],

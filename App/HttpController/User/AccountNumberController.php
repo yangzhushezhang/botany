@@ -191,33 +191,25 @@ class AccountNumberController extends UserBase
     {
 
         try {
-
             $id = $this->request()->getRequestParam('id');
             if (!$this->check_parameter($id, "账户id")) {
                 return false;
             }
-
             return DbManager::getInstance()->invoke(function ($client) use ($id) {
                 $one = AccountNumberModel::invoke($client)->get(['id' => $id]);
                 if (!$one) {
                     $this->writeJson(-101, [], "非法账户");
                     return false;
                 }
-
-
                 $data = Tools::getSunflowers($one['token_value']);
                 if (!$data) {
                     $this->writeJson(-101, [], "获取失败");
                     return false;
-
                 }
-
                 if ($data['status'] != 0) {
                     $this->writeJson(-101, [], "获取失败 status:" . $data['status']);
                     return false;
                 }
-
-
                 $update = [
                     'updated_at' => time()
                 ];
@@ -227,7 +219,6 @@ class AccountNumberController extends UserBase
                         $update['already_sapling'] = $datum['total'];
 
                     }
-
                     if ($datum['plantType'] == 2) {
                         $update['all_sunflower'] = $datum['usages'];
                         $update['already_sunflower'] = $datum['total'];

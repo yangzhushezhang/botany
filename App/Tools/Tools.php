@@ -102,8 +102,8 @@ class Tools
                     'account_number_id' => $account_number_id,
                     'variety' => $variety
                 ];
-                $kk = LoggerModel::invoke($client)->data($data)->save();
 
+                $kk = LoggerModel::invoke($client)->data($data)->save();
                 if (!$kk) {
                     var_dump("WriteLogger 日志插入失败");
                 }

@@ -6,6 +6,8 @@ namespace App\HttpController\User;
 
 use App\Model\AccountNumberModel;
 use App\Model\FarmModel;
+use App\Model\ToolsModel;
+use App\Tools\Tools;
 use EasySwoole\ORM\DbManager;
 use EasySwoole\ORM\Exception\Exception;
 use EasySwoole\Pool\Exception\PoolEmpty;
@@ -181,15 +183,21 @@ class FarmInformationController extends UserBase
         if (!$this->check_parameter($limit, "limit") || !$this->check_parameter($page, "page") || !$this->check_parameter($page, "action")) {
             return false;
         }
-
         try {
             return DbManager::getInstance()->invoke(function ($client) use ($limit, $page) {
                 $model = AccountNumberModel::invoke($client)->limit($limit * ($page - 1), $limit)->withTotalCount();
-                $list = $model->all(['user_id'=>$this->who['id']]);
+                $list = $model->all(['user_id' => $this->who['id']]);
                 foreach ($list as $k => $value) {
-                    $list[$k]['total'] = FarmModel::invoke($client)->where(['account_number_id' => $value['id'],'status'=>1])->count();
-                    $list[$k]['plant_type_one_total'] = FarmModel::invoke($client)->where(['account_number_id' => $value['id'], 'plant_type' => 1,'status'=>1])->count();
-                    $list[$k]['plant_type_two_total'] = FarmModel::invoke($client)->where(['account_number_id' => $value['id'], 'plant_type' => 2,'status'=>1])->count();
+
+                    $one = ToolsModel::invoke($client)->get(['account_number_id' => $value['id']]);
+                    if ($one) {
+                        $list[$k]['tools_water'] = $one['water'];
+                        $list[$k]['tools_pot'] = $one['samll_pot'];
+                        $list[$k]['tools_scarecrow'] = $one['scarecrow'];
+                    }
+                    $list[$k]['total'] = FarmModel::invoke($client)->where(['account_number_id' => $value['id'], 'status' => 1])->count();
+                    $list[$k]['plant_type_one_total'] = FarmModel::invoke($client)->where(['account_number_id' => $value['id'], 'plant_type' => 1, 'status' => 1])->count();
+                    $list[$k]['plant_type_two_total'] = FarmModel::invoke($client)->where(['account_number_id' => $value['id'], 'plant_type' => 2, 'status' => 1])->count();
                 }
                 $result = $model->lastQueryResult();
                 $total = $result->getTotalCount();
@@ -208,5 +216,6 @@ class FarmInformationController extends UserBase
             return false;
         }
     }
+
 
 }

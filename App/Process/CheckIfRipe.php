@@ -42,7 +42,6 @@ class CheckIfRipe extends AbstractProcess
                                     Tools::WriteLogger($one['user_id'], 2, "CheckIfRipe 进程请求 账号:" . $one['id'] . " 不存在");
                                     continue;
                                 }
-
                                 for ($i = 0; $i < 3; $i++) {
                                     $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms?limit=10&offset=0');
                                     $headers = array(
@@ -97,8 +96,6 @@ class CheckIfRipe extends AbstractProcess
                             }
                         }
                     }
-
-
                 });
 
                 \co::sleep(85); # 85 秒执行一次 检查 是否有成熟的种子

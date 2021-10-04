@@ -15,22 +15,23 @@ class TheWorldTreeController extends UserBase
 {
 
 
-    # 世界树 接口
+    # 世界树 接口  每天 11点运行
     function TheWorldTree()
     {
         # 获取所有的行号
         try {
-
             $task = \EasySwoole\EasySwoole\Task\TaskManager::getInstance();
             $task->async(new TheTreeFromWorldTask(['user' => 'custom']));
             $this->writeJson(200, [], "调用成功");
-
         } catch (\Throwable $e) {
-
-
+            $this->WriteLogger(-1, [], "TheWorldTree 执行异常:" . $e->getMessage());
+            return false;
         }
-
-
     }
+
+
+    #
+
+
 
 }
