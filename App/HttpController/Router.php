@@ -71,10 +71,14 @@ class Router extends AbstractRouter
 
         /**
          * TheWorldTreeController.php
+         * 世界树
          */
 
         #TheWorldTree
         $routeCollector->post('/user/TheWorldTree', '/User/TheWorldTreeController/TheWorldTree');
+        $routeCollector->post('/user/getTodayTheWorldTree', '/User/TheWorldTreeController/getTodayTheWorldTree');
+        $routeCollector->post('/user/yesterdayGetOne', '/User/TheWorldTreeController/yesterdayGetOne');
+        $routeCollector->post('/user/yesterdayWatering', '/User/TheWorldTreeController/yesterdayWatering');
 
 
         $routeCollector->get('/closure', function (Request $request, Response $response) {

@@ -31,21 +31,14 @@ class GetAnswerTask implements TaskInterface
     function run(int $taskId, int $workerIndex)
     {
         // TODO: Implement run() method.
-
-
         for ($i = 0; $i < 30; $i++) {
             # 在这里 获取答案
             $client_http = new \EasySwoole\HttpClient\HttpClient("http://2captcha.com/res.php?key=" . $this->data['api_key'] . "&action=get&id=" . $this->data['id'] . "&json=1");
             $response_two = $client_http->get();
             $response_two = $response_two->getBody();
-
-
-            #解析
             $data_two = json_decode($response_two, true);
-
             if ($data_two && $data_two['status'] == 1) {
                 Tools::WriteLogger($this->data['user_id'], 2, "GetAnswerTask 获取答案成功 result:" . $response_two, $this->data['account_number_id'], 5);
-
                 # 获取答案成功
                 $geetest_challenge = $data_two['request']['geetest_challenge'];
                 $validate = $data_two['request']['geetest_validate'];
@@ -95,16 +88,12 @@ class GetAnswerTask implements TaskInterface
             }
             \co::sleep(1); # 30 秒
         }
-
-
         # 打码超时了  重新打码
         $redis = RedisPool::defer("redis");
         $redis->rPush("DecryptCaptcha", $this->data['account_number_id'] . "@" . $this->data['user_id']); # 账户名    用户名
         $redis->set("IfDoingVerification", 1, 600);# 时间重置
         Tools::WriteLogger($this->data['user_id'], 2, "GetAnswerTask 打码超时 重新打码", $this->data['account_number_id'], 5);
         return false;
-
-
     }
 
     /**

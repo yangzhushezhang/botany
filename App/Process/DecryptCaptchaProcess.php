@@ -29,9 +29,7 @@ class DecryptCaptchaProcess extends AbstractProcess
         $redis = RedisPool::defer("redis");
         $redis->del("DecryptCaptcha");
         go(function () {
-
             while (true) {
-
                 \EasySwoole\RedisPool\RedisPool::invoke(function (\EasySwoole\Redis\Redis $redis) {
                     $id = $redis->rPop("DecryptCaptcha");  # 账户id  用户id
                     if ($id) {
@@ -82,8 +80,6 @@ class DecryptCaptchaProcess extends AbstractProcess
                                     # 这个地方再做处理
                                     return false;
                                 }
-
-
                                 if ($data['status'] != 0) {
                                     Tools::WriteLogger($one['user_id'], 2, "DecryptCaptchaProcess 进程请求  获取验证码 错误 账号:" . $one['id'] . " 请求返回的解析参数失败 result:" . $response, $one['id'], 5);
                                     # 重新吧 值 推到 进程重新解析
@@ -94,10 +90,7 @@ class DecryptCaptchaProcess extends AbstractProcess
                                     # 这个地方再做处理
                                     return false;
                                 }
-
-
                                 Tools::WriteLogger($one['user_id'], 2, "DecryptCaptchaProcess 进程请求  请求验证码成功  result:" . $response, $one['id'], 5);
-
                                 # 把值 传给 2captcha
                                 $gt = $data['data']['gt'];
                                 $challenge = $data['data']['challenge'];
@@ -121,11 +114,7 @@ class DecryptCaptchaProcess extends AbstractProcess
                                     });
                                     return false;
                                 }
-
-
                                 # 上传验证码 成功   推进一个  一个是 任务
-                                #  var_dump("验证码上传成功...........".$response);
-                                # var_dump("验证码上传成功...........".$response_two);
                                 Tools::WriteLogger($one['user_id'], 2, "DecryptCaptchaProcess 进程请求  验证码上传成功 :" . $response_two . $response_two, $one['id'], 5);
                                 $task = \EasySwoole\EasySwoole\Task\TaskManager::getInstance();
                                 $task->async(new GetAnswerTask([
@@ -135,15 +124,9 @@ class DecryptCaptchaProcess extends AbstractProcess
                                     'token_value' => $one['token_value'],
                                     'account_number_id' => $one['id']
                                 ]));
-
-
                             });
-
-
                         }
                     }
-
-
                 }, "redis");
                 \co::sleep(5); # 五秒循环一次
             }

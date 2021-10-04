@@ -36,13 +36,12 @@ class CheckIfRipe extends AbstractProcess
                         foreach ($res as $k => $re) {
                             if ($re['harvestTime'] < time()) {
                                 # 说明这个 种子已经成熟了  理论上可以收获了    可以收获了  但是要先请求下  接口是否有乌鸦的 导致 收获验证
-                                #获取账号的 token_value
                                 $one = AccountNumberModel::invoke($client)->get(['id' => $re['account_number_id']]);
                                 if (!$one) {
                                     Tools::WriteLogger($one['user_id'], 2, "CheckIfRipe 进程请求 账号:" . $one['id'] . " 不存在");
                                     continue;
                                 }
-                                for ($i = 0; $i < 3; $i++) {
+                                for ($i = 0; $i < 5; $i++) {
                                     $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms?limit=10&offset=0');
                                     $headers = array(
                                         'authority' => 'backend-farm.plantvsundead.com',

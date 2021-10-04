@@ -26,7 +26,7 @@ class Index extends Controller
 //
 //        $task->async(new GetAnswerTask(['user' => 'custom']));
 
-        $two = AccountNumberModel::create()->where(['id' => 4])->update($update);
+//        $two = AccountNumberModel::create()->where(['id' => 4])->update($update);
 
 
     }

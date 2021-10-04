@@ -26,20 +26,20 @@ class HarvestFruitProcess extends AbstractProcess
                 \EasySwoole\RedisPool\RedisPool::invoke(function (\EasySwoole\Redis\Redis $redis) {
                     $id = $redis->rPop("Harvest_Fruit");
                     $id_array = explode("@", $id);  # farm_id   account_number_id user_id
-                    if (count($id_array) == 3) {  # 数组长度为2
+                    if (count($id_array) > 2) {  # 数组长度为2
                         if ($id) {
-                            DbManager::getInstance()->invoke(function ($client) use ($id_array, $redis,$id) {
+                            DbManager::getInstance()->invoke(function ($client) use ($id_array, $redis, $id) {
                                 # 获取这个  农作物的详情
                                 $one = FarmModel::invoke($client)->get(['id' => $id_array[0]]);
                                 $two = AccountNumberModel::invoke($client)->get(['id' => $id_array[1]]);
                                 if (!$one || !$two) {
-                                    Tools::WriteLogger($id_array[2], 2, "HarvestFruitProcess 账户id:" . $id_array[1] . "不存在 ",$id_array[1],8);
+                                    Tools::WriteLogger($id_array[2], 2, "HarvestFruitProcess 账户id:" . $id_array[1] . "不存在 ", $id_array[1], 8);
                                     return false;
                                 }
 
                                 if ($one['status'] != 1) {
                                     # 说明这个种子已经 收获过了
-                                    Tools::WriteLogger($id_array[2], 2, "HarvestFruitProcess 账户id:" . $id_array[1] . " 不要重复收获种子id:" . $one['farm_id'],$id_array[1],8);
+                                    Tools::WriteLogger($id_array[2], 2, "HarvestFruitProcess 账户id:" . $id_array[1] . " 不要重复收获种子id:" . $one['farm_id'], $id_array[1], 8);
                                     return false;
                                 }
 
@@ -72,12 +72,12 @@ class HarvestFruitProcess extends AbstractProcess
                                     \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
                                         $redis->rPush("Harvest_Fruit", $id);  # account_number_id  种子类型 user_id
                                     });
-                                    Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . " 种子id:" . $one['farm_id'] . "收获失败.....json解析失败",$id_array[1],8);
+                                    Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . " 种子id:" . $one['farm_id'] . "收获失败.....json解析失败", $id_array[1], 8);
                                     return false;
                                 }
 
                                 if ($data['status'] != 0) {
-                                    Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . " 种子id:" . $one['farm_id'] . "收获失败....." . $result,$id_array[1],8);
+                                    Tools::WriteLogger($id_array[2], 2, "账户id:" . $id_array[1] . " 种子id:" . $one['farm_id'] . "收获失败....." . $result, $id_array[1], 8);
                                     return false;
                                 }
 
@@ -86,11 +86,11 @@ class HarvestFruitProcess extends AbstractProcess
                                 AccountNumberModel::invoke($client)->where(['id' => $id_array[1]])->update(['leWallet' => $new]);
                                 # 收获成功
                                 FarmModel::invoke($client)->where(['id' => $id_array[0]])->update(['status' => 2, 'updated_at' => time()]);
-                                Tools::WriteLogger($id_array[2], 1, "账户id:" . $id_array[1] . " 种子id:" . $one['farm_id'] . "收获成功....." . $result . "获取能量值:" . $data['data']['amount'],$id_array[1],8);
-
-
+                                Tools::WriteLogger($id_array[2], 1, "账户id:" . $id_array[1] . " 种子id:" . $one['farm_id'] . "收获成功....." . $result . "获取能量值:" . $data['data']['amount'], $id_array[1], 8);
                                 # 收获成功 需要去 铲除 废物  交给 后勤去处理 这件事
-                                $redis->rPush("RemoveSeed", $id_array[0] . "@" . $id_array[1] . "@" . $id_array[2]); #farm_id   account_number_id user_id
+                                if (count($id_array) == 3) {  #  4 是特殊种子
+                                    $redis->rPush("RemoveSeed", $id_array[0] . "@" . $id_array[1] . "@" . $id_array[2]); #farm_id   account_number_id user_id
+                                }
 
                             });
                         }
