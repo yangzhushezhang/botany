@@ -186,8 +186,24 @@
                     {field: 'id',title:'ID',sort: true,align:"center",width:130},
                     {field: 'farm_id', title: '植物ID', sort: true,align:"center"},
 
-                    {field: 'needWater', title: '需要浇水', sort: true,align:"center"},
-                    {field: 'hasSeed', title: '需要种子', sort: true,align:"center"},
+                    {field: 'needWater', title: '需要浇水', sort: true,align:"center",templet:function(d){
+
+                            if(d.needWater == 2){
+                                return '否';
+                            }else{
+                                return '真';
+                            }
+
+                    }},
+                    {field: 'hasSeed', title: '需要种子', sort: true,align:"center",templet:function(d){
+
+                            if(d.hasSeed == 2){
+                                return '否';
+                            }else{
+                                return '真';
+                            }
+
+                    }},
 
                     {field: 'totalHarvest', title: '能量值', sort: true,align:"center"},
 
@@ -534,7 +550,7 @@
             form.on('select(play_kindS)', function (data) {
 
 
-                 currSelectReturnID = data.value
+                currSelectReturnID = data.value
 
 
 
@@ -587,6 +603,64 @@
 
                     }
                 },false);
+
+                var param={};
+                param['id']= currSelectReturnID;
+                //刷新自己的工具信息
+                $.ajax({
+                    url: global_request_refresh_tools+"?token="+global_token,
+                    dataType: 'json',
+                    type: 'post',
+                    data: param,
+                    success: function (dataArray) {
+
+                        if (dataArray.code != 200) {
+
+                            // console.log(dataArray.msg)
+                            layer.msg(dataArray.msg);
+
+                            return false;
+
+                        }
+
+
+                        // layer.msg(dataArray.msg, {icon: 1, time: 500}, function () {
+                        //
+                        //
+                        // });
+
+                        //获取工具数据到右上角
+                        $.ajax({
+                            url: global_request_get_tools+"?token="+global_token,
+                            dataType: 'json',
+                            type: 'post',
+                            data: param,
+                            success: function (dataArray) {
+
+                                if (dataArray.code != 200) {
+
+                                    // console.log(dataArray.msg)
+                                    // layer.msg(dataArray.msg);
+
+                                    return false;
+
+                                }
+
+
+
+                                $("#s").text(dataArray.result.water)
+                                $("#xp").text(dataArray.result.samll_pot)
+                                $("#wy").text(dataArray.result.scarecrow)
+                                // $("#s").text(dataArray.result.water)
+                                // $("#s").text(dataArray.result.water)
+
+                            }
+                        })
+
+
+
+                    }
+                })
 
                 return false;
             });

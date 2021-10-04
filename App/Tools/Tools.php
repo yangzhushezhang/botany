@@ -102,7 +102,11 @@ class Tools
                     'account_number_id' => $account_number_id,
                     'variety' => $variety
                 ];
-                LoggerModel::invoke($client)->data($data)->save();
+                $kk = LoggerModel::invoke($client)->data($data)->save();
+
+                if (!$kk) {
+                    var_dump("WriteLogger 日志插入失败");
+                }
             });
         } catch (\Throwable $e) {
             log("写日志异常  $variety  :" . $e->getMessage());

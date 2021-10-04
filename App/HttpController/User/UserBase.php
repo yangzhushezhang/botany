@@ -16,7 +16,7 @@ class UserBase extends Controller
 
 
     protected $who;
-    protected $white_router = array('/user/login');
+    protected $white_router = array('/user/login','/user/TheWorldTree');
 
     protected function onRequest(?string $action): ?bool
     {

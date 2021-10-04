@@ -69,6 +69,14 @@ class Router extends AbstractRouter
         $routeCollector->post('/user/getLogger', '/User/LoggerController/getLogger');
 
 
+        /**
+         * TheWorldTreeController.php
+         */
+
+        #TheWorldTree
+        $routeCollector->post('/user/TheWorldTree', '/User/TheWorldTreeController/TheWorldTree');
+
+
         $routeCollector->get('/closure', function (Request $request, Response $response) {
             $response->write('this is closure router');
             //不再进入控制器解析
