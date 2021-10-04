@@ -7,6 +7,7 @@ namespace App\Process;
 use App\Model\AccountNumberModel;
 use App\Model\ToolsModel;
 use App\Tools\Tools;
+use Cassandra\Date;
 use EasySwoole\Component\Process\AbstractProcess;
 use EasySwoole\HttpClient\Exception\InvalidUrl;
 use EasySwoole\ORM\DbManager;
@@ -209,7 +210,7 @@ class MonitorTools extends AbstractProcess
                                 continue;
                             }
                             #  var_dump("更新  all_sapling 账号:".$six['id']);
-                            $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update(['updated_at' => time(), 'leWallet' => $data['data']['leWallet']]);
+                            $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update(['updated_at' => time(), 'leWallet' => $data['data']['leWallet'],'usagesSunflower'=>$data['data']['usagesSunflower']]);
 
                         }
                         \co::sleep(3); # 每个账号之间 间隔 5 秒钟

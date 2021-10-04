@@ -41,14 +41,10 @@ class PutPotProcess extends AbstractProcess
                                     return false;
                                 }
                                 # 判断是花盆个数够吗?
-
-
                                 if ($three['samll_pot'] && $three['samll_pot'] < 1) {
                                     Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 账号的花盆不足,无法放盆", $id_array[1], 1);
                                     return false;
                                 }
-
-
                                 if (!$one || !$two) {
                                     Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 账户不存在 ", $id_array[1], 3);
                                     return false;
@@ -80,14 +76,12 @@ class PutPotProcess extends AbstractProcess
                                 $response = $client_http->post($data);
                                 $response = $response->getBody();
                                 $data = json_decode($response, true);
-
                                 if (!$data) {
                                     # 解析失败 收获失败
                                     #重新压进redis  进行
                                     \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
                                         $redis->rPush("PutPot", $id);  # account_number_id  种子类型 user_id
                                     });
-
                                     Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 种子:" . $one['farm_id'] . " 放花盆失败了 原因:json 解析失败 result:" . $response, $id_array[1], 3);
                                     return false;
                                 }
@@ -101,15 +95,15 @@ class PutPotProcess extends AbstractProcess
                                             $redis->rPush("DecryptCaptcha", $id_array[1] . "@" . $id_array[2]);
                                             $redis->set("IfDoingVerification", 1, 600);# 10分钟
                                         }
-                                        Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 种子:" . $one['farm_id'] . " 放花盆失败了 原因: 验证码 result:" . $response, $id_array[1], 3);
+                                        Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 种子:" . $two['farm_id'] . " 放花盆失败了 原因: 验证码 result:" . $response, $id_array[1], 3);
                                         return false;
                                     } else {
-                                        Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 种子:" . $one['farm_id'] . " 放花盆失败了 原因: result:" . $response, $id_array[1], 3);
+                                        Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 种子:" . $two['farm_id'] . " 放花盆失败了 原因: result:" . $response, $id_array[1], 3);
                                         return false;
                                     }
                                 }
 
-                                var_dump("放花盆成功");
+                              //  var_dump("放花盆成功");
                                 # 更新 农作物状态
                                 FarmModel::invoke($client)->where(['id' => $id_array[0]])->update(['stage' => 'farming', 'updated_at' => time()]);
                                 # 放 花盆成功
@@ -124,7 +118,6 @@ class PutPotProcess extends AbstractProcess
 
 
                             }
-
                         });
 
                     }

@@ -29,7 +29,6 @@ class ExpelRavenProcess extends AbstractProcess
                     # 监听 赶乌鸦的接口
                     $id = $redis->rPop("CROW_IDS");
                     if ($id) {
-                        var_dump("有乌鸦进来了!!");
                         # 说明 已经有 出现了  乌鸦了
                         DbManager::getInstance()->invoke(function ($client) use ($id, $redis) {
                             $array_data = explode('@', $id);

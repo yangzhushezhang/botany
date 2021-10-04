@@ -41,12 +41,10 @@ class WateringProcess extends AbstractProcess
                                     Tools::WriteLogger($id_array[2], 2, "进程 WateringProcess 账号的水量不足,无法浇水", $id_array[1], 1);
                                     return false;
                                 }
-
                                 if (!$one || !$two) {
                                     Tools::WriteLogger($id_array[2], 2, "进程 WateringProcess 没有找到该账号 ", $id_array[1], 1);
                                     return false;
                                 }
-
                                 # 种子放花盆
                                 $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms/apply-tool');
                                 $headers = array(
@@ -70,10 +68,7 @@ class WateringProcess extends AbstractProcess
                                 $response = $client_http->post($data);
                                 $response = $response->getBody();
                                 $data = json_decode($response, true);
-
-
                                 #  556 验证码
-
                                 if (!$data) {
                                     # 解析失败 收获失败
                                     \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
@@ -92,7 +87,6 @@ class WateringProcess extends AbstractProcess
                                         $IfDoingVerification = $redis->get("IfDoingVerification");
                                         if (!$IfDoingVerification) {
                                             #  不存在 就去处理
-
                                             $redis->rPush("DecryptCaptcha", $id_array[1] . "@" . $id_array[2]);
                                             $redis->set("IfDoingVerification", 1, 600);# 10分钟
                                         }
@@ -108,9 +102,7 @@ class WateringProcess extends AbstractProcess
                                     }
 
                                 }
-
-
-                                var_dump("浇水成功");
+                              //  var_dump("浇水成功");
                                 # 更新 农作物状态
                                 FarmModel::invoke($client)->where(['id' => $id_array[0]])->update(['stage' => 'farming', 'updated_at' => time()]);
                                 # 浇水成功
@@ -118,7 +110,6 @@ class WateringProcess extends AbstractProcess
                                 #$redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
                                 $new = $three['water'] - 1;
                                 ToolsModel::invoke($client)->where(['account_number_id' => $id_array[1]])->update(['updated_at' => time(), 'water' => $new]); # 更新工具
-
                             }
 
                         });

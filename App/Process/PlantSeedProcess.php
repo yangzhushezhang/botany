@@ -96,7 +96,7 @@ class PlantSeedProcess extends AbstractProcess
                                 }
 
 
-                                var_dump("种植成功");
+                             //   var_dump("种植成功");
                                 $add = [
                                     'account_number_id' => $id_array[0],
                                     'farm_id' => $data['data']['_id'],

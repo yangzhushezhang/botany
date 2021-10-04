@@ -26,6 +26,7 @@ class MonitorFarmProcess extends AbstractProcess
     {
         var_dump("检测进程开启");
         go(function () {
+            $time = 0;
             while (true) {
                 # 遍历所有的
                 DbManager::getInstance()->invoke(function ($client) {
@@ -57,10 +58,10 @@ class MonitorFarmProcess extends AbstractProcess
                                     }
                                     if ($value['stage'] == "new") {
                                         # 这个是 就去放 盆
-                                        var_dump("放花盆");
+                                      //  var_dump("放花盆");
                                         $redis = RedisPool::defer('redis');
                                         if ($one) {
-                                            var_dump($one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);
+                                           // var_dump($one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);
                                             $redis->rPush("PutPot", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']); #
                                         }
                                         Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  发现需要放花盆的种子:" . $one['farm_id'], $re['id'], 11);
@@ -72,7 +73,7 @@ class MonitorFarmProcess extends AbstractProcess
                                     if (isset($value['plantId']) && $value['plantId'] != 0) {
                                         $plantId = $value['plantId'];
                                         $iconUrl = $value['plant']['iconUrl'];
-                                        var_dump($iconUrl);
+                                       // var_dump($iconUrl);
                                     }
 
                                     if ($value['stage'] == "cancelled") {
@@ -87,7 +88,7 @@ class MonitorFarmProcess extends AbstractProcess
                                         } else {
                                             if ($value['totalHarvest'] == 0) {
                                                 # 这个 已经收获过了 直接去铲除
-                                                var_dump("已经收获过了!");
+                                             //   var_dump("已经收获过了!");
                                                 $redis = RedisPool::defer("redis");
                                                 $redis->rPush("RemoveSeed", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);  #种子的 id 种子的  账户id
                                                 Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要铲除的种子:' . $one['farm_id'] . "并且推送到RemoveSeedProcess 后勤", $re['id'], 11);
@@ -95,7 +96,7 @@ class MonitorFarmProcess extends AbstractProcess
                                                 # 说明这个 可以去收获  直接 push  到  收获进程去
                                                 $redis = RedisPool::defer("redis");
                                                 $redis->rPush("Harvest_Fruit", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);  #种子的 id 种子的  账户id
-                                                var_dump("账户:" . $one['farm_id'] . "已经推送到后勤任务");
+                                             //   var_dump("账户:" . $one['farm_id'] . "已经推送到后勤任务");
                                                 Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要收获的种子:' . $one['farm_id'] . "并且推送到 HarvestFruitProcess后勤", $re['id'], 11);
                                             }
                                         }
@@ -106,7 +107,7 @@ class MonitorFarmProcess extends AbstractProcess
                                     $hasSeed = 2;  # 暂停
                                     if ($value['stage'] == "paused") {
                                         # 这个种子的时间停止了   说明已经有乌鸦了 .我怕需要 用 稻草人去吓退乌鸦
-                                        var_dump("发现了 停止的种子 :" . $value['_id']);
+                                      //  var_dump("发现了 停止的种子 :" . $value['_id']);
                                         $redis = RedisPool::defer("redis");
                                         $redis->rPush("CROW_IDS", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);  #种子的 id 种子的  账户id
                                         Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要赶走乌鸦的的种子:' . $one['farm_id'] . "并且推送到ExpelRavenProcess后勤", $re['id'], 11);
@@ -169,7 +170,7 @@ class MonitorFarmProcess extends AbstractProcess
                                         $redis = RedisPool::defer('redis');
                                         if ($i == 0 && !$if_sunflowerId_2) {
                                             # 添加向日葵
-                                            var_dump("向日葵");
+                                           // var_dump("向日葵");
                                             $redis->rPush("Seed_Fruit", $re['id'] . "@" . 2 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
                                             Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要播种向日葵 并且 把账号推入到 PlantSeedProcess进程', $re['id'], 11);
                                         } else {
@@ -188,6 +189,7 @@ class MonitorFarmProcess extends AbstractProcess
                     }
                 });
                 \co::sleep(20 * 60);  # 20分钟 检查一次
+
 
             }
         });
