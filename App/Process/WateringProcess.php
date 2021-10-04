@@ -91,12 +91,17 @@ class WateringProcess extends AbstractProcess
                                             $redis->set("IfDoingVerification", 1, 600);# 10分钟
                                         }
                                         Tools::WriteLogger($id_array[2], 2, "进程 WateringProcess 种子id:" . $two['farm_id'] . "浇水失败了,出现了验证码 result:" . $response, $id_array[1], 1);
-
                                         return false;
+                                    } else if ($data['status'] == 20) {
+                                        # 没有 放花盆
+                                        \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
+                                            $redis->rPush("PutPot", $id);  # account_number_id  种子类型 user_id
+                                        });
                                     } else {
                                         \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
                                             $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
                                         });
+
                                         Tools::WriteLogger($id_array[2], 2, "进程 WateringProcess 种子id:" . $two['farm_id'] . "浇水失败了,原因:status 不等于0和556 result:" . $response, $id_array[1], 1);
                                         return false;
                                     }
