@@ -42,7 +42,7 @@ class ToolsController extends UserBase
                     'accept' => 'application/json, text/plain, */*',
                     'authorization' => $one['token_value'],
                     'sec-ch-ua-mobile' => '?0',
-                    'user-agent' => $token_value,
+                    'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
                     'sec-ch-ua-platform' => '^\\^Windows^\\^',
                     'origin' => 'https://marketplace.plantvsundead.com',
                     'sec-fetch-site' => 'same-site',
@@ -50,7 +50,7 @@ class ToolsController extends UserBase
                     'sec-fetch-dest' => 'empty',
                     'referer' => 'https://marketplace.plantvsundead.com/',
                     'accept-language' => 'zh-CN,zh;q=0.9',
-                  #  'if-none-match' => 'W/^\\^32c-sAwO7sU/nng0IT4QwrYVX61WsEY^\\^',
+                 #   'if-none-match' => 'W/^\\^32c-sAwO7sU/nng0IT4QwrYVX61WsEY^\\^',
                 );
                 $client->setHeaders($headers, false, false);
                 $response = $client->get();

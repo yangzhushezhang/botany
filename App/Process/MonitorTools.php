@@ -77,7 +77,7 @@ class MonitorTools extends AbstractProcess
                                     $result = $response->getBody();
                                     $data_json = json_decode($result, true);
                                     if (!$data_json) {
-                                        Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $result);
+                                        Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $result, $six['id'], 9);
                                         continue;
                                     }
                                     if ($data_json['status'] != 0) {
@@ -100,6 +100,7 @@ class MonitorTools extends AbstractProcess
                                         }
                                     }
                                     ToolsModel::invoke($client)->data($update_data)->save();
+                                    Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools  更新成功" . $result, $six['id'], 9);
                                     break;
                                 }
                             } else {
@@ -150,10 +151,13 @@ class MonitorTools extends AbstractProcess
                                         }
                                     }
                                     ToolsModel::invoke($client)->where(['account_number_id' => $six['id']])->update($update_data);
+                                    Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools  更新成功" . $result, $six['id'], 9);
                                     break;
 
                                 }
                             }
+
+
 
                             $token_value = $six['token_value'];
                             # 更新我的 种子 个数
@@ -210,7 +214,7 @@ class MonitorTools extends AbstractProcess
                                 continue;
                             }
                             #  var_dump("更新  all_sapling 账号:".$six['id']);
-                            $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update(['updated_at' => time(), 'leWallet' => $data['data']['leWallet'],'usagesSunflower'=>$data['data']['usagesSunflower']]);
+                            $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update(['updated_at' => time(), 'leWallet' => $data['data']['leWallet'], 'usagesSunflower' => $data['data']['usagesSunflower']]);
 
                         }
                         \co::sleep(3); # 每个账号之间 间隔 5 秒钟
