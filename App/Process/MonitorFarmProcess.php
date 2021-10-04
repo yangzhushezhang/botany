@@ -69,12 +69,17 @@ class MonitorFarmProcess extends AbstractProcess
                                     #  农作物已经 成熟
                                     $plantId = "";
                                     $iconUrl = "";
+                                    if (isset($value['plantId']) && $value['plantId'] != 0) {
+                                        $plantId = $value['plantId'];
+                                        $iconUrl = $value['plant']['iconUrl'];
+                                    }
+
                                     if ($value['stage'] == "cancelled") {
                                         # 判断种子 是否可以 收获
                                         if (isset($value['plantId']) && $value['plantId'] != 0) {   # 特殊的种子
                                             if ($value['totalHarvest'] != 0) {
-                                                $plantId = $value['plantId'];
-                                                $iconUrl = $value['plant']['iconUrl'];
+//                                                $plantId = $value['plantId'];
+//                                                $iconUrl = $value['plant']['iconUrl'];
                                                 $redis = RedisPool::defer("redis");
                                                 $redis->rPush("Harvest_Fruit", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id'] . "@" . "999");  #种子的 id 种子的  账户id
                                                 var_dump("账户:" . $one['farm_id'] . "已经推送到后勤任务");
