@@ -237,7 +237,6 @@ class MonitorTools extends AbstractProcess
                 }
             }
 
-
             if ($id == 4) {
                 if ($leWallet < 20) {
                     Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  能量不够", $account_number_id, 6);
