@@ -36,10 +36,6 @@ class MonitorFarmProcess extends AbstractProcess
                         $success = 0;
                         Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 开始,本次检查的账号 总共有 " . count($res) . "个", "", 11);
                         foreach ($res as $k => $re) {
-                            if ($re['id'] == 71) {
-                                var_dump("ace ");
-                            }
-
                             $data = $this->GetFarms($re['token_value'], $re['user_id'], $re['id']);
                             if ($data) {
                                 $if_add_new = false;

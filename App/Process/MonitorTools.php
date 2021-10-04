@@ -26,26 +26,6 @@ class MonitorTools extends AbstractProcess
             var_dump("工具自行检查进程");
             while (true) {
                 DbManager::getInstance()->invoke(function ($client) {
-//                    $res = ToolsModel::invoke($client)->all();
-//                    foreach ($res as $re) {
-//                        $one = AccountNumberModel::invoke($client)->get(['id' => $re['account_number_id']]);
-//                        if ($one && $one['status'] == 1) {
-//                            # 检查
-//                            if ($re['water'] < 12) {
-//                                # 购买水
-//                                $this->Shop_tools(3, $one['token_value'], $one['user_id'], $one['id'], $one['leWallet']);
-//                            }
-//                            if ($re['samll_pot'] < 6) {
-//                                #购买盆
-//                                $this->Shop_tools(1, $one['token_value'], $one['user_id'], $one['id'], $one['leWallet']);
-//                            }
-//                            if ($re['scarecrow'] < 10) {
-//                                # 购买乌鸦
-//                                $this->Shop_tools(4, $one['token_value'], $one['user_id'], $one['id'], $one['leWallet']);
-//                            }
-//                            # 请求工具接口
-//                        }
-//                    }
                     $fix = AccountNumberModel::invoke($client)->all(['status' => 1]);
                     if ($fix) {
                         # 更新 鼠标 和 向日葵 个数
@@ -187,7 +167,6 @@ class MonitorTools extends AbstractProcess
                                 if ($datum['plantType'] == 1) {
                                     $update['all_sapling'] = $datum['usages'];
                                     $update['already_sapling'] = $datum['total'];
-
                                     if ($datum['total'] == 0) {
                                         # 去购买向日葵宝宝
                                         $po = $this->shop($token_value, 1, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
