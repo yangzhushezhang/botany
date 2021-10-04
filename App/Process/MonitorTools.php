@@ -131,12 +131,21 @@ class MonitorTools extends AbstractProcess
                                     foreach ($data_json['data'] as $k => $value) {
                                         if ($value['type'] == "WATER") {
                                             $update_data['water'] = $value['usages'];
+                                            if ($value['usages'] < 1) {
+                                                $this->Shop_tools(3, $six['token_value'], $six['user_id'], $six['id'], $six['leWallet']);
+                                            }
                                         }
-                                        if ($value['type'] == "POT") {
+                                        if ($value['toolId'] == 1) {
                                             $update_data['samll_pot'] = $value['usages'];
+                                            if ($value['usages'] < 1) {
+                                                $this->Shop_tools(1, $six['token_value'], $six['user_id'], $six['id'], $six['leWallet']);
+                                            }
                                         }
                                         if ($value['type'] == "SCARECROW") {
                                             $update_data['scarecrow'] = $value['usages'];
+                                            if ($value['usages'] < 1) {
+                                                $this->Shop_tools(4, $six['token_value'], $six['user_id'], $six['id'], $six['leWallet']);
+                                            }
                                         }
                                     }
                                     ToolsModel::invoke($client)->where(['account_number_id' => $six['id']])->update($update_data);
