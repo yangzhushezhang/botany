@@ -268,10 +268,12 @@ class MonitorTools extends AbstractProcess
                 $result = $response->getBody();
                 $data_json = json_decode($result, true);
                 if (!$data_json) {
+
                     Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  原因:解析失败", $account_number_id, 6);
                     continue;
                 }
                 if ($data_json['status'] != 0) {
+                    var_dump($token_value);
                     Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  原因:" . $result, $account_number_id, 6);
                     continue;
                 }

@@ -102,7 +102,7 @@ class WateringProcess extends AbstractProcess
                                     }
 
                                 }
-                              //  var_dump("浇水成功");
+                                var_dump("浇水成功");
                                 # 更新 农作物状态
                                 FarmModel::invoke($client)->where(['id' => $id_array[0]])->update(['stage' => 'farming', 'updated_at' => time()]);
                                 # 浇水成功
