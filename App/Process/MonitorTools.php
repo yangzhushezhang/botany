@@ -272,7 +272,6 @@ class MonitorTools extends AbstractProcess
                     continue;
                 }
                 if ($data_json['status'] != 0) {
-                    var_dump($token_value);
                     Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  原因:" . $result, $account_number_id, 6);
                     continue;
                 }
