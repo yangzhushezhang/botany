@@ -251,7 +251,7 @@ class MonitorTools extends AbstractProcess
                     'sec-ch-ua' => '"Google Chrome";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
                     'accept' => 'application/json, text/plain, */*',
                     'content-type' => 'application/json;charset=UTF-8',
-                    'authorization' => trim($token_value),
+                    'authorization' => $token_value,
                     'sec-ch-ua-mobile' => '?0',
                     'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
                     'sec-ch-ua-platform' => '"Windows"',
@@ -268,7 +268,6 @@ class MonitorTools extends AbstractProcess
                 $result = $response->getBody();
                 $data_json = json_decode($result, true);
                 if (!$data_json) {
-
                     Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  原因:解析失败", $account_number_id, 6);
                     continue;
                 }
