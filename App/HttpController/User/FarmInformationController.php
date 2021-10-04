@@ -73,7 +73,11 @@ class FarmInformationController extends UserBase
                         foreach ($data['data'] as $k => $value) {
                             # 判断 农场 没有有 这个 种子 id
                             $one = FarmModel::invoke($client)->get(['account_number_id' => $id, 'farm_id' => $value['_id']]);
-                            $unix = str_replace(array('T', 'Z'), ' ', $value['harvestTime']);
+                            $unix = 0;
+                            if (isset($value['harvestTime'])) {
+                                $unix = str_replace(array('T', 'Z'), ' ', $value['harvestTime']);
+                            }
+
                             $needWater = 2;
                             $hasSeed = 2;
                             if ($value['needWater']) {
