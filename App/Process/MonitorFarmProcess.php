@@ -58,7 +58,7 @@ class MonitorFarmProcess extends AbstractProcess
                                     }
                                     if ($value['stage'] == "new") {
                                         # 这个是 就去放 盆
-                                      //  var_dump("放花盆");
+                                        var_dump("放花盆");
                                         $redis = RedisPool::defer('redis');
                                         if ($one) {
                                            // var_dump($one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);
@@ -107,7 +107,7 @@ class MonitorFarmProcess extends AbstractProcess
                                     $hasSeed = 2;  # 暂停
                                     if ($value['stage'] == "paused") {
                                         # 这个种子的时间停止了   说明已经有乌鸦了 .我怕需要 用 稻草人去吓退乌鸦
-                                      //  var_dump("发现了 停止的种子 :" . $value['_id']);
+                                        var_dump("发现了 停止的种子 :" . $value['_id']);
                                         $redis = RedisPool::defer("redis");
                                         $redis->rPush("CROW_IDS", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);  #种子的 id 种子的  账户id
                                         Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要赶走乌鸦的的种子:' . $one['farm_id'] . "并且推送到ExpelRavenProcess后勤", $re['id'], 11);
