@@ -82,7 +82,7 @@ class ToolsController extends UserBase
                         if ($value['type'] == "WATER") {
                             $update_data['water'] = $value['usages'];
                         }
-                        if ($value['type'] == "POT") {
+                        if ($value['toolId'] == 1) {
                             $update_data['samll_pot'] = $value['usages'];
                         }
                         if ($value['type'] == "SCARECROW") {
