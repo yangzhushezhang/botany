@@ -35,10 +35,9 @@ class AccountNumberController extends UserBase
                     $this->writeJson(-101, [], "不要重复添加");
                     return false;
                 }
-
                 $data = [
                     'user_id' => $this->who['id'],
-                    'token_value' => $token_value,
+                    'token_value' => trim($token_value),
                     'token_md5' => md5($token_value),
                     'status' => 1,
                     'remark' => $remark,
@@ -46,7 +45,6 @@ class AccountNumberController extends UserBase
                     'updated_at' => time(),
 
                 ];
-
                 $two = AccountNumberModel::invoke($client)->data($data)->save();
                 if (!$two) {
                     $this->writeJson(-101, [], "添加失败");
@@ -54,7 +52,6 @@ class AccountNumberController extends UserBase
                 }
                 $this->writeJson(200, $two, "添加成功");
                 return true;
-
             });
         } catch (\Throwable $e) {
             $this->writeJson(-1, [], "添加异常:" . $e->getMessage());
@@ -241,6 +238,11 @@ class AccountNumberController extends UserBase
             return false;
         }
     }
+
+
+
+
+
 
 
 }
