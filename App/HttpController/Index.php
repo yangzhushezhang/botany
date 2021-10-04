@@ -46,8 +46,7 @@ class Index extends Controller
         $data = '{"amount":1,"toolId":' . $id . '}';
         $response = $client->post($data);
         $result = $response->getBody();
-//        $data_json = json_decode($result, true);
-        $this->writeJson(200, $result, "获取成功");
+        $this->response()->write($result);
     }
 
     protected function actionNotFound(?string $action)
