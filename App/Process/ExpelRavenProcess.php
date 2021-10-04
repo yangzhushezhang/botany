@@ -80,11 +80,8 @@ class ExpelRavenProcess extends AbstractProcess
                                         return false;
                                     }
                                     Tools::WriteLogger($array_data[2], 1, "账户id:" . $array_data[1] . " 种子id:" . $one['farm_id'] . "赶走乌鸦成功....." . $response, $array_data[1], 9);
-
                                     #
-
                                 }else{
-
                                     var_dump("ExpelRavenProcess");
                                 }
 

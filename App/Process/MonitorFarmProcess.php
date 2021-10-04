@@ -39,7 +39,7 @@ class MonitorFarmProcess extends AbstractProcess
                             if ($data) {
                                 $if_add_new = false;
                                 $if_sunflowerId_2 = false;
-                                if ($data['total'] != 6) {
+                                if (isset($data['total']) && $data['total'] != 6) {
                                     $if_add_new = true;
                                 }
                                 # 判断是否 有乌鸦  影响 农作物
@@ -142,7 +142,8 @@ class MonitorFarmProcess extends AbstractProcess
                                         'plant_type' => $value['plant']['type'],
                                         'updated_at' => time(),
                                         'stage' => $value['stage'], #paused 说明暂停 了 有乌鸦,
-                                        'plantId' => $plantId
+                                        'plantId' => $plantId,
+                                        'iconUrl' => $iconUrl
                                     ];
                                     #存在 只需要 做更新操作
                                     if ($one) {
