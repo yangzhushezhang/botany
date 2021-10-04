@@ -84,7 +84,8 @@ class MonitorTools extends AbstractProcess
                                         continue;
                                     }
                                     $update_data = [
-                                        'updated_at' => time()
+                                        'updated_at' => time(),
+                                        'account_number_id' => $six['id']
                                     ];
                                     foreach ($data_json['data'] as $k => $value) {
                                         if ($value['type'] == "WATER") {

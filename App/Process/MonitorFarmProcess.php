@@ -26,17 +26,16 @@ class MonitorFarmProcess extends AbstractProcess
     {
         var_dump("检测进程开启");
         go(function () {
+            $time = 0;
             while (true) {
                 # 遍历所有的
-                DbManager::getInstance()->invoke(function ($client) {
+                DbManager::getInstance()->invoke(function ($client) use ($time) {
                     # 查询所有 账户
+                    var_dump("进程 MonitorFarmProcess 成功运行 :" . $time . "次");
                     $res = AccountNumberModel::invoke($client)->all(['status' => 1]);
-
                     if ($res) {
                         $success = 0;
                         $fail = 0;
-
-
                         Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 开始,本次检查的账号 总共有 " . count($res) . "个");
                         foreach ($res as $k => $re) {
 
@@ -214,7 +213,9 @@ class MonitorFarmProcess extends AbstractProcess
                         Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 本轮检查 成功:" . $success . "个 ,失败:" . $pp . "个");
                     }
                 });
+                $time++;
                 \co::sleep(20 * 60);  # 30分钟 检查一次
+
             }
         });
     }
