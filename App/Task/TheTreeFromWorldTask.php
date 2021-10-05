@@ -133,7 +133,7 @@ class TheTreeFromWorldTask implements TaskInterface
                     if ($redis_data) {
                         $redis_array = json_decode($redis_data, true);
                         $redis_array['present'] = 1;
-                        $redis->hSet(Date("Y-m-d", time()) . "_worldTree", "account_" . $account_number_id, json_decode($redis_array));
+                        $redis->hSet(Date("Y-m-d", time()) . "_worldTree", "account_" . $account_number_id, json_encode($redis_array));
                     }
                     var_dump("账号:" . $account_number_id . "一键收取昨日成功");
                     Tools::WriteLogger($user_id, 1, "一键收取昨日成功", $account_number_id, 10);
@@ -182,7 +182,7 @@ class TheTreeFromWorldTask implements TaskInterface
                     if ($redis_data) {
                         $redis_array = json_decode($redis_data, true);
                         $redis_array['water'] = 1;
-                        $redis->hSet(Date("Y-m-d", time()) . "_worldTree", "account_" . $account_number_id, json_decode($redis_array));
+                        $redis->hSet(Date("Y-m-d", time()) . "_worldTree", "account_" . $account_number_id, json_encode($redis_array));
                     }
                     Tools::WriteLogger($user_id, 1, "世界树浇水成功¬", $account_number_id, 10);
                     return false;

@@ -76,6 +76,7 @@ class Router extends AbstractRouter
 
         #TheWorldTree
         $routeCollector->post('/user/TheWorldTree', '/User/TheWorldTreeController/TheWorldTree');
+        $routeCollector->get('/user/TheWorldTree', '/User/TheWorldTreeController/TheWorldTree');
         $routeCollector->post('/user/getTodayTheWorldTree', '/User/TheWorldTreeController/getTodayTheWorldTree');
         $routeCollector->post('/user/yesterdayGetOne', '/User/TheWorldTreeController/yesterdayGetOne');
         $routeCollector->post('/user/yesterdayWatering', '/User/TheWorldTreeController/yesterdayWatering');
