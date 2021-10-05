@@ -75,6 +75,21 @@ class ExpelRavenProcess extends AbstractProcess
                                         return false;
                                     }
                                     if ($data['status'] != 0) {
+                                        var_dump("验证码出现...准备去处理它");
+                                        #判断是否已经在处理验证码了!
+
+                                        if ($data['status'] == 556) {
+                                            $IfDoingVerification = $redis->get("IfDoingVerification");
+                                            if (!$IfDoingVerification) {
+                                                #  不存在 就去处理
+                                                $redis->rPush("DecryptCaptcha", $array_data[1] . "@" . $array_data[2]);
+                                                $redis->set("IfDoingVerification", 1, 600);# 10分钟
+                                            }
+                                            Tools::WriteLogger($array_data[2], 2, "进程 WateringProcess 种子id:" . $one['farm_id'] . "浇水失败了,出现了验证码 result:" . $response, $array_data[1], 1);
+                                            return false;
+                                        }
+
+
                                         Tools::WriteLogger($array_data[2], 2, "账户id:" . $array_data[1] . " 种子id:" . $one['farm_id'] . "赶走乌鸦失败....." . $response, $array_data[1], 9);
                                         return false;
                                     }

@@ -90,6 +90,7 @@ class Tools
     }
 
 
+    # 写日志
     static function WriteLogger($user_id, $kind, $content, $account_number_id = 0, $variety = 0)
     {
         try {
