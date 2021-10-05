@@ -73,7 +73,6 @@ class MonitorFarmProcess extends AbstractProcess
                                     if (isset($value['plantId']) && $value['plantId'] != 0) {
                                         $plantId = $value['plantId'];
                                         $iconUrl = $value['plant']['iconUrl'];
-                                        // var_dump($iconUrl);
                                     }
 
                                     if ($value['stage'] == "cancelled") {
@@ -188,7 +187,7 @@ class MonitorFarmProcess extends AbstractProcess
                         Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 本轮检查 成功:" . $success . "个 ,失败:" . $pp . "个", "", 11);
                     }
                 });
-                \co::sleep(20 * 60);  # 20分钟 检查一次
+                \co::sleep(10 * 60);  # 20分钟 检查一次
 
 
             }

@@ -89,6 +89,10 @@ class WateringProcess extends AbstractProcess
                                             #  不存在 就去处理
                                             $redis->rPush("DecryptCaptcha", $id_array[1] . "@" . $id_array[2]);
                                             $redis->set("IfDoingVerification", 1, 600);# 10分钟
+                                            # 重新 2 分钟后浇水
+                                            \EasySwoole\Component\Timer::getInstance()->after(120 * 1000, function () use ($id, $redis) {
+                                                $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
+                                            });
                                         }
                                         Tools::WriteLogger($id_array[2], 2, "进程 WateringProcess 种子id:" . $two['farm_id'] . "浇水失败了,出现了验证码 result:" . $response, $id_array[1], 1);
                                         return false;
@@ -104,7 +108,6 @@ class WateringProcess extends AbstractProcess
                                         \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
                                             $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
                                         });
-
                                         Tools::WriteLogger($id_array[2], 2, "进程 WateringProcess 种子id:" . $two['farm_id'] . "浇水失败了,原因:status 不等于0和556 result:" . $response, $id_array[1], 1);
                                         return false;
                                     }

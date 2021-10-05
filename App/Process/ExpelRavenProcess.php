@@ -41,7 +41,6 @@ class ExpelRavenProcess extends AbstractProcess
                                     Tools::WriteLogger($array_data[2], 2, "进程 ExpelRavenProcess 稻草人数量不足", $array_data[1], 9);
                                     return false;
                                 }
-
                                 if ($one && $there) {
                                     $token_value = $one['token_value'];
                                     $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms/apply-tool');
@@ -75,27 +74,28 @@ class ExpelRavenProcess extends AbstractProcess
                                         return false;
                                     }
                                     if ($data['status'] != 0) {
-                                        var_dump("验证码出现...准备去处理它");
-                                        #判断是否已经在处理验证码了!
-
                                         if ($data['status'] == 556) {
+                                            var_dump("验证码出现...准备去处理它");
+                                            #判断是否已经在处理验证码了!
                                             $IfDoingVerification = $redis->get("IfDoingVerification");
                                             if (!$IfDoingVerification) {
                                                 #  不存在 就去处理
                                                 $redis->rPush("DecryptCaptcha", $array_data[1] . "@" . $array_data[2]);
                                                 $redis->set("IfDoingVerification", 1, 600);# 10分钟
                                             }
+                                            \EasySwoole\Component\Timer::getInstance()->after(120 * 1000, function () use ($id, $redis) {
+                                                $redis->rPush("CROW_IDS", $id);  # 赶乌鸦  2分钟
+                                            });
                                             Tools::WriteLogger($array_data[2], 2, "进程 WateringProcess 种子id:" . $one['farm_id'] . "浇水失败了,出现了验证码 result:" . $response, $array_data[1], 1);
                                             return false;
                                         }
-
 
                                         Tools::WriteLogger($array_data[2], 2, "账户id:" . $array_data[1] . " 种子id:" . $one['farm_id'] . "赶走乌鸦失败....." . $response, $array_data[1], 9);
                                         return false;
                                     }
                                     Tools::WriteLogger($array_data[2], 1, "账户id:" . $array_data[1] . " 种子id:" . $one['farm_id'] . "赶走乌鸦成功....." . $response, $array_data[1], 9);
                                     #
-                                }else{
+                                } else {
                                     var_dump("ExpelRavenProcess");
                                 }
 
@@ -111,10 +111,6 @@ class ExpelRavenProcess extends AbstractProcess
 
         });
     }
-
-
-
-
 
 
     protected function onException(\Throwable $throwable, ...$args)

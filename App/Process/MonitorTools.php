@@ -131,7 +131,7 @@ class MonitorTools extends AbstractProcess
                                     foreach ($data_json['data'] as $k => $value) {
                                         if ($value['type'] == "WATER") {
                                             $update_data['water'] = $value['usages'];
-                                            if ($value['usages'] < 1) {
+                                            if ($value['usages'] < 25) {
                                                 $this->Shop_tools(3, $six['token_value'], $six['user_id'], $six['id'], $six['leWallet']);
                                             }
                                         }
@@ -172,32 +172,40 @@ class MonitorTools extends AbstractProcess
                                 'updated_at' => time()
                             ];
 
-                            foreach ($data['data'] as $datum) {
+
+                            foreach ($data['data'] as $datum) {  # 向日葵 有优先级
                                 if ($datum['plantType'] == 1) {
                                     $update['all_sapling'] = $datum['usages'];
                                     $update['already_sapling'] = $datum['total'];
-                                    if ($datum['total'] == 0) {
-                                        # 去购买向日葵宝宝
-                                        $po = $this->shop($token_value, 1, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
-                                        if ($po) {
-                                            $update['already_sapling'] = 1;
-                                        }
-
-                                    }
 
                                 }
                                 if ($datum['plantType'] == 2) {
                                     $update['all_sunflower'] = $datum['usages'];
                                     $update['already_sunflower'] = $datum['total'];
-                                    if ($datum['total'] == 0) {
-                                        # 去购买向日葵
-                                        $po = $this->shop($token_value, 2, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
-                                        if ($po) {
-                                            $update['already_sapling'] = 1;
-                                        }
+                                }
+                            }
+
+
+
+                            #  调整向日葵的优先级
+                            if ($update['already_sapling'] == 0) {
+                                if ($update['already_sunflower'] > 0) {
+                                    $po = $this->shop($token_value, 1, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
+                                    if ($po) {
+                                        $update['already_sapling'] = 1;
                                     }
                                 }
                             }
+
+                            # 向日葵 为0  购买
+                            if ($update['already_sunflower'] == 0) {
+                                $po = $this->shop($token_value, 2, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
+                                if ($po) {
+                                    $update['already_sunflower'] = 1;
+                                }
+                            }
+
+
                             $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update($update);
                             # 获取 账号的能量
                             $data = Tools::getLeWallet($token_value);
