@@ -102,7 +102,6 @@ class PutPotProcess extends AbstractProcess
                                         return false;
                                     }
                                 }
-
                                 var_dump("放花盆成功");
                                 # 更新 农作物状态
                                 FarmModel::invoke($client)->where(['id' => $id_array[0]])->update(['stage' => 'farming', 'updated_at' => time()]);
@@ -115,8 +114,6 @@ class PutPotProcess extends AbstractProcess
                                 \EasySwoole\Component\Timer::getInstance()->after(60* 1000, function () use ($id, $redis) {
                                     $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
                                 });
-
-
                             }
                         });
 
