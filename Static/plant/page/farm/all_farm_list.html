@@ -195,7 +195,7 @@
                     //     }, sort: true
                     // },
                     {field: 'plant_type_one_total', title: '普通树苗数', sort: true,align:"center",templet:function(d){
-                            console.log("d",d)
+                            // console.log("d",d)
                             return '<div><img src="../../assets/images/sm.png" ' + 'alt="" width="40px" height="40px" ><span style="vertical-align: middle;font-size: 15px !important;margin-left: 5px;">'+d.plant_type_one_total+'</span><img src="../../assets/images/mm.png" ' + 'alt="" width="40px" height="40px" ><span style="vertical-align: middle;font-size: 15px !important;margin-left: 5px;">'+d.plant_type_two_total+'</span></div>';
 
 
@@ -206,15 +206,16 @@
                     // }},
 
 
-                    {field: 'all_sapling', title: '树苗(已种植/总种植)', sort: true,align:"center",width:180, templet: function (d) {
+                    {field: 'all_sapling', title: '树苗(剩余/总数)', sort: true,align:"center",width:180, templet: function (d) {
 
                             return d.all_sapling+"/"+d.already_sapling
                     }},
                     // {field: 'all_sunflower', title: '已种植', sort: true,align:"center",width:140},
-                    {field: 'already_sapling', title: '向日葵(已种植/总种植)', sort: true,align:"center",width:180, templet: function (d) {
+                    {field: 'already_sapling', title: '向日葵(剩余/总数)', sort: true,align:"center",width:180, templet: function (d) {
 
                             return d.all_sunflower+"/"+d.already_sunflower
                     }},
+
                     // {field: 'already_sunflower', title: '总种植向日葵', sort: true,align:"center",width:140},
 
                     // {field: 'stage', title: '是否存在乌鸦', sort: true,align:"center",templet:function(d){

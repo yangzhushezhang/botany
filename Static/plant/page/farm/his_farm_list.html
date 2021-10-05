@@ -170,8 +170,14 @@
                     {field: 'id',title:'ID',sort: true,align:"center",width:130},
                     {field: 'farm_id', title: '植物ID', sort: true,align:"center"},
 
-                    {field: 'needWater', title: '需要浇水', sort: true,align:"center"},
-                    {field: 'hasSeed', title: '需要种子', sort: true,align:"center"},
+                    {field: 'needWater', title: '需要浇水', sort: true,align:"center",templet:function(d){
+
+                            return '<span >'+'否'+'</span>'
+                    }},
+                    {field: 'hasSeed', title: '需要种子', sort: true,align:"center",templet:function(d){
+
+                            return '<span >'+'否'+'</span>'
+                    }},
 
                     {field: 'totalHarvest', title: '能量值', sort: true,align:"center"},
 

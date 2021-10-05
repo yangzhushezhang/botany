@@ -19,8 +19,8 @@
         }
 
         .layui-table-cell{
-            height:46px;
-            line-height: 46px;
+            height:60px;
+            line-height: 60px;
         }
 
         .images_tool{
@@ -189,9 +189,10 @@
                     {field: 'needWater', title: '需要浇水', sort: true,align:"center",templet:function(d){
 
                             if(d.needWater == 2){
-                                return '否';
+                                // return '否';
+                                return '<span >'+'否'+'</span>'
                             }else{
-                                return '真';
+                                return '<span style="color: red;font-weight: bold;font-size: 18px">'+'真'+'</span>'
                             }
 
                     }},
@@ -200,14 +201,14 @@
                             if(d.hasSeed == 2){
                                 return '否';
                             }else{
-                                return '真';
+                                return '<span style="color: red;font-weight: bold;font-size: 18px">'+'真'+'</span>'
                             }
 
                     }},
 
                     {field: 'totalHarvest', title: '能量值', sort: true,align:"center"},
 
-                    {field: 'harvestTime', title: '收货时间',width:215, sort: true,align:"center", templet: function (d) {
+                    {field: 'harvestTime', title: '收货时间',width:170, sort: true,align:"center", templet: function (d) {
                             return util.toDateString(d.harvestTime* 1000);
                         }, sort: true
                     },
@@ -223,12 +224,28 @@
                     {field: 'stage', title: '是否存在乌鸦', sort: true,align:"center",templet:function(d){
 
                             if(d.stage == "paused"){
-                                return '<div><img src="../../assets/images/czwy.jpg" ' + 'alt="" width="40px" height="40px"></a></div>'
+                                return '<div><img src="../../assets/images/czwy.jpg" ' + 'alt="" width="50px" height="60px"></a></div>'
                             }else{
-                                return '<div><img src="../../assets/images/bczwy.png" ' + 'alt="" width="40px" height="40px"></a></div>'
+                                return '<div><img src="../../assets/images/bczwy.png" ' + 'alt="" width="50px" height="60px"></a></div>'
                             }
-                        }},
-                    {field: 'stage', title: '植物状态', sort: true,align:"center",templet:function(d){
+                    }},
+                    {field: 'plantId', title: '植物ID',width:125, sort: true,align:"center",templet:function(d){
+
+                            if(d.plantId == "" || d.plantId.length === 0){
+                                return '无';
+                            }else{
+                                return d.plantId
+                            }
+                    }},
+                    {field: 'iconUrl', title: '植物图片', sort: true,align:"center",templet:function(d){
+
+                            if(d.plantId == "" || d.plantId.length === 0){
+                                return '无';
+                            }else{
+                                return '<div><img src="'+d.iconUrl+'" ' + 'alt="" width="40px" height="40px"></a></div>'
+                            }
+                    }},
+                    {field: 'stage', title: '植物状态',width:115, sort: true,align:"center",templet:function(d){
 
                             //news new ?? 新种植
                             //farming 正在耕种
@@ -402,7 +419,7 @@
 
 
                     // {field: 'loss_per_cent_id', title: '当前赔率', sort: true,align:"center"},
-                    {field: 'status', title: '状态', sort: true,align:"center",width:130,templet:function(d){
+                    {field: 'status', title: '状态', sort: true,align:"center",width:100,templet:function(d){
 
                             if(d.status == "1"){//正常
                                 return '<button class="layui-btn  layui-btn-sm" style="background-color: #48b0f7;border-color: #48b0f7;">'+'正常'+'</button>'

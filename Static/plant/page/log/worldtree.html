@@ -1,0 +1,349 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>登录日志</title>
+    <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
+
+    <style>
+
+        .currSerachBtn{
+            box-shadow: 0 15px 18px -6px rgb(45 140 240 / 65%) !important;
+        }
+
+        .currReloadBtn{
+            box-shadow: 0 15px 18px -6px rgb(146 109 222 / 65%) !important;
+        }
+
+        .layui-table-cell{
+            height:46px;
+            line-height: 46px;
+        }
+    </style>
+
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+
+<!--            <div class="layui-form-item layui-form-pane">-->
+
+<!--                <div class="layui-inline" style="margin-top:10px;">-->
+<!--                    &lt;!&ndash;                <div class="layui-btn " data-type="reload"><i class="layui-icon"></i>查询</div>&ndash;&gt;-->
+<!--                    <div id="reloadtable" class="layui-btn layui-bg-cyan"><i class="layui-icon"></i>刷新数据</div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+            <!-- 表格工具栏 -->
+            <form class="layui-form toolbar">
+                <div class="layui-form-item" style="margin-left: -30px">
+<!--                    <div class="layui-inline">-->
+<!--                        <label class="layui-form-label">操作员:</label>-->
+<!--                        <div class="layui-input-inline">-->
+<!--                            <input name="username" class="layui-input" placeholder="请输入账号"/>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="layui-inline">-->
+<!--                        <label class="layui-form-label">玩家ID:</label>-->
+<!--                        <div class="layui-input-inline">-->
+<!--                            <input name="uid" class="layui-input" placeholder="请输入用户名"/>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="layui-inline">-->
+<!--                        <label class="layui-form-label">用户名:</label>-->
+<!--                        <div class="layui-input-inline">-->
+<!--                            <input name="nickName" class="layui-input" placeholder="输入用户名"/>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                    <div class="layui-inline">
+                        <label class="layui-form-label">植物账号:</label>
+                        <div class="layui-input-inline">
+                            <select name="account_number_id" id="account_number_id" lay-filter="account_number_id">
+
+<!--                                <option value="normal">正常</option>-->
+<!--                                <option value="warn">警告</option>-->
+<!--                                <option value="abnormal">异常</option>-->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">操作类型:</label>
+                        <div class="layui-input-inline">
+                            <select name="variety" id="variety" lay-filter="variety">
+                                <option value="999">全部</option>
+                                <option value="1">浇水</option>
+                                <option value="2">种植</option>
+                                <option value="3">放花盆</option>
+                                <option value="4">移除</option>
+                                <option value="5">验证码</option>
+                                <option value="6">购买</option>
+                                <option value="8">丰收</option>
+                                <option value="9">赶走乌鸦</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">&emsp;
+                        <button class="layui-btn icon-btn currSerachBtn" lay-filter="userTbSearch" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                        <button class="layui-btn icon-btn currReloadBtn" lay-filter="reloadData" lay-submit style="background-color: #926dde;border-color: #926dde;">
+                            <i class="layui-icon layui-icon-refresh"></i>刷新数据
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <!-- 数据表格 -->
+            <table id="userTable" lay-filter="userTable" style="margin-top:10px"></table>
+        </div>
+    </div>
+</div>
+
+
+<!-- js部分 -->
+<script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="../../assets/js/common.js?v=318"></script>
+
+<script type="text/javascript" src="../../assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="../../assets/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="../../assets/js/config.url.js"></script>
+
+<script>
+
+    var mybck= $.cookie('tokenMyb');
+    //alert(document.cookie);
+    //console.log(mybck)
+    if(mybck == "" || mybck == null){
+
+        window.top.location.href="../../login.html";
+
+    }else{
+        global_token = mybck
+        var currSelectReturnID
+        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect'], function () {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var form = layui.form;
+            var table = layui.table;
+            var util = layui.util;
+            var admin = layui.admin;
+            var xmSelect = layui.xmSelect;
+
+
+            var log_login_request_param = {};
+            // log_login_request_param['level']= 'normal';
+            log_login_request_param['token']= $.cookie('tokenMyb');
+            log_login_request_param['variety']= '10';
+
+            /* 渲染表格 */
+            var insTb = table.render({
+                elem: '#userTable',
+                url: global_request_getLogger,
+                method: 'post',
+                where:log_login_request_param,
+                // toolbar: ['<p>',
+                //     '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
+                //     '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
+                //     '</p>'].join(''),
+                cellMinWidth: 100,
+                page :  { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                    layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                    //,curr: 5 //设定初始在第 5 页
+                    ,groups: 10 //只显示 1 个连续页码
+                    ,first: "首页" //不显示首页
+                    ,last: "尾页"//不显示尾页
+                },
+                height : "full-100",
+                limit : 15,
+                limits : [15,30,50,100],
+                id : "systemLog",
+                cols: [[
+                    {type: 'checkbox'},
+                    {field: 'id',title:'ID',sort: true,align:"center",width:130},
+                    {field: 'account_number_name', title: '账号备注', sort: true,align:"center",width:155,templet:function(d){
+
+                        if(d.account_number_id == "0"){//正常
+                            return '普通日志'
+                        }else {
+                            return d.account_number_name
+                        }
+
+                    }},
+                    {field: 'kind', title: '日志类型', sort: true,align:"center",width:130,templet:function(d){
+
+                        if(d.kind == "1"){//正常
+                            return '<button class="layui-btn  layui-btn-sm" style="background-color: #33cabb;border-color: #33cabb;">'+'正常'+'</button>'
+                        }else if(d.kind == "2"){//异常
+                            return '<button class="layui-btn  layui-btn-sm" style="background-color: #faa64b;border-color: #faa64b;">'+'异常'+'</button>'
+                        }else{
+                            return ''
+                        }
+
+                        // else if(d.status === "3"){//
+                        //     return '<button class="layui-btn layui-btn-green  layui-btn-xs">'+''+'</button>'
+                        // }else if(d.status === "3"){//
+                        //     return '<button class="layui-btn layui-bg-red  layui-btn-xs">'+''+'</button>'
+                        // }
+
+                    }},
+                    {field: 'variety', title: '操作类型', sort: true,align:"center",width:130,templet:function(d){
+                            if(d.variety == "1"){//浇水
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #FCC525;border-color: #FCC525;">'+'浇水'+'</button>'
+                            }else if(d.variety == "2"){//种植
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #926DDE;border-color: #926DDE;">'+'种植'+'</button>'
+                            }else if(d.variety == "3"){//放花盆
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #48B0F7;border-color: #48B0F7;">'+'放花盆'+'</button>'
+                            }else if(d.variety == "4"){//移除
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #8D6658;border-color: #8D6658;">'+'移除'+'</button>'
+                            }else if(d.variety == "5"){//验证码
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #F96868;border-color: #F96868;">'+'验证码'+'</button>'
+                            }else if(d.variety == "6"){//购买
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #F96197;border-color: #F96197;">'+'购买'+'</button>'
+                            }else if(d.variety == "7"){//数据查询
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #bd15c3;border-color: #bd15c3;">'+'数据查询'+'</button>'
+                            }else if(d.variety == "8"){//丰收
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #15C377;border-color: #15C377;">'+'丰收'+'</button>'
+                            }else if(d.variety == "9"){//赶走乌鸦
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #465161;border-color: #465161;">'+'赶走乌鸦'+'</button>'
+                            }else if(d.variety == "10"){//世界树
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #16478d;border-color: #16478d;">'+'世界树'+'</button>'
+                            }else if(d.variety == "11"){//进程
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #cd143d;border-color: #cd143d;">'+'process进程'+'</button>'
+                            }else{
+                                return ''
+                            }
+                    }},
+                    {field: 'content', title: '操作内容', sort: true,align:"center"},
+                    {
+                        field: 'created_at', title: '创建时间',align:"center", templet: function (d) {
+                            return util.toDateString(d.created_at* 1000);
+                        }, sort: true,width:175
+                    },
+                    // {
+                    //     field: 'updated_at', title: '更新时间',align:"center", templet: function (d) {
+                    //         return util.toDateString(d.updated_at* 1000);
+                    //     }, sort: true
+                    // }
+                ]],
+                done: function (res, curr, count) {
+                    $('tr').css({'background-color': '#fff', 'color': '#191a1c'});
+                }
+            });
+
+            var param={};
+            // param['token']= $.cookie('tokenMyb');
+            // param['status']= '1';
+            param['page']= '1';
+            param['limit']= '3000';
+            param['action']= 'select';
+
+            //获取账号列表添加到下拉框中
+            $.ajax({
+                url: global_request_get_account_numberInformation+"?token="+global_token,
+                dataType: 'json',
+                type: 'post',
+                data: param,
+                success: function (dataArray) {
+
+                    if (dataArray.code != 0) {
+
+                        // console.log(dataArray.msg)
+                        // layer.msg(dataArray.msg);
+
+                        return false;
+
+                    }
+
+
+                    var returnDataArray = dataArray.data
+
+                    var currAccountID = returnDataArray[0].id
+                    currSelectReturnID = currAccountID
+                    // console.log("returnDataArray",returnDataArray)
+
+                    $("#account_number_id").empty();
+
+                    $('#account_number_id').append(new Option('全部', "777"));
+
+                    $.each(returnDataArray, function (index, item) {
+                        $('#account_number_id').append(new Option(item.remark, item.id));// 下拉菜单里添加元素
+                    });
+
+                    //重新渲染 固定写法
+                    form.render("select");
+
+
+                    // insTb.reload({
+                    //     // url:js_global_requestAddress_get_periods,
+                    //     method: 'post',
+                    //     where: {
+                    //         account_number_id:currAccountID,
+                    //     }
+                    // },false);
+
+                }
+            })
+
+
+
+            /* 表格搜索 */
+            form.on('submit(userTbSearch)', function (data) {
+
+                var currSelect_account_number_id = data.field.account_number_id
+                var currSelect_variety = data.field.variety
+
+                var postAccount_number_id = "";
+
+                var postVariety = "";
+
+                // console.log(data.field)
+
+                if(currSelect_account_number_id == "777"){
+                    postAccount_number_id = ""
+                }else{
+                    postAccount_number_id = currSelect_account_number_id
+                }
+
+                if(currSelect_variety == "999"){
+                    postVariety = ""
+                }else{
+                    postVariety = currSelect_variety
+                }
+
+                // insTb.reload({
+                //     where: {
+                //         account_number_id:postAccount_number_id,
+                //         variety:postVariety
+                //     }, page: {curr: 1}});
+
+
+                //查询当前状态的
+                insTb.reload({
+                    where: {
+                        account_number_id:postAccount_number_id,
+                        variety:10
+                    }, page: {curr: 1}});
+                // insTb.reload({where: data.field, page: {curr: 1}});
+                return false;
+            });
+
+
+
+
+        });
+
+    }
+
+
+
+</script>
+</body>
+</html>

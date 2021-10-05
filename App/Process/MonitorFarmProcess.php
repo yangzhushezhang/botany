@@ -29,167 +29,170 @@ class MonitorFarmProcess extends AbstractProcess
             $time = 0;
             while (true) {
                 # 遍历所有的
-                DbManager::getInstance()->invoke(function ($client) {
-                    # 查询所有 账户
-                    $res = AccountNumberModel::invoke($client)->all(['status' => 1]);
-                    if ($res) {
-                        $success = 0;
-                        Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 开始,本次检查的账号 总共有 " . count($res) . "个", "", 11);
-                        foreach ($res as $k => $re) {
-                            $data = $this->GetFarms($re['token_value'], $re['user_id'], $re['id']);
-                            if ($data) {
-                                $if_add_new = false;
-                                $if_sunflowerId_2 = false;
-                                if (isset($data['total']) && $data['total'] != 6) {
-                                    $if_add_new = true;
-                                }
-                                # 判断是否 有乌鸦  影响 农作物
-                                foreach ($data['data'] as $value) {
-                                    if (isset($value['plant']['sunflowerId']) && $value['plant']['sunflowerId'] == 2) {
-                                        $if_sunflowerId_2 = true;
+                try {
+                    DbManager::getInstance()->invoke(function ($client) {
+                        # 查询所有 账户
+                        $res = AccountNumberModel::invoke($client)->all(['status' => 1]);
+                        if ($res) {
+                            $success = 0;
+                            Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 开始,本次检查的账号 总共有 " . count($res) . "个", "", 11);
+                            foreach ($res as $k => $re) {
+                                $data = $this->GetFarms($re['token_value'], $re['user_id'], $re['id']);
+                                if ($data) {
+                                    $if_add_new = false;
+                                    $if_sunflowerId_2 = false;
+                                    if (isset($data['total']) && $data['total'] != 6) {
+                                        $if_add_new = true;
                                     }
-                                    # 判断 农场 没有有 这个 种子 id
-                                    $one = FarmModel::invoke($client)->get(['account_number_id' => $re['id'], 'farm_id' => $value['_id']]);
-                                    if (isset($value['harvestTime'])) {
-                                        $unix = str_replace(array('T', 'Z'), ' ', $value['harvestTime']);
-                                        $harvestTime = strtotime($unix) + 8 * 60 * 60;
-                                    } else {
-                                        $harvestTime = 0;
-                                    }
-                                    if ($value['stage'] == "new") {
-                                        # 这个是 就去放 盆
-                                        var_dump("账号 :  " . $re['id'] . "放花盆");
-                                        $redis = RedisPool::defer('redis');
-                                        if ($one) {
-                                            // var_dump($one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);
-                                            $redis->rPush("PutPot", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']); #
+                                    # 判断是否 有乌鸦  影响 农作物
+                                    foreach ($data['data'] as $value) {
+                                        if (isset($value['plant']['sunflowerId']) && $value['plant']['sunflowerId'] == 2) {
+                                            $if_sunflowerId_2 = true;
                                         }
-                                        Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  发现需要放花盆的种子:" . $one['farm_id'], $re['id'], 11);
-                                    }
-
-                                    #  农作物已经 成熟
-                                    $plantId = "";
-                                    $iconUrl = "";
-                                    if (isset($value['plantId']) && $value['plantId'] != 0) {
-                                        $plantId = $value['plantId'];
-                                        $iconUrl = $value['plant']['iconUrl'];
-                                    }
-
-                                    if ($value['stage'] == "cancelled") {
-                                        # 判断种子 是否可以 收获
-                                        if (isset($value['plantId']) && $value['plantId'] != 0) {   # 特殊的种子
-                                            if ($value['totalHarvest'] != 0) {
-                                                $redis = RedisPool::defer("redis");
-                                                $redis->rPush("Harvest_Fruit", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id'] . "@" . "999");  #种子的 id 种子的  账户id
-                                                var_dump("账户:" . $one['farm_id'] . "已经推送到后勤任务");
-                                                Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要收获的种子:' . $one['farm_id'] . "并且推送到 HarvestFruitProcess后勤", $re['id'], 11);
-                                            }
+                                        # 判断 农场 没有有 这个 种子 id
+                                        $one = FarmModel::invoke($client)->get(['account_number_id' => $re['id'], 'farm_id' => $value['_id']]);
+                                        if (isset($value['harvestTime'])) {
+                                            $unix = str_replace(array('T', 'Z'), ' ', $value['harvestTime']);
+                                            $harvestTime = strtotime($unix) + 8 * 60 * 60;
                                         } else {
-                                            if ($value['totalHarvest'] == 0) {
-                                                # 这个 已经收获过了 直接去铲除
-                                                //   var_dump("已经收获过了!");
-                                                $redis = RedisPool::defer("redis");
-                                                $redis->rPush("RemoveSeed", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);  #种子的 id 种子的  账户id
-                                                Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要铲除的种子:' . $one['farm_id'] . "并且推送到RemoveSeedProcess 后勤", $re['id'], 11);
-                                            } else {
-                                                # 说明这个 可以去收获  直接 push  到  收获进程去
-                                                $redis = RedisPool::defer("redis");
-                                                $redis->rPush("Harvest_Fruit", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);  #种子的 id 种子的  账户id
-                                                //   var_dump("账户:" . $one['farm_id'] . "已经推送到后勤任务");
-                                                Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要收获的种子:' . $one['farm_id'] . "并且推送到 HarvestFruitProcess后勤", $re['id'], 11);
+                                            $harvestTime = 0;
+                                        }
+                                        if ($value['stage'] == "new") {
+                                            # 这个是 就去放 盆
+                                            var_dump("账号 :  " . $re['id'] . "放花盆");
+                                            $redis = RedisPool::defer('redis');
+                                            if ($one) {
+                                                // var_dump($one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);
+                                                $redis->rPush("PutPot", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']); #
                                             }
+                                            Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  发现需要放花盆的种子:" . $one['farm_id'], $re['id'], 11);
                                         }
 
-                                    }
+                                        #  农作物已经 成熟
+                                        $plantId = "";
+                                        $iconUrl = "";
+                                        if (isset($value['plantId']) && $value['plantId'] != 0) {
+                                            $plantId = $value['plantId'];
+                                            $iconUrl = $value['plant']['iconUrl'];
+                                        }
 
-                                    $needWater = 2;
-                                    $hasSeed = 2;  # 暂停
-                                    if ($value['stage'] == "paused") {
-                                        # 这个种子的时间停止了   说明已经有乌鸦了 .我怕需要 用 稻草人去吓退乌鸦
-                                        var_dump("发现了 停止的种子 :" . $value['_id']);
-                                        $redis = RedisPool::defer("redis");
-                                        $redis->rPush("CROW_IDS", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);  #种子的 id 种子的  账户id
-                                        Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要赶走乌鸦的的种子:' . $one['farm_id'] . "并且推送到ExpelRavenProcess后勤", $re['id'], 11);
-                                    }
-                                    if ($value['needWater']) {
-                                        # 需要浇水  让进程去做这件事情     需要给浇水的进程去
-                                        $needWater = 1;
-                                        #判断需要浇 几滴水
-                                        if (count($value['activeTools']) == 1) { #需要浇两滴水
-                                            if ($one) {
+                                        if ($value['stage'] == "cancelled") {
+                                            # 判断种子 是否可以 收获
+                                            if (isset($value['plantId']) && $value['plantId'] != 0) {   # 特殊的种子
+                                                if ($value['totalHarvest'] != 0) {
+                                                    $redis = RedisPool::defer("redis");
+                                                    $redis->rPush("Harvest_Fruit", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id'] . "@" . "999");  #种子的 id 种子的  账户id
+                                                    var_dump("账户:" . $one['farm_id'] . "已经推送到后勤任务");
+                                                    Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要收获的种子:' . $one['farm_id'] . "并且推送到 HarvestFruitProcess后勤", $re['id'], 11);
+                                                }
+                                            } else {
+                                                if ($value['totalHarvest'] == 0) {
+                                                    # 这个 已经收获过了 直接去铲除
+                                                    //   var_dump("已经收获过了!");
+                                                    $redis = RedisPool::defer("redis");
+                                                    $redis->rPush("RemoveSeed", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);  #种子的 id 种子的  账户id
+                                                    Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要铲除的种子:' . $one['farm_id'] . "并且推送到RemoveSeedProcess 后勤", $re['id'], 11);
+                                                } else {
+                                                    # 说明这个 可以去收获  直接 push  到  收获进程去
+                                                    $redis = RedisPool::defer("redis");
+                                                    $redis->rPush("Harvest_Fruit", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);  #种子的 id 种子的  账户id
+                                                    //   var_dump("账户:" . $one['farm_id'] . "已经推送到后勤任务");
+                                                    Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要收获的种子:' . $one['farm_id'] . "并且推送到 HarvestFruitProcess后勤", $re['id'], 11);
+                                                }
+                                            }
+
+                                        }
+
+                                        $needWater = 2;
+                                        $hasSeed = 2;  # 暂停
+                                        if ($value['stage'] == "paused") {
+                                            # 这个种子的时间停止了   说明已经有乌鸦了 .我怕需要 用 稻草人去吓退乌鸦
+                                            var_dump("发现了 停止的种子 :" . $value['_id']);
+                                            $redis = RedisPool::defer("redis");
+                                            $redis->rPush("CROW_IDS", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);  #种子的 id 种子的  账户id
+                                            Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要赶走乌鸦的的种子:' . $one['farm_id'] . "并且推送到ExpelRavenProcess后勤", $re['id'], 11);
+                                        }
+                                        if ($value['needWater']) {
+                                            # 需要浇水  让进程去做这件事情     需要给浇水的进程去
+                                            $needWater = 1;
+                                            #判断需要浇 几滴水
+                                            if (count($value['activeTools']) == 1) { #需要浇两滴水
+                                                if ($one) {
+                                                    $redis = RedisPool::defer('redis');
+                                                    $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
+                                                    \EasySwoole\Component\Timer::getInstance()->after(10 * 6 * 30 * 1000, function () use ($one, $re, $redis) { # 30秒后进行
+                                                        $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
+                                                    });
+                                                }
+                                            } else if (count($value['activeTools']) == 2) {  # 需要浇1滴水
                                                 $redis = RedisPool::defer('redis');
                                                 $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
-                                                \EasySwoole\Component\Timer::getInstance()->after(10 * 6 * 30 * 1000, function () use ($one, $re, $redis) { # 30秒后进行
-                                                    $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
-                                                });
                                             }
-                                        } else if (count($value['activeTools']) == 2) {  # 需要浇1滴水
-                                            $redis = RedisPool::defer('redis');
-                                            $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
                                         }
-                                    }
-                                    if ($value['hasSeed']) {
-                                        #需要 放种子
-                                        $hasSeed = 1;
-                                    }
-                                    # 这里需要判断 有没有乌鸦    如果有乌鸦 我需要 仍在 进程里面来做这件事!!!!
-                                    $add = [
-                                        'account_number_id' => $re['id'],
-                                        'farm_id' => $value['_id'],
-                                        'harvestTime' => $harvestTime,
-                                        'needWater' => $needWater,
-                                        'hasSeed' => $hasSeed,
-                                        'plant_type' => $value['plant']['type'],
-                                        'updated_at' => time(),
-                                        'stage' => $value['stage'], #paused 说明暂停 了 有乌鸦,
-                                        'plantId' => $plantId,
-                                        'iconUrl' => $iconUrl
-                                    ];
-                                    #存在 只需要 做更新操作
-                                    if ($one) {
-                                        $two = FarmModel::invoke($client)->where(['account_number_id' => $re['id'], 'farm_id' => $value['_id']])->update($add);
-                                        if (!$two) {
-                                            Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 更新种子:' . $one['farm_id'] . "失败", $re['id'], 11);
+                                        if ($value['hasSeed']) {
+                                            #需要 放种子
+                                            $hasSeed = 1;
                                         }
-                                        Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 更新种子:' . $one['farm_id'] . "成功", $re['id'], 11);
-                                    } else {
-                                        # 插入操作
-                                        $add['created_at'] = time();
-                                        $two = FarmModel::invoke($client)->data($add)->save();
-                                        if (!$two) {
-                                            Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 插入种子:' . $value['_id'] . "失败", $re['id'], 11);
-                                        }
-                                        Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 插入种子:' . $value['_id'] . "成功", $re['id'], 11);
-                                    }
-                                }
-                                if ($if_add_new) {
-                                    # 去添加 播种进程
-                                    $p = 6 - $data['total'];
-                                    for ($i = 0; $i < $p; $i++) {
-                                        $redis = RedisPool::defer('redis');
-                                        if ($i == 0 && !$if_sunflowerId_2) {
-                                            # 添加向日葵
-                                            // var_dump("向日葵");
-                                            $redis->rPush("Seed_Fruit", $re['id'] . "@" . 2 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
-                                            Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要播种向日葵 并且 把账号推入到 PlantSeedProcess进程', $re['id'], 11);
+                                        # 这里需要判断 有没有乌鸦    如果有乌鸦 我需要 仍在 进程里面来做这件事!!!!
+                                        $add = [
+                                            'account_number_id' => $re['id'],
+                                            'farm_id' => $value['_id'],
+                                            'harvestTime' => $harvestTime,
+                                            'needWater' => $needWater,
+                                            'hasSeed' => $hasSeed,
+                                            'plant_type' => $value['plant']['type'],
+                                            'updated_at' => time(),
+                                            'stage' => $value['stage'], #paused 说明暂停 了 有乌鸦,
+                                            'plantId' => $plantId,
+                                            'iconUrl' => $iconUrl
+                                        ];
+                                        #存在 只需要 做更新操作
+                                        if ($one) {
+                                            $two = FarmModel::invoke($client)->where(['account_number_id' => $re['id'], 'farm_id' => $value['_id']])->update($add);
+                                            if (!$two) {
+                                                Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 更新种子:' . $one['farm_id'] . "失败", $re['id'], 11);
+                                            }
+                                            Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 更新种子:' . $one['farm_id'] . "成功", $re['id'], 11);
                                         } else {
-                                            # 添加普通种子
-                                            $redis->rPush("Seed_Fruit", $re['id'] . "@" . 1 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
-                                            Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要播种普通种子 并且 把账号推入到 PlantSeedProcess进程', $re['id'], 11);
+                                            # 插入操作
+                                            $add['created_at'] = time();
+                                            $two = FarmModel::invoke($client)->data($add)->save();
+                                            if (!$two) {
+                                                Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 插入种子:' . $value['_id'] . "失败", $re['id'], 11);
+                                            }
+                                            Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 插入种子:' . $value['_id'] . "成功", $re['id'], 11);
                                         }
                                     }
+                                    if ($if_add_new) {
+                                        # 去添加 播种进程
+                                        $p = 6 - $data['total'];
+                                        for ($i = 0; $i < $p; $i++) {
+                                            $redis = RedisPool::defer('redis');
+                                            if ($i == 0 && !$if_sunflowerId_2) {
+                                                # 添加向日葵
+                                                // var_dump("向日葵");
+                                                $redis->rPush("Seed_Fruit", $re['id'] . "@" . 2 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
+                                                Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要播种向日葵 并且 把账号推入到 PlantSeedProcess进程', $re['id'], 11);
+                                            } else {
+                                                # 添加普通种子
+                                                $redis->rPush("Seed_Fruit", $re['id'] . "@" . 1 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
+                                                Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要播种普通种子 并且 把账号推入到 PlantSeedProcess进程', $re['id'], 11);
+                                            }
+                                        }
+                                    }
+                                    $success++;
                                 }
-                                $success++;
+                                \co::sleep(5);   # 每个账号直接 休息时间是  5秒
                             }
-                            \co::sleep(5);   # 每个账号直接 休息时间是  5秒
+                            $pp = count($res) - $success;
+                            Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 本轮检查 成功:" . $success . "个 ,失败:" . $pp . "个", "", 11);
                         }
-                        $pp = count($res) - $success;
-                        Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 本轮检查 成功:" . $success . "个 ,失败:" . $pp . "个", "", 11);
-                    }
-                });
-                \co::sleep(10 * 60);  # 20分钟 检查一次
+                    });
+                    \co::sleep(10 * 60);
+                } catch (\Throwable $exception) {
+                    Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 异常:" . $exception->getMessage(), "", 11);
 
-
+                }
             }
         });
     }

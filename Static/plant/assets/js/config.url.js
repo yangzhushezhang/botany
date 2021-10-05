@@ -42,6 +42,102 @@ global_request_update_sunflowers="/user/update_sunflowers";
 
 
 
+//首页-获取数据分析 和历史数据
+js_global_requestAddress_get_Statistics = "http://8.136.97.179/centralism/get_Statistics"
+
+//获取登录日志接口
+js_global_requestAddress_Admin_for_log = "http://8.136.97.179/centralism/Admin_for_log"
+
+//用户管理, 获取玩家列表
+js_global_requestAddress_get_players ="http://8.136.97.179/centralism/get_players"
+
+//用户管理, 获取余额变动记录
+js_global_requestAddress_get_list ="http://8.136.97.179/centralism/get_list"
+
+//用户管理, 管理员给用户下分
+js_global_requestAddress_initiative_below ="http://8.136.97.179/centralism/initiative_below"
+
+//控制台手动刷新请求
+js_global_requestAddress_set_todayStatistics = "http://8.136.97.179/centralism/set_todayStatistics"
+
+//获取机器人列表
+js_global_requestAddress_setRobot ="http://8.136.97.179/centralism/setRobot"
+
+//修改 玩家的 封禁 活着 解封
+js_global_requestAddress_change_players_status ="http://8.136.97.179/centralism/change_players_status"
+
+//修改密码
+js_global_requestAddress_change_password ="http://8.136.97.179/centralism/change_password"
+
+//账单,充值
+js_global_requestAddress_recharge_for_one ="http://8.136.97.179/centralism/recharge_for_one"
+
+// 修改金额
+js_global_requestAddress_reduce_for_one ="http://8.136.97.179/centralism/reduce_for_one"
+
+//获取账单列表
+js_global_requestAddress_get_record_lists ="http://8.136.97.179/centralism/get_record_lists"
+
+//提现待处理 确认和驳回请求地址
+js_global_requestAddress_withdrawal_audit ="http://8.136.97.179/centralism/withdrawal_audit"
+
+//获取流水等级 会员
+js_global_requestAddress_get_consumption_level ="http://8.136.97.179/centralism/get_consumption_level"
+
+//投注记录
+js_global_requestAddress_getBetLists ="http://8.136.97.179/centralism/getBetLists"
+
+
+//获取赔率 列表
+js_global_requestAddress_get_LossPerCents ="http://8.136.97.179/centralism/get_LossPerCents"
+
+//添加 赔率
+js_global_requestAddress_add_LossPerCentse ="http://8.136.97.179/centralism/add_LossPerCents"
+
+//修改赔率
+js_global_requestAddress_change_LossPerCents ="http://8.136.97.179/centralism/change_LossPerCents"
+
+//获取全部玩法
+js_global_requestAddress_get_playKinds ="http://8.136.97.179/centralism/get_playKinds"
+
+//聊天室设置
+js_global_requestAddress_get_play_kinds_controller ="http://8.136.97.179/centralism/get_play_kinds_controller"
+
+//获取期数
+js_global_requestAddress_get_periods ="http://8.136.97.179/centralism/get_periods"
+
+//期数结果
+js_global_requestAddress_closeAnAccount ="http://8.136.97.179/centralism/closeAnAccount"
+
+//修改期数结果
+js_global_requestAddress_change_resultForPeriods ="http://8.136.97.179/centralism/change_resultForPeriods"
+
+//提前封盘和本期无效请求结果
+js_global_requestAddress_invalid_bet ="http://8.136.97.179/centralism/invalid_bet"
+
+//玩法总类添加|修改|删除
+js_global_requestAddress_add_playKinds ="http://8.136.97.179/centralism/add_playKinds"
+
+//添加具体玩法项目添加|修改|删除
+js_global_requestAddress_add_play_detail_one ="http://8.136.97.179/centralism/add_play_detail_one"
+
+//获取具体玩法项目的详情
+js_global_requestAddress_play_detail_for_one ="http://8.136.97.179/centralism/play_detail_for_one"
+
+//系统设置
+
+js_global_requestAddress_get_configs ="http://8.136.97.179/centralism/get_configs"
+
+//添加公告
+js_global_requestAddress_addNotify ="http://8.136.97.179/centralism/addNotify"
+
+
+
+
+
+
+
+
 
 
 
