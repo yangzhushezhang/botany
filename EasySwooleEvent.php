@@ -39,7 +39,6 @@ class EasySwooleEvent implements Event
         #注册mysql连接池
         $mysql_config = new Config(\EasySwoole\EasySwoole\Config::getInstance()->getConf('MYSQL'));
         DbManager::getInstance()->addConnection(new Connection($mysql_config));
-
         #注册redis连接池
         $redis_config = new \EasySwoole\Redis\Config\RedisConfig(\EasySwoole\EasySwoole\Config::getInstance()->getConf('REDIS'));
         try {
@@ -48,14 +47,12 @@ class EasySwooleEvent implements Event
         } catch (RedisPoolException $e) {
 
         }
-
-
         /**
          * 注册 浇水 进程
          */
         $processConfig = new  \EasySwoole\Component\Process\Config([
             'processName' => 'WateringProcess', // 设置 进程名称为 TickProcess
-            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'processGroup' => 'WateringProcess', // 设置 进程组名称为 Tick
             'arg' => [
 
             ], // 传递参数到自定义进程中
@@ -72,7 +69,7 @@ class EasySwooleEvent implements Event
          */
         $processConfig = new  \EasySwoole\Component\Process\Config([
             'processName' => 'ExpelRavenProcess', // 设置 进程名称为 TickProcess
-            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'processGroup' => 'ExpelRavenProcess', // 设置 进程组名称为 Tick
             'arg' => [
 
             ], // 传递参数到自定义进程中
@@ -88,7 +85,7 @@ class EasySwooleEvent implements Event
          */
         $processConfig = new  \EasySwoole\Component\Process\Config([
             'processName' => 'MonitorFarmProcess', // 设置 进程名称为 TickProcess
-            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'processGroup' => 'MonitorFarmProcess', // 设置 进程组名称为 Tick
             'arg' => [
 
             ], // 传递参数到自定义进程中
@@ -104,7 +101,7 @@ class EasySwooleEvent implements Event
          */
         $processConfig = new  \EasySwoole\Component\Process\Config([
             'processName' => 'HarvestFruitProcess', // 设置 进程名称为 TickProcess
-            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'processGroup' => 'HarvestFruitProcess', // 设置 进程组名称为 Tick
             'arg' => [
 
             ], // 传递参数到自定义进程中
@@ -120,7 +117,7 @@ class EasySwooleEvent implements Event
          */
         $processConfig = new  \EasySwoole\Component\Process\Config([
             'processName' => 'RemoveSeedProcess', // 设置 进程名称为 TickProcess
-            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'processGroup' => 'RemoveSeedProcess', // 设置 进程组名称为 Tick
             'arg' => [
 
             ], // 传递参数到自定义进程中
@@ -137,7 +134,7 @@ class EasySwooleEvent implements Event
 
         $processConfig = new  \EasySwoole\Component\Process\Config([
             'processName' => 'PlantSeedProcess', // 设置 进程名称为 TickProcess
-            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'processGroup' => 'PlantSeedProcess', // 设置 进程组名称为 Tick
             'arg' => [
 
             ], // 传递参数到自定义进程中
@@ -154,7 +151,7 @@ class EasySwooleEvent implements Event
          */
         $processConfig = new  \EasySwoole\Component\Process\Config([
             'processName' => 'PutPotProcess', // 设置 进程名称为 TickProcess
-            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'processGroup' => 'PutPotProcess', // 设置 进程组名称为 Tick
             'arg' => [
 
             ], // 传递参数到自定义进程中
@@ -168,7 +165,7 @@ class EasySwooleEvent implements Event
         #WateringProcess
         $processConfig = new  \EasySwoole\Component\Process\Config([
             'processName' => 'WateringProcess', // 设置 进程名称为 TickProcess
-            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'processGroup' => 'WateringProcess', // 设置 进程组名称为 Tick
             'arg' => [
 
             ], // 传递参数到自定义进程中
@@ -184,7 +181,7 @@ class EasySwooleEvent implements Event
 
         $processConfig = new  \EasySwoole\Component\Process\Config([
             'processName' => 'MonitorTools', // 设置 进程名称为 TickProcess
-            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'processGroup' => 'MonitorTools', // 设置 进程组名称为 Tick
             'arg' => [
 
             ], // 传递参数到自定义进程中
@@ -200,7 +197,7 @@ class EasySwooleEvent implements Event
          */
         $processConfig = new  \EasySwoole\Component\Process\Config([
             'processName' => 'DecryptCaptchaProcess', // 设置 进程名称为 TickProcess
-            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'processGroup' => 'DecryptCaptchaProcess', // 设置 进程组名称为 Tick
             'arg' => [
 
             ], // 传递参数到自定义进程中
@@ -216,7 +213,7 @@ class EasySwooleEvent implements Event
          */
         $processConfig = new  \EasySwoole\Component\Process\Config([
             'processName' => 'CheckIfRipe', // 设置 进程名称为 TickProcess
-            'processGroup' => 'Custom_one', // 设置 进程组名称为 Tick
+            'processGroup' => 'CheckIfRipe', // 设置 进程组名称为 Tick
             'arg' => [
 
             ], // 传递参数到自定义进程中
