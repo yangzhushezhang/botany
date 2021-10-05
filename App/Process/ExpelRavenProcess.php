@@ -88,7 +88,7 @@ class ExpelRavenProcess extends AbstractProcess
                                                 \EasySwoole\Component\Timer::getInstance()->after(120 * 1000, function () use ($id, $redis) {
                                                     $redis->rPush("CROW_IDS", $id);  # 赶乌鸦  2分钟
                                                 });
-                                                Tools::WriteLogger($array_data[2], 2, "进程 WateringProcess 种子id:" . $one['farm_id'] . "浇水失败了,出现了验证码 result:" . $response, $array_data[1], 1);
+                                                Tools::WriteLogger($array_data[2], 2, "进程 WateringProcess 种子id:" . $one['farm_id'] . "浇水失败了,出现了验证码 result:" . $response, $array_data[1], 9);
                                                 return false;
                                             }
 

@@ -23,6 +23,9 @@ class WateringProcess extends AbstractProcess
         go(function () {
             var_dump("这是一个浇水的进程");
             while (true) {
+
+
+
                 try {
                     \EasySwoole\RedisPool\RedisPool::invoke(function (\EasySwoole\Redis\Redis $redis) {
                         # 监听 赶乌鸦的接口
@@ -128,6 +131,10 @@ class WateringProcess extends AbstractProcess
 
                         }
                     }, 'redis');
+
+
+
+
                     \co::sleep(5); # 五秒循环一次
                 } catch (\Throwable $exception) {
                     Tools::WriteLogger(0, 2, "WateringProcess 进程 异常:" . $exception->getMessage(), "", 5);

@@ -26,7 +26,7 @@ class MonitorTools extends AbstractProcess
             var_dump("工具自行检查进程");
             while (true) {
                 try {
-                    Tools::WriteLogger(0, 2, "MonitorTools   开始 ", "", 9);
+                    Tools::WriteLogger(0, 2, "MonitorTools   开始 ", "", 7);
                     DbManager::getInstance()->invoke(function ($client) {
                         $fix = AccountNumberModel::invoke($client)->all(['status' => 1]);
                         if ($fix) {
@@ -93,7 +93,6 @@ class MonitorTools extends AbstractProcess
                                         Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools  插入成功" . $result, $six['id'], 9);
                                         break;
                                     }
-                                    Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools  插入失败", $six['id'], 9);
                                 } else {
                                     # 更新
                                     $token_value = $six['token_value'];
@@ -151,10 +150,9 @@ class MonitorTools extends AbstractProcess
                                             }
                                         }
                                         ToolsModel::invoke($client)->where(['account_number_id' => $six['id']])->update($update_data);
-                                        Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools  更新成功" . $result, $six['id'], 9);
+                                        Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools  更新成功" . $result, $six['id'], 7);
                                         break;
                                     }
-                                    Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools  更新失败", $six['id'], 9);
                                 }
 
 
@@ -162,11 +160,11 @@ class MonitorTools extends AbstractProcess
                                 # 更新我的 种子 个数
                                 $data = Tools::getSunflowers($token_value);
                                 if (!$data) {
-                                    Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $data, $six['id'], 9);
+                                    Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $data, $six['id'], 7);
                                     continue;
                                 }
                                 if ($data['status'] != 0) {
-                                    Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     result: status ", $six['id'], 9);
+                                    Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     result: status ", $six['id'], 7);
                                     continue;
                                 }
 
@@ -206,21 +204,21 @@ class MonitorTools extends AbstractProcess
                                 # 获取 账号的能量
                                 $data = Tools::getLeWallet($token_value);
                                 if (!$data) {
-                                    Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $data, $six['id'], 9);
+                                    Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $data, $six['id'], 7);
                                     continue;
                                 }
                                 if ($data['status'] != 0) {
-                                    Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     result: status " . $data['status'], $six['id'], 9);
+                                    Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     result: status " . $data['status'], $six['id'], 7);
                                     continue;
                                 }
                                 #  var_dump("更新  all_sapling 账号:".$six['id']);
                                 $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update(['updated_at' => time(), 'leWallet' => $data['data']['leWallet'], 'usagesSunflower' => $data['data']['usagesSunflower']]);
-                                Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     更新leWallet usagesSunflower  成功", $six['id'], 9);
+                                Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     更新leWallet usagesSunflower  成功", $six['id'], 7);
                             }
                             \co::sleep(3); # 每个账号之间 间隔 5 秒钟
                         }
                     });
-                    Tools::WriteLogger(0, 2, "MonitorTools   结束 ", "", 9);
+                    Tools::WriteLogger(0, 2, "MonitorTools   结束 ", "", 7);
                     \co::sleep(60 * 10); # 10 分钟执行一次
                 } catch (\Throwable $exception) {
                     Tools::WriteLogger(0, 2, "MonitorTools 异常:" . $exception->getMessage(), "", 9);
@@ -245,14 +243,12 @@ class MonitorTools extends AbstractProcess
                     return false;
                 }
             }
-
             if ($id == 4) {
                 if ($leWallet < 20) {
                     Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  能量不够", $account_number_id, 6);
                     return false;
                 }
             }
-
             for ($i = 0; $i < 5; $i++) {
                 $client = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/buy-tools');
                 $headers = array(
@@ -287,7 +283,6 @@ class MonitorTools extends AbstractProcess
                 Tools::WriteLogger($user_id, 1, "购买工具 :" . $id . "成功", $account_number_id, 6);
                 break;
             }
-
         } catch (InvalidUrl $e) {
             Tools::WriteLogger($user_id, 2, "购买 异常:" . $e->getMessage(), $account_number_id, 6);
 
