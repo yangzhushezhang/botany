@@ -74,9 +74,9 @@ class PutPotProcess extends AbstractProcess
                                     );
                                     $client_http->setHeaders($headers, false, false);
                                     $data = '{"farmId":"' . $two['farm_id'] . '","toolId":1,"token":{"challenge":"default","seccode":"default","validate":"default"}}';
-                                    $response = $client_http->post($data);
                                     $client_http->setTimeout(5);
                                     $client_http->setConnectTimeout(10);
+                                    $response = $client_http->post($data);
                                     $response = $response->getBody();
                                     $data = json_decode($response, true);
                                     if (!$data) {

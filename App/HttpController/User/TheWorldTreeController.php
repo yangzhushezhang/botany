@@ -24,6 +24,7 @@ class TheWorldTreeController extends UserBase
         try {
             $task = \EasySwoole\EasySwoole\Task\TaskManager::getInstance();
             $task->async(new TheTreeFromWorldTask(['user' => 'custom']));
+
             $this->writeJson(200, [], "调用成功");
         } catch (\Throwable $e) {
             $this->WriteLogger(-1, [], "TheWorldTree 执行异常:" . $e->getMessage());
@@ -35,9 +36,23 @@ class TheWorldTreeController extends UserBase
     function getTodayTheWorldTree()
     {
         try {
+            $data = [];
             $redis = RedisPool::defer('redis');
             $result = $redis->hGetAll(Date("Y-m-d", time()) . "_worldTree");
-            $this->writeJson(200, json_encode($result), "调用成功");
+            if ($result){
+                foreach ($result as $k => $item) {
+                    $data[$k] = json_decode($item);
+                }
+            }
+
+            $return = [
+                'total' => count($data),
+                'data' => $data
+            ];
+
+
+
+            $this->writeJson(200, $return, "调用成功");
             return true;
         } catch (\Throwable $exception) {
             $this->writeJson(-1, [], "获取异常:" . $exception->getMessage());
@@ -63,6 +78,7 @@ class TheWorldTreeController extends UserBase
             return false;
         }
     }
+
 
     #世界树浇水
     function yesterdayWatering()

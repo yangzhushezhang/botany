@@ -184,7 +184,7 @@ class TheTreeFromWorldTask implements TaskInterface
                         $redis_array['water'] = 1;
                         $redis->hSet(Date("Y-m-d", time()) . "_worldTree", "account_" . $account_number_id, json_encode($redis_array));
                     }
-                    Tools::WriteLogger($user_id, 1, "世界树浇水成功¬", $account_number_id, 10);
+                    Tools::WriteLogger($user_id, 1, "世界树浇水成功", $account_number_id, 10);
                     return false;
                 }
                 \co::sleep(2); # 五秒循环一次
