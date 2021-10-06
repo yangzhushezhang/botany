@@ -34,9 +34,9 @@ class Tools
                     # 'if-none-match' => 'W/^\\^99-2xqEFdktsE4xMb9duc5cLOCwO+c^\\^',
                 );
                 $client->setHeaders($headers, false, false);
-                $response = $client->get();
                 $client->setTimeout(5);
                 $client->setConnectTimeout(10);
+                $response = $client->get();
                 $response = $response->getBody();
                 $data = json_decode($response, true);
                 if (!$data) {

@@ -30,18 +30,20 @@ class TheWorldTreeController extends UserBase
             return false;
         }
     }
+
     # 获取当日世界树的 执行结果
     function getTodayTheWorldTree()
     {
         try {
             $redis = RedisPool::defer('redis');
             $result = $redis->hGetAll(Date("Y-m-d", time()) . "_worldTree");
-            $this->writeJson(200, [], "调用成功");
+            $this->writeJson(200, json_encode($result, true), "调用成功");
             return true;
         } catch (\Throwable $exception) {
             $this->writeJson(-1, [], "获取异常:" . $exception->getMessage());
         }
     }
+
     # 昨日一键收取
     function yesterdayGetOne()
     {
@@ -61,6 +63,7 @@ class TheWorldTreeController extends UserBase
             return false;
         }
     }
+
     #世界树浇水
     function yesterdayWatering()
     {
