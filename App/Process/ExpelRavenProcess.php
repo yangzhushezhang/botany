@@ -63,6 +63,8 @@ class ExpelRavenProcess extends AbstractProcess
                                             'accept-language' => 'zh-CN,zh;q=0.9',
                                         );
                                         $client_http->setHeaders($headers, false, false);
+                                        $client_http->setTimeout(5);
+                                        $client_http->setConnectTimeout(10);
                                         $data = '{"farmId":"' . $there['farm_id'] . '","toolId":4,"token":{"challenge":"default","seccode":"default","validate":"default"}}';
                                         $response = $client_http->post($data);
                                         $response = $response->getBody();

@@ -48,6 +48,8 @@ class HarvestFruitProcess extends AbstractProcess
 
                                     #准备去收获 种子
                                     $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms/' . $one['farm_id'] . '/harvest');
+                                    $client_http->setTimeout(5);
+                                    $client_http->setConnectTimeout(10);
                                     $headers = array(
                                         'authority' => 'backend-farm.plantvsundead.com',
                                         'sec-ch-ua' => '"Google Chrome";v="93", " Not;A Brand";v="99", "Chromium";v="93"',

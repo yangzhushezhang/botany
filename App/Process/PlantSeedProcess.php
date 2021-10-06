@@ -74,6 +74,8 @@ class PlantSeedProcess extends AbstractProcess
                                         'accept-language' => 'zh-CN,zh;q=0.9',
                                     );
                                     $client_http->setHeaders($headers, false, false);
+                                    $client_http->setTimeout(5);
+                                    $client_http->setConnectTimeout(10);
                                     $data = '{"landId":0,"sunflowerId":' . $id_array[1] . '}';
                                     $response = $client_http->post($data);
                                     $result = $response->getBody();

@@ -42,7 +42,7 @@ class PutPotProcess extends AbstractProcess
                                         return false;
                                     }
                                     # 判断是花盆个数够吗?
-                                    if ($three['samll_pot'] && $three['samll_pot'] < 1) {
+                                    if ($three['samll_pot'] && $three['samll_pot'] < 1) {  # 这里的逻辑进行改变下  主动去买花盆
                                         Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 账号的花盆不足,无法放盆", $id_array[1], 1);
                                         return false;
                                     }
@@ -75,6 +75,8 @@ class PutPotProcess extends AbstractProcess
                                     $client_http->setHeaders($headers, false, false);
                                     $data = '{"farmId":"' . $two['farm_id'] . '","toolId":1,"token":{"challenge":"default","seccode":"default","validate":"default"}}';
                                     $response = $client_http->post($data);
+                                    $client_http->setTimeout(5);
+                                    $client_http->setConnectTimeout(10);
                                     $response = $response->getBody();
                                     $data = json_decode($response, true);
                                     if (!$data) {
@@ -112,7 +114,7 @@ class PutPotProcess extends AbstractProcess
                                     $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
                                     $new = $three['samll_pot'] - 1;
                                     ToolsModel::invoke($client)->where(['account_number_id' => $id_array[1]])->update(['updated_at' => time(), 'samll_pot' => $new]); # 更新工具
-                                    \EasySwoole\Component\Timer::getInstance()->after(60* 1000, function () use ($id, $redis) {
+                                    \EasySwoole\Component\Timer::getInstance()->after(60 * 1000, function () use ($id, $redis) {
                                         $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
                                     });
                                 }
@@ -121,7 +123,7 @@ class PutPotProcess extends AbstractProcess
                         }
                     }, 'redis');
                     \co::sleep(5); # 五秒循环一次
-                }catch (\Throwable $exception){
+                } catch (\Throwable $exception) {
                     Tools::WriteLogger(0, 2, "PutPotProcess 进程 异常:" . $exception->getMessage(), "", 5);
 
                 }

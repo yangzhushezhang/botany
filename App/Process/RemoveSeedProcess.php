@@ -71,6 +71,8 @@ class RemoveSeedProcess extends AbstractProcess
                                         'referer' => 'https://marketplace.plantvsundead.com/',
                                         'accept-language' => 'zh-CN,zh;q=0.9',
                                     );
+                                    $client_http->setTimeout(5);
+                                    $client_http->setConnectTimeout(10);
                                     $client_http->setHeaders($headers, false, false);
                                     $data = '{}';
                                     $response = $client_http->post($data);

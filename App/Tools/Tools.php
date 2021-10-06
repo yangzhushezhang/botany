@@ -35,6 +35,8 @@ class Tools
                 );
                 $client->setHeaders($headers, false, false);
                 $response = $client->get();
+                $client->setTimeout(5);
+                $client->setConnectTimeout(10);
                 $response = $response->getBody();
                 $data = json_decode($response, true);
                 if (!$data) {
@@ -73,14 +75,14 @@ class Tools
                     #'if-none-match' => 'W/^\\^99-2xqEFdktsE4xMb9duc5cLOCwO+c^\\^',
                 );
                 $client->setHeaders($headers, false, false);
+                $client->setTimeout(5);
+                $client->setConnectTimeout(10);
                 $response = $client->get();
                 $response = $response->getBody();
                 $data = json_decode($response, true);
                 if (!$data) {
                     continue;
                 }
-
-
                 return $data;
             }
             return false;
@@ -90,12 +92,70 @@ class Tools
     }
 
 
+
+    #   购买工具
+    static function shoppingTools($tool_id, $token_value, $farm_id, $account_number_id, $user_id, $leWallet)   #1 花盆  2水  4 稻草人
+    {
+        if ($tool_id == 1 || $tool_id == 3) {
+            if ($leWallet < 50) {
+                if ($tool_id == 1) {
+                    Tools::WriteLogger($user_id, 2, "能量不够,无法购买花盆", $account_number_id, 6, $farm_id);
+                } else {
+                    Tools::WriteLogger($user_id, 2, "能量不够,无法购买水滴", $account_number_id, 6, $farm_id);
+                }
+                return false;
+            }
+        }
+        if ($tool_id == 4) {
+            if ($leWallet < 20) {
+                Tools::WriteLogger($user_id, 2, "能量不够,无法购买稻草人", $account_number_id, 6, $farm_id);
+                return false;
+            }
+        }
+        $result = "";
+        for ($i = 0; $i < 5; $i++) {
+            $client = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/buy-tools');
+            $headers = array(
+                'authority' => 'backend-farm.plantvsundead.com',
+                'sec-ch-ua' => '"Google Chrome";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
+                'accept' => 'application/json, text/plain, */*',
+                'content-type' => 'application/json;charset=UTF-8',
+                'authorization' => $token_value,
+                'sec-ch-ua-mobile' => '?0',
+                'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
+                'sec-ch-ua-platform' => '"Windows"',
+                'origin' => 'https://marketplace.plantvsundead.com',
+                'sec-fetch-site' => 'same-site',
+                'sec-fetch-mode' => 'cors',
+                'sec-fetch-dest' => 'empty',
+                'referer' => 'https://marketplace.plantvsundead.com/',
+                'accept-language' => 'zh-CN,zh;q=0.9',
+            );
+            $client->setHeaders($headers, false, false);
+            $client->setTimeout(5);
+            $client->setConnectTimeout(10);
+            $data = '{"amount":1,"toolId":' . $tool_id . '}';
+            $response = $client->post($data);
+            $result = $response->getBody();
+            $data_json = json_decode($result, true);
+            if ($data_json && $data_json['status'] == 0) {
+                #工具购买成功
+                Tools::WriteLogger($user_id, 2, "购买工具:" . $tool_id . "成功", $account_number_id, 6, $farm_id);
+                return true;
+            }
+            \co::sleep(1); # 10 分钟执行一次
+        }
+        Tools::WriteLogger($user_id, 2, "购买工具:" . $tool_id . "失败  原因:" . $result, $account_number_id, 6, $farm_id);
+        return false;
+    }
+
+
     # 写日志
-    static function WriteLogger($user_id, $kind, $content, $account_number_id = 0, $variety = 0)
+    static function WriteLogger($user_id, $kind, $content, $account_number_id = 0, $variety = 0, $farm_id = 0)
     {
         try {
 
-            DbManager::getInstance()->invoke(function ($client) use ($user_id, $kind, $content, $account_number_id, $variety) {
+            DbManager::getInstance()->invoke(function ($client) use ($user_id, $kind, $content, $account_number_id, $variety, $farm_id) {
                 $data = [
                     'content' => $content,
                     'user_id' => $user_id,
@@ -103,7 +163,8 @@ class Tools
                     'updated_at' => time(),
                     'created_at' => time(),
                     'account_number_id' => $account_number_id,
-                    'variety' => $variety
+                    'variety' => $variety,
+                    'farm_id' => $farm_id
                 ];
 
                 $kk = LoggerModel::invoke($client)->data($data)->save();
@@ -142,6 +203,8 @@ class Tools
                 );
                 $client_http_two = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/world-tree/claim-yesterday-reward');
                 $client_http_two->setHeaders($headers, false, false);
+                $client_http_two->setTimeout(5);
+                $client_http_two->setConnectTimeout(10);
                 $response = $client_http_two->post();
                 $result = $response->getBody();
                 $data = json_decode($result, true);
@@ -191,6 +254,8 @@ class Tools
                 );
                 $client_http_two = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/world-tree/give-waters');
                 $client_http_two->setHeaders($headers, false, false);
+                $client_http_two->setTimeout(5);
+                $client_http_two->setConnectTimeout(10);
                 $data = '{"amount":20}';
                 $response = $client_http_two->post($data);
                 $result = $response->getBody();

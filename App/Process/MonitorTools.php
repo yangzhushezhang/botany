@@ -54,6 +54,8 @@ class MonitorTools extends AbstractProcess
                                             #  'if-none-match' => 'W/^\\^32c-sAwO7sU/nng0IT4QwrYVX61WsEY^\\^',
                                         );
                                         $client_http->setHeaders($headers, false, false);
+                                        $client_http->setTimeout(5);
+                                        $client_http->setConnectTimeout(10);
                                         $response = $client_http->get();
                                         $result = $response->getBody();
                                         $data_json = json_decode($result, true);
@@ -154,8 +156,6 @@ class MonitorTools extends AbstractProcess
                                         break;
                                     }
                                 }
-
-
                                 $token_value = $six['token_value'];
                                 # 更新我的 种子 个数
                                 $data = Tools::getSunflowers($token_value);
@@ -233,9 +233,7 @@ class MonitorTools extends AbstractProcess
 
     function Shop_tools($id, $token_value, $user_id, $account_number_id, $leWallet)
     {
-
         try {
-
             # 判断 自己的能量值是否 足够
             if ($id == 1 || $id == 3) {
                 if ($leWallet < 50) {
@@ -287,7 +285,6 @@ class MonitorTools extends AbstractProcess
             Tools::WriteLogger($user_id, 2, "购买 异常:" . $e->getMessage(), $account_number_id, 6);
 
         }
-
     }
 
 

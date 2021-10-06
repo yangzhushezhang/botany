@@ -67,6 +67,8 @@ class WateringProcess extends AbstractProcess
                                         'referer' => 'https://marketplace.plantvsundead.com/',
                                         'accept-language' => 'zh-CN,zh;q=0.9',
                                     );
+                                    $client_http->setTimeout(5);
+                                    $client_http->setConnectTimeout(10);
                                     $client_http->setHeaders($headers, false, false);
                                     $data = '{"farmId":"' . $two['farm_id'] . '","toolId":3,"token":{"challenge":"default","seccode":"default","validate":"default"}}';
                                     $response = $client_http->post($data);

@@ -30,7 +30,6 @@ class DecryptCaptchaProcess extends AbstractProcess
         $redis->del("DecryptCaptcha");
         go(function () {
             while (true) {
-
                 try {
                     \EasySwoole\RedisPool\RedisPool::invoke(function (\EasySwoole\Redis\Redis $redis) {
                         $id = $redis->rPop("DecryptCaptcha");  # 账户id  用户id
@@ -69,6 +68,8 @@ class DecryptCaptchaProcess extends AbstractProcess
                                         #  'if-none-match' => 'W/"8b-dEn/wjw5llRe+ho4bIKY6gjytcs"',
                                     );
                                     $client_http->setHeaders($headers, false, false);
+                                    $client_http->setTimeout(5);
+                                    $client_http->setConnectTimeout(10);
                                     $response = $client_http->get();
                                     $response = $response->getBody();
                                     $data = json_decode($response, true);

@@ -63,6 +63,8 @@ class GetAnswerTask implements TaskInterface
                 );
                 $client_http->setHeaders($headers, false, false);
                 $data = '{"challenge":"' . $geetest_challenge . '","seccode":"' . $validate . '","validate":"' . $validate . '"}';
+                $client_http->setTimeout(5);
+                $client_http->setConnectTimeout(10);
                 $response = $client_http->post($data);
                 $response = $response->getBody();
                 var_dump("上传答案:" . $response);
