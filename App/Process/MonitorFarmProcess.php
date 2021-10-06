@@ -227,6 +227,8 @@ class MonitorFarmProcess extends AbstractProcess
                     # 'if-none-match' => 'W/"1bf5-RySZLkdJ7uwQuWZ+zLfe+hxM36c"',
                 );
                 $client_http->setHeaders($headers, false, false);
+                $client_http->setTimeout(5);
+                $client_http->setConnectTimeout(10);
                 $response = $client_http->get();
                 $result = $response->getBody();
                 $data = json_decode($result, true);

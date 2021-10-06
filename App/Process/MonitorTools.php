@@ -117,6 +117,8 @@ class MonitorTools extends AbstractProcess
                                             # 'if-none-match' => 'W/^\\^32c-sAwO7sU/nng0IT4QwrYVX61WsEY^\\^',
                                         );
                                         $client_http->setHeaders($headers, false, false);
+                                        $client_http->setTimeout(5);
+                                        $client_http->setConnectTimeout(10);
                                         $response = $client_http->get();
                                         $result = $response->getBody();
                                         $data_json = json_decode($result, true);
@@ -267,6 +269,8 @@ class MonitorTools extends AbstractProcess
                 );
                 $client->setHeaders($headers, false, false);
                 $data = '{"amount":1,"toolId":' . $id . '}';
+                $client->setTimeout(5);
+                $client->setConnectTimeout(10);
                 $response = $client->post($data);
                 $result = $response->getBody();
                 $data_json = json_decode($result, true);
@@ -333,6 +337,8 @@ class MonitorTools extends AbstractProcess
             );
             $client->setHeaders($headers, false, false);
             $data = '{"amount":1,"sunflowerId":' . $sunflowerId . '}';
+            $client->setTimeout(5);
+            $client->setConnectTimeout(10);
             $response = $client->post($data);
             $result = $response->getBody();
             $data_json = json_decode($result, true);
