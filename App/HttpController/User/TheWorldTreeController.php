@@ -37,7 +37,7 @@ class TheWorldTreeController extends UserBase
         try {
             $redis = RedisPool::defer('redis');
             $result = $redis->hGetAll(Date("Y-m-d", time()) . "_worldTree");
-            $this->writeJson(200, json_encode($result, true), "调用成功");
+            $this->writeJson(200, json_encode($result), "调用成功");
             return true;
         } catch (\Throwable $exception) {
             $this->writeJson(-1, [], "获取异常:" . $exception->getMessage());
