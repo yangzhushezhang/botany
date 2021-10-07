@@ -317,7 +317,6 @@ class MonitorTools extends AbstractProcess
         ];
 
         foreach ($data as $k => $value) {
-
             if ($value['type'] == "WATER") { #水
                 $update_data['water'] = $value['usages'];
                 if ($value['usages'] < 25) { #水小 25 直接就买水
@@ -326,11 +325,7 @@ class MonitorTools extends AbstractProcess
                     $this->Shop_tools(3, $token_value, $user_id, $account_number_id, $leWallet);
                 }
             }
-
-
-
             if ($value['toolId'] == 1) {
-                array_push($data_two, 1);
                 $update_data['samll_pot'] = $value['usages'];
                 if ($value['usages'] < 1) {
                     $this->Shop_tools(1, $token_value, $user_id, $account_number_id, $leWallet);
@@ -338,7 +333,6 @@ class MonitorTools extends AbstractProcess
                     $this->Shop_tools(1, $token_value, $user_id, $account_number_id, $leWallet);
                 }
             }
-
             if ($value['type'] == "SCARECROW") {
                 if ($value['usages'] < 1) {
                     $this->Shop_tools(4, $token_value, $user_id, $account_number_id, $leWallet);
