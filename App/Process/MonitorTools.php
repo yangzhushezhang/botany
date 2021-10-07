@@ -335,6 +335,7 @@ class MonitorTools extends AbstractProcess
                 }
             }
             if ($value['type'] == "SCARECROW") {
+                $three = true;
                 $update_data['scarecrow'] = $value['usages'];
                 if ($value['usages'] < 1) {
                     $this->Shop_tools(4, $token_value, $user_id, $account_number_id, $leWallet);
