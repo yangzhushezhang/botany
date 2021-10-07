@@ -184,13 +184,20 @@ class MonitorTools extends AbstractProcess
                     Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  原因:解析失败", $account_number_id, 6);
                     continue;
                 }
+
                 if ($data_json['status'] != 0) {
+                    if ($data_json['status'] == 9) {
+                        Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  原因:能量不足了" . $result, $account_number_id, 6);
+                        break;
+                    }
                     Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  原因:" . $result, $account_number_id, 6);
                     continue;
                 }
                 Tools::WriteLogger($user_id, 1, "购买工具 :" . $id . "成功", $account_number_id, 6);
                 break;
             }
+
+
         } catch (InvalidUrl $e) {
             Tools::WriteLogger($user_id, 2, "购买 异常:" . $e->getMessage(), $account_number_id, 6);
             return false;
@@ -305,18 +312,9 @@ class MonitorTools extends AbstractProcess
     function IfShopTools($data, $token_value, $user_id, $account_number_id, $leWallet)
     {
 
-
         $update_data = [
             'updated_at' => time()
         ];
-
-
-        $data_array = [
-            'water'
-
-        ];
-
-
         $one = false;
         $two = false;
         $three = false;
@@ -328,9 +326,9 @@ class MonitorTools extends AbstractProcess
                     $this->Shop_tools(3, $token_value, $user_id, $account_number_id, $leWallet);
                 }
             }
+
             if (!$one) {
                 $this->Shop_tools(3, $token_value, $user_id, $account_number_id, $leWallet);
-
             }
             if ($value['toolId'] == 1) {
                 $two = true;
