@@ -37,7 +37,6 @@ class FarmInformationController extends UserBase
                     return false;
                 }
                 $token_value = $one['token_value'];
-
                 for ($i = 0; $i < 5; $i++) {
                     $client = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms?limit=10&offset=0');
                     $headers = array(
@@ -57,72 +56,59 @@ class FarmInformationController extends UserBase
                         'if-none-match' => 'W/"1bf5-RySZLkdJ7uwQuWZ+zLfe+hxM36c"',
                     );
                     $client->setHeaders($headers, false, false);
+                    $client->setTimeout(5);
+                    $client->setConnectTimeout(10);
                     $response = $client->get();
                     $result = $response->getBody();
                     $data = json_decode($result, true);
-                    if (!$data) {
-                        $this->WriteLogger($this->who['id'], 2, "接口 refresh_botany json 解析失败");
-                        continue;
-                    }
-                    if ($data['status'] != 0) {
-                        $this->WriteLogger($this->who['id'], 2, "接口 refresh_botany json status!=0");
-                        continue;
-                    }
-                    #开始遍历 参数
-                    return DbManager::getInstance()->invoke(function ($client) use ($data, $id) {
-                        foreach ($data['data'] as $k => $value) {
-                            # 判断 农场 没有有 这个 种子 id
-                            $one = FarmModel::invoke($client)->get(['account_number_id' => $id, 'farm_id' => $value['_id']]);
-                            $unix = 0;
-                            if (isset($value['harvestTime'])) {
-                                $unix = str_replace(array('T', 'Z'), ' ', $value['harvestTime']);
-                            }
+                    if ($data && $data['status'] == 0) {
+                        $this->response()->write($result);
+                        #开始遍历 参数
+                        return DbManager::getInstance()->invoke(function ($client) use ($data, $id) {
+                            foreach ($data['data'] as $k => $value) {
+                                # 判断 农场 没有有 这个 种子 id
+                                $one = FarmModel::invoke($client)->get(['account_number_id' => $id, 'farm_id' => $value['_id']]);
+                                $unix = 0;
+                                if (isset($value['harvestTime'])) {
+                                    $unix = str_replace(array('T', 'Z'), ' ', $value['harvestTime']);
+                                }
 
-                            $needWater = 2;
-                            $hasSeed = 2;
-                            if ($value['needWater']) {
-                                # 需要浇水  让进程去做这件事情
-                                $needWater = 1;
-                            }
-                            if ($value['hasSeed']) {
-                                #需要 放种子
-                                $hasSeed = 1;
-                            }
-                            # 这里需要判断 有没有乌鸦    如果有乌鸦 我需要 仍在 进程里面来做这件事!!!!
-                            $add = [
-                                'account_number_id' => $id,
-                                'farm_id' => $value['_id'],
-                                'harvestTime' => strtotime($unix),
-                                'needWater' => $needWater,
-                                'hasSeed' => $hasSeed,
-                                'plant_type' => $value['plant']['type'],
-                                'updated_at' => time(),
-                                'stage' => $value['stage'], #paused 说明暂停 了 有乌鸦
-                                'totalHarvest' => $value['totalHarvest']
-                            ];
-                            #存在 只需要 做更新操作
-                            if ($one) {
-                                $two = FarmModel::invoke($client)->where(['account_number_id' => $id, 'farm_id' => $value['_id']])->update($add);
-                                if (!$two) {
-                                    $this->WriteLogger($this->who['id'], 2, "接口 refresh_botany 更新数据的时候出错误");
+                                $needWater = 2;
+                                $hasSeed = 2;
+                                if ($value['needWater']) {
+                                    # 需要浇水  让进程去做这件事情
+                                    $needWater = 1;
                                 }
-                            } else {
-                                # 插入操作
-                                $add['created_at'] = time();
-                                $two = FarmModel::invoke($client)->data($add)->save();
-                                if (!$two) {
-                                    $this->WriteLogger($this->who['id'], 2, "接口 refresh_botany 插入数据的时候出错误");
+                                if ($value['hasSeed']) {
+                                    #需要 放种子
+                                    $hasSeed = 1;
+                                }
+                                # 这里需要判断 有没有乌鸦    如果有乌鸦 我需要 仍在 进程里面来做这件事!!!!
+                                $add = [
+                                    'account_number_id' => $id,
+                                    'farm_id' => $value['_id'],
+                                    'harvestTime' => strtotime($unix),
+                                    'needWater' => $needWater,
+                                    'hasSeed' => $hasSeed,
+                                    'plant_type' => $value['plant']['type'],
+                                    'updated_at' => time(),
+                                    'stage' => $value['stage'], #paused 说明暂停 了 有乌鸦
+                                    'totalHarvest' => $value['totalHarvest']
+                                ];
+                                #存在 只需要 做更新操作
+                                if ($one) {
+                                    $two = FarmModel::invoke($client)->where(['account_number_id' => $id, 'farm_id' => $value['_id']])->update($add);
+                                } else {
+                                    # 插入操作
+                                    $add['created_at'] = time();
+                                    $two = FarmModel::invoke($client)->data($add)->save();
                                 }
                             }
-                        }
-                        $this->writeJson(200, [], "刷新完毕");
-                        return true;
-                    });
+                            return true;
+                        });
+                    }
                 }
-
-
                 $this->writeJson(-101, [], "获取失败");
-
                 return false;
             });
         } catch (\Throwable $e) {
@@ -131,6 +117,8 @@ class FarmInformationController extends UserBase
             return false;
         }
     }
+
+
 
 
     #  获取农场信息
@@ -169,9 +157,7 @@ class FarmInformationController extends UserBase
                 return false;
 
             });
-
         } catch (\Throwable $e) {
-
             $this->writeJson(-1, [], "异常:" . $e->getMessage());
             return false;
         }

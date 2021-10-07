@@ -39,7 +39,7 @@ class TheTreeFromWorldTask implements TaskInterface
         try {
             DbManager::getInstance()->invoke(function ($client) {
                 $res = AccountNumberModel::invoke($client)->all(['status' => 1]);
-                Tools::WriteLogger($this->data['user_id'], 2, "任务 TheTreeFromWorldTask 开始,共有:" . count($res) . "需要去检查,", '', 10);
+                Tools::WriteLogger(0, 1, "任务 TheTreeFromWorldTask 开始,共有:" . count($res) . "需要去检查,", '', 10,);
                 if ($res) {
                     foreach ($res as $re) {
                         $redis = RedisPool::defer('redis');
@@ -47,6 +47,8 @@ class TheTreeFromWorldTask implements TaskInterface
                         if (!$redis_data) {
                             $redis->hSet(Date("Y-m-d", time()) . "_worldTree", "account_" . $re['id'], json_encode(['water' => 0, 'present' => 0]));
                         }
+
+
                         for ($i = 0; $i < 5; $i++) {
                             $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/world-tree/datas');
                             $headers = array(
@@ -80,6 +82,8 @@ class TheTreeFromWorldTask implements TaskInterface
                             \co::sleep(2); # 五秒循环一次
                             break;
                         }
+
+
                         if ($redis_data) {
                             $redis_array = json_decode($redis_data, true);
                             if ($redis_array['water'] == 0) {
@@ -89,17 +93,48 @@ class TheTreeFromWorldTask implements TaskInterface
                         } else {
                             $this->Watering($re['token_value'], $re['user_id'], $re['id']);
                         }
-
-
                         \co::sleep(2); # 五秒循环一次
                     }
                 }
-                Tools::WriteLogger($this->data['user_id'], 2, "任务 TheTreeFromWorldTask 开始,运行结束,共检查了" . count($res) . "次", '', 10);
+                Tools::WriteLogger(0, 1, "任务 TheTreeFromWorldTask 开始,运行结束,共检查了" . count($res) . "次", '', 10);
             });
         } catch (\Throwable $e) {
-            Tools::WriteLogger($this->data['user_id'], 2, "任务 TheTreeFromWorldTask 异常:" . $e->getMessage());
+            Tools::WriteLogger(0, 2, "任务 TheTreeFromWorldTask 异常:" . $e->getMessage());
         }
     }
+
+
+    # 获取世界树信息
+    function getTheWorldInformation($token_value)
+    {
+
+        for ($i = 0; $i < 5; $i++) {
+            $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/world-tree/datas');
+            $headers = array(
+                'authority' => 'backend-farm.plantvsundead.com',
+                'sec-ch-ua' => '"Google Chrome";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
+                'accept' => 'application/json, text/plain, */*',
+                'authorization' => $token_value,
+                'sec-ch-ua-mobile' => '?0',
+                'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
+                'sec-ch-ua-platform' => '"Windows"',
+                'origin' => 'https://marketplace.plantvsundead.com',
+                'sec-fetch-site' => 'same-site',
+                'sec-fetch-mode' => 'cors',
+                'sec-fetch-dest' => 'empty',
+                'referer' => 'https://marketplace.plantvsundead.com/',
+                'accept-language' => 'zh-CN,zh;q=0.9',
+            );
+            $client_http->setHeaders($headers, false, false);
+            $client_http->setTimeout(5);
+            $client_http->setConnectTimeout(10);
+            $response = $client_http->get();
+            $result = $response->getBody();
+            $data = json_decode($result, true);
+        }
+
+    }
+
 
     # 昨日一键收取
     function OneKey($token_value, $user_id, $account_number_id)
@@ -154,6 +189,7 @@ class TheTreeFromWorldTask implements TaskInterface
     function Watering($token_value, $user_id, $account_number_id)
     {
         try {
+            $result = "";
             for ($i = 0; $i < 5; $i++) {
                 $headers = array(
                     'authority' => 'backend-farm.plantvsundead.com',
@@ -192,7 +228,7 @@ class TheTreeFromWorldTask implements TaskInterface
                 }
                 \co::sleep(2); # 五秒循环一次
             }
-            Tools::WriteLogger($user_id, 2, "世界树浇水失败", $account_number_id, 10);
+            Tools::WriteLogger($user_id, 2, "世界树浇水失败:" . $result, $account_number_id, 10);
             return false;
         } catch (InvalidUrl $e) {
             Tools::WriteLogger($user_id, 2, "世界树浇水异常" . $e->getMessage(), $account_number_id, 10);

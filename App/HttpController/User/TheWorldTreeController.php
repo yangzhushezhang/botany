@@ -43,13 +43,10 @@ class TheWorldTreeController extends UserBase
                     $data[$k] = json_decode($item);
                 }
             }
-
             $return = [
                 'total' => count($data),
                 'data' => $data
             ];
-
-
             $this->writeJson(200, $return, "调用成功");
             return true;
         } catch (\Throwable $exception) {
@@ -92,6 +89,8 @@ class TheWorldTreeController extends UserBase
                     }
                 });
             }
+
+            $this->writeJson(200, [], "yesterdayGetOne 执行成功");
         } catch (\Throwable $e) {
             $this->writeJson(-1, [], "yesterdayGetOne 执行异常:" . $e->getMessage());
             return false;
