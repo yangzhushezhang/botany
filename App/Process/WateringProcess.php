@@ -42,7 +42,7 @@ class WateringProcess extends AbstractProcess
                                         return false;
                                     }
 
-                                    if ($three['water'] && $three['water'] < 1) {
+                                    if ($three['water'] && $three['water'] < 21) {
                                         var_dump("水量不足");
                                         Tools::WriteLogger($id_array[2], 2, "进程 WateringProcess 账号的水量不足,无法浇水", $id_array[1], 1, $two['farm_id']);
                                         return false;
