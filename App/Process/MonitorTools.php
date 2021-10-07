@@ -321,7 +321,6 @@ class MonitorTools extends AbstractProcess
         $one = false;
         $two = false;
         $three = false;
-        var_dump("账号: " . $account_number_id . "进来检查---------------------------------------------");
         foreach ($data as $k => $value) {
             if ($value['type'] == "WATER") { #水
                 $one = true;
