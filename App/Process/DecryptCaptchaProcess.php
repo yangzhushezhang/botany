@@ -48,7 +48,6 @@ class DecryptCaptchaProcess extends AbstractProcess
                                         Tools::WriteLogger($one['user_id'], 2, "DecryptCaptchaProcess 进程请求 用户:" . $array_ids[1] . " 不存在", $one['id'], 5);
                                         return false;
                                     }
-
                                     $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/captcha/register');
                                     #请求验证码
                                     $headers = array(

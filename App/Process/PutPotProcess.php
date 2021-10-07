@@ -37,23 +37,21 @@ class PutPotProcess extends AbstractProcess
                                     $one = AccountNumberModel::invoke($client)->get(['id' => $id_array[1]]); #farm_id   account_number_id user_id
                                     $two = FarmModel::invoke($client)->get(['id' => $id_array[0]]);
                                     $three = ToolsModel::invoke($client)->get(['account_number_id' => $id_array[1]]);  #查询工具
-                                    if ($three && $three['samll_pot'] < 1) {
-                                        Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 花盆的数量不足 ", $id_array[1], 3);
-                                        return false;
-                                    }
-                                    # 判断是花盆个数够吗?
-                                    if ($three['samll_pot'] && $three['samll_pot'] < 1) {  # 这里的逻辑进行改变下  主动去买花盆
-                                        Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 账号的花盆不足,无法放盆", $id_array[1], 1);
-                                        return false;
-                                    }
                                     if (!$one || !$two) {
                                         Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 账户不存在 ", $id_array[1], 3);
                                         return false;
                                     }
-                                    if ($two['stage'] != "new") {
-                                        Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 种子:" . $one['farm_id'] . " 不要重复放花盆", $id_array[1], 3);
+
+                                    if ($three && $three['samll_pot'] < 1) { #花盆不足
+                                        Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 花盆的数量不足 ", $id_array[1], 3, $two['farm_id']);
                                         return false;
                                     }
+
+                                    if ($two['stage'] != "new") {
+                                        Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 放花盆失败,不要重复放花盆", $id_array[1], 3, $two['farm_id']);
+                                        return false;
+                                    }
+
                                     # 种子放花盆
                                     $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms/apply-tool');
                                     $headers = array(
@@ -80,15 +78,12 @@ class PutPotProcess extends AbstractProcess
                                     $response = $response->getBody();
                                     $data = json_decode($response, true);
                                     if (!$data) {
-                                        # 解析失败 收获失败
-                                        #重新压进redis  进行
-                                        \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
+                                        \EasySwoole\Component\Timer::getInstance()->after(15 * 1000, function () use ($id, $redis) {
                                             $redis->rPush("PutPot", $id);  # account_number_id  种子类型 user_id
                                         });
-                                        Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 种子:" . $one['farm_id'] . " 放花盆失败了 原因:json 解析失败 result:" . $response, $id_array[1], 3);
+                                        Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 放花盆失败了,数据解析错误,15后重试" . $response, $id_array[1], 3, $two['farm_id']);
                                         return false;
                                     }
-
                                     if ($data['status'] != 0) {
                                         #  这里需要 是否存在 验证码
                                         if ($data['status'] == 556) {
@@ -98,40 +93,38 @@ class PutPotProcess extends AbstractProcess
                                                 $redis->rPush("DecryptCaptcha", $id_array[1] . "@" . $id_array[2]);
                                                 $redis->set("IfDoingVerification", 1, 600);# 10分钟
                                             }
-                                            Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 种子:" . $two['farm_id'] . " 放花盆失败了 原因: 验证码 result:" . $response, $id_array[1], 3);
+                                            Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 出现了验证码!" . $response, $id_array[1], 3, $two['farm_id']);
                                             return false;
                                         } else {
-                                            Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 种子:" . $two['farm_id'] . " 放花盆失败了 原因: result:" . $response, $id_array[1], 3);
+                                            Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 放花盆失败,返回数据的状态错误,result:" . $response, $id_array[1], 3, $two['farm_id']);
                                             return false;
                                         }
                                     }
-                                    var_dump("放花盆成功");
+
                                     # 更新 农作物状态
                                     FarmModel::invoke($client)->where(['id' => $id_array[0]])->update(['stage' => 'farming', 'updated_at' => time()]);
-                                    # 放 花盆成功
-                                    Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 种子:" . $one['farm_id'] . "放花盆成功" . $response, $id_array[1], 3);
-                                    #
                                     $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
+                                    Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 放花盆成功,并推入 WateringProcess 进程 First result:" . $response, $id_array[1], 3, $two['farm_id']);
                                     $new = $three['samll_pot'] - 1;
+                                    $farm_id = $two['farm_id'];
                                     ToolsModel::invoke($client)->where(['account_number_id' => $id_array[1]])->update(['updated_at' => time(), 'samll_pot' => $new]); # 更新工具
-                                    \EasySwoole\Component\Timer::getInstance()->after(60 * 1000, function () use ($id, $redis) {
+                                    \EasySwoole\Component\Timer::getInstance()->after(60 * 1000, function () use ($id, $redis, $id_array, $farm_id) {
                                         $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
+                                        Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 放花盆成功,并推入 WateringProcess 进程 Second", $id_array[1], 3, $farm_id);
                                     });
                                 }
                             });
-
                         }
                     }, 'redis');
                     \co::sleep(5); # 五秒循环一次
                 } catch (\Throwable $exception) {
                     Tools::WriteLogger(0, 2, "PutPotProcess 进程 异常:" . $exception->getMessage(), "", 5);
-
                 }
-
             }
 
         });
     }
+
 
     protected function onException(\Throwable $throwable, ...$args)
     {

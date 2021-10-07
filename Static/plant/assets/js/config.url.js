@@ -40,7 +40,14 @@ global_request_update_sunflowers="/user/update_sunflowers";
 //首页世界树数据
 global_request_getTodayTheWorldTree="/user/getTodayTheWorldTree";
 
+//获取能量
+global_request_getEnergy="/user/getEnergy";
 
+
+//一键浇水
+global_request_yesterdayWatering="/user/yesterdayWatering";
+
+//一键收取
 
 
 

@@ -13,6 +13,12 @@ use EasySwoole\HttpClient\Exception\InvalidUrl;
 use EasySwoole\ORM\DbManager;
 use PHPUnit\Framework\Constraint\IsFalse;
 
+
+/**
+ * Class MonitorTools
+ * @package App\Process
+ * 获取  能量 工具
+ */
 class MonitorTools extends AbstractProcess
 {
 
@@ -35,128 +41,32 @@ class MonitorTools extends AbstractProcess
                                 $one = ToolsModel::invoke($client)->get(['account_number_id' => $six['id']]);
                                 if (!$one) {
                                     # 不存在这个 账号的工具 就 插入
-                                    for ($i = 0; $i < 5; $i++) {
-                                        $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/my-tools');
-                                        $headers = array(
-                                            'authority' => 'backend-farm.plantvsundead.com',
-                                            'sec-ch-ua' => '^\\^Google',
-                                            'accept' => 'application/json, text/plain, */*',
-                                            'authorization' => $six['token_value'],
-                                            'sec-ch-ua-mobile' => '?0',
-                                            'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
-                                            'sec-ch-ua-platform' => '^\\^Windows^\\^',
-                                            'origin' => 'https://marketplace.plantvsundead.com',
-                                            'sec-fetch-site' => 'same-site',
-                                            'sec-fetch-mode' => 'cors',
-                                            'sec-fetch-dest' => 'empty',
-                                            'referer' => 'https://marketplace.plantvsundead.com/',
-                                            'accept-language' => 'zh-CN,zh;q=0.9',
-                                            #  'if-none-match' => 'W/^\\^32c-sAwO7sU/nng0IT4QwrYVX61WsEY^\\^',
-                                        );
-                                        $client_http->setHeaders($headers, false, false);
-                                        $client_http->setTimeout(5);
-                                        $client_http->setConnectTimeout(10);
-                                        $response = $client_http->get();
-                                        $result = $response->getBody();
-                                        $data_json = json_decode($result, true);
-                                        if (!$data_json) {
-                                            Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $result, $six['id'], 9);
-                                            continue;
-                                        }
-                                        if ($data_json['status'] != 0) {
-                                            Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools json status!=0  :" . $result, $six['id'], 9);
-                                            continue;
-                                        }
-                                        $update_data = [
-                                            'updated_at' => time(),
-                                            'account_number_id' => $six['id']
-                                        ];
-                                        foreach ($data_json['data'] as $k => $value) {
-                                            if ($value['type'] == "WATER") {
-                                                $update_data['water'] = $value['usages'];
-                                                if ($value['usages'] < 1) {
-                                                    $this->Shop_tools(3, $six['token_value'], $six['user_id'], $six['id'], $six['leWallet']);
-                                                }
-                                            }
-                                            if ($value['toolId'] == 1) {
-                                                $update_data['samll_pot'] = $value['usages'];
-                                                if ($value['usages'] < 1) {
-                                                    $this->Shop_tools(1, $six['token_value'], $six['user_id'], $six['id'], $six['leWallet']);
-                                                }
-                                            }
-                                            if ($value['type'] == "SCARECROW") {
-                                                $update_data['scarecrow'] = $value['usages'];
-                                                if ($value['usages'] < 1) {
-                                                    $this->Shop_tools(4, $six['token_value'], $six['user_id'], $six['id'], $six['leWallet']);
-                                                }
-                                            }
-                                        }
-                                        ToolsModel::invoke($client)->data($update_data)->save();
-                                        Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools  插入成功" . $result, $six['id'], 9);
-                                        break;
+                                    #获取 工具
+                                    $data_json = $this->ToolsGet($six['token_value'], $six['user_id'], $six['id']);
+                                    if (!$data_json) {
+                                        continue;
                                     }
+                                    $update_data = [
+                                        'updated_at' => time(),
+                                        'account_number_id' => $six['id']
+                                    ];
+                                    $update_data = $this->IfShopTools($data_json['data'], $six['token_value'], $six['user_id'], $six['id'], $six['leWallet']);
+                                    ToolsModel::invoke($client)->data($update_data)->save();
+                                    Tools::WriteLogger($six['user_id'], 2, "MonitorTools 工具插入成功", $six['id'], 7);
+
                                 } else {
                                     # 更新
-                                    $token_value = $six['token_value'];
-                                    for ($i = 0; $i < 5; $i++) {
-                                        $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/my-tools');
-                                        $headers = array(
-                                            'authority' => 'backend-farm.plantvsundead.com',
-                                            'sec-ch-ua' => '^\\^Google',
-                                            'accept' => 'application/json, text/plain, */*',
-                                            'authorization' => $six['token_value'],
-                                            'sec-ch-ua-mobile' => '?0',
-                                            'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
-                                            'sec-ch-ua-platform' => '^\\^Windows^\\^',
-                                            'origin' => 'https://marketplace.plantvsundead.com',
-                                            'sec-fetch-site' => 'same-site',
-                                            'sec-fetch-mode' => 'cors',
-                                            'sec-fetch-dest' => 'empty',
-                                            'referer' => 'https://marketplace.plantvsundead.com/',
-                                            'accept-language' => 'zh-CN,zh;q=0.9',
-                                            # 'if-none-match' => 'W/^\\^32c-sAwO7sU/nng0IT4QwrYVX61WsEY^\\^',
-                                        );
-                                        $client_http->setHeaders($headers, false, false);
-                                        $client_http->setTimeout(5);
-                                        $client_http->setConnectTimeout(10);
-                                        $response = $client_http->get();
-                                        $result = $response->getBody();
-                                        $data_json = json_decode($result, true);
-                                        if (!$data_json) {
-                                            Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools   解析失败  result:" . $result, $six['id'], 9);
-                                            continue;
-                                        }
-                                        if ($data_json['status'] != 0) {
-                                            Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools json status!=0  :" . $result, $six['id'], 9);
-                                            continue;
-                                        }
-                                        $update_data = [
-                                            'updated_at' => time()
-                                        ];
-                                        foreach ($data_json['data'] as $k => $value) {
-                                            if ($value['type'] == "WATER") {
-                                                $update_data['water'] = $value['usages'];
-                                                if ($value['usages'] < 25) {
-                                                    $this->Shop_tools(3, $six['token_value'], $six['user_id'], $six['id'], $six['leWallet']);
-                                                }
-                                            }
-                                            if ($value['toolId'] == 1) {
-                                                $update_data['samll_pot'] = $value['usages'];
-                                                if ($value['usages'] < 1) {
-                                                    $this->Shop_tools(1, $six['token_value'], $six['user_id'], $six['id'], $six['leWallet']);
-                                                }
-                                            }
-                                            if ($value['type'] == "SCARECROW") {
-                                                $update_data['scarecrow'] = $value['usages'];
-                                                if ($value['usages'] < 1) {
-                                                    $this->Shop_tools(4, $six['token_value'], $six['user_id'], $six['id'], $six['leWallet']);
-                                                }
-                                            }
-                                        }
-                                        ToolsModel::invoke($client)->where(['account_number_id' => $six['id']])->update($update_data);
-                                        Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools  更新成功" . $result, $six['id'], 7);
-                                        break;
+                                    $data_json = $this->ToolsGet($six['token_value'], $six['user_id'], $six['id']);
+                                    if (!$data_json) {
+                                        continue;
                                     }
+                                    $update_data = [
+                                        'updated_at' => time()
+                                    ];
+                                    $update_data = $this->IfShopTools($data_json['data'], $six['token_value'], $six['user_id'], $six['id'], $six['leWallet']);
+                                    ToolsModel::invoke($client)->where(['account_number_id' => $six['id']])->update($update_data);
+                                    Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools  更新成功", $six['id'], 7);
+                                    break;
                                 }
                                 $token_value = $six['token_value'];
                                 # 更新我的 种子 个数
@@ -169,11 +79,9 @@ class MonitorTools extends AbstractProcess
                                     Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     result: status ", $six['id'], 7);
                                     continue;
                                 }
-
                                 $update = [
                                     'updated_at' => time()
                                 ];
-
                                 foreach ($data['data'] as $datum) {  # 向日葵 有优先级
                                     if ($datum['plantType'] == 1) {
                                         $update['all_sapling'] = $datum['usages'];
@@ -188,7 +96,7 @@ class MonitorTools extends AbstractProcess
                                 #  调整向日葵的优先级
                                 if (!isset($update['already_sapling']) || $update['already_sapling'] == 0) {
                                     if (isset($update['already_sunflower']) || $update['already_sunflower'] > 0) {
-                                        $po = $this->shop($token_value, 1, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
+                                        $po = $this->shopSeed($token_value, 1, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
                                         if ($po) {
                                             $update['already_sapling'] = 1;
                                         }
@@ -196,12 +104,11 @@ class MonitorTools extends AbstractProcess
                                 }
                                 # 向日葵 为0  购买  不存在需要购买
                                 if (!isset($update['already_sunflower']) || $update['already_sunflower'] == 0) {
-                                    $po = $this->shop($token_value, 2, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
+                                    $po = $this->shopSeed($token_value, 2, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
                                     if ($po) {
                                         $update['already_sunflower'] = 1;
                                     }
                                 }
-
                                 $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update($update);
                                 # 获取 账号的能量
                                 $data = Tools::getLeWallet($token_value);
@@ -213,7 +120,6 @@ class MonitorTools extends AbstractProcess
                                     Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     result: status " . $data['status'], $six['id'], 7);
                                     continue;
                                 }
-                                #  var_dump("更新  all_sapling 账号:".$six['id']);
                                 $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update(['updated_at' => time(), 'leWallet' => $data['data']['leWallet'], 'usagesSunflower' => $data['data']['usagesSunflower']]);
                                 Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     更新leWallet usagesSunflower  成功", $six['id'], 7);
                             }
@@ -306,6 +212,50 @@ class MonitorTools extends AbstractProcess
     }
 
 
+    function ToolsGet($token_value, $user_id, $account_number_id)
+    {
+        try {
+            $result = "";
+            for ($i = 0; $i < 5; $i++) {
+                $client = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/my-tools');
+                $headers = array(
+                    'authority' => 'backend-farm.plantvsundead.com',
+                    'sec-ch-ua' => '^\\^Google',
+                    'accept' => 'application/json, text/plain, */*',
+                    'authorization' => $token_value,
+                    'sec-ch-ua-mobile' => '?0',
+                    'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
+                    'sec-ch-ua-platform' => '^\\^Windows^\\^',
+                    'origin' => 'https://marketplace.plantvsundead.com',
+                    'sec-fetch-site' => 'same-site',
+                    'sec-fetch-mode' => 'cors',
+                    'sec-fetch-dest' => 'empty',
+                    'referer' => 'https://marketplace.plantvsundead.com/',
+                    'accept-language' => 'zh-CN,zh;q=0.9',
+                    #   'if-none-match' => 'W/^\\^32c-sAwO7sU/nng0IT4QwrYVX61WsEY^\\^',
+                );
+                $client->setHeaders($headers, false, false);
+                $client->setTimeout(5);
+                $client->setConnectTimeout(10);
+                $response = $client->get();
+                $result = $response->getBody();
+                $data_json = json_decode($result, true);
+                if ($data_json) {
+                    if ($data_json['status'] != 0) {
+                        Tools::WriteLogger($user_id, 2, "进程 MonitorTools    获取工具数据状态错误 " . $result, $account_number_id, 7);
+                        return false;
+                    }
+                    return $data_json;
+                }
+
+            }
+            Tools::WriteLogger($user_id, 2, "进程 MonitorTools    获取工具数据失败 result " . $result, $account_number_id, 7);
+            return false;
+        } catch (InvalidUrl $e) {
+            return false;
+        }
+    }
+
     /**
      * @param $token_value
      * @param $sunflowerId
@@ -314,10 +264,9 @@ class MonitorTools extends AbstractProcess
      * @return bool
      * @throws InvalidUrl  购买向日葵种子
      */
-    function shop($token_value, $sunflowerId, $user_id, $account_number_id)
+    function shopSeed($token_value, $sunflowerId, $user_id, $account_number_id)
     {
         for ($i = 0; $i < 5; $i++) {
-
             $client = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/buy-sunflowers');
             $headers = array(
                 'authority' => 'backend-farm.plantvsundead.com',
@@ -348,9 +297,38 @@ class MonitorTools extends AbstractProcess
             }
         }
         Tools::WriteLogger($user_id, 2, "购买向日葵/或者向日葵宝宝 失败", $account_number_id, 6);
-
         return false;
+    }
 
+
+    function IfShopTools($data, $token_value, $user_id, $account_number_id, $leWallet)
+    {
+        $update_data = [
+            'updated_at' => time()
+        ];
+        foreach ($data['data'] as $k => $value) {
+            if ($value['type'] == "WATER") { #水
+                $update_data['water'] = $value['usages'];
+                if ($value['usages'] < 25) { #水小 25 直接就买水
+                    $this->Shop_tools(3, $token_value, $user_id, $account_number_id, $leWallet);
+                }
+            }
+
+            if ($value['toolId'] == 1) {
+                $update_data['samll_pot'] = $value['usages'];
+                if ($value['usages'] < 1) {
+                    $this->Shop_tools(1, $token_value, $user_id, $account_number_id, $leWallet);
+                }
+            }
+            if ($value['type'] == "SCARECROW") {
+                $update_data['scarecrow'] = $value['usages'];
+                if ($value['usages'] < 1) {
+                    $this->Shop_tools(4, $token_value, $user_id, $account_number_id, $leWallet);
+                }
+            }
+        }
+
+        return $update_data;
     }
 
 }

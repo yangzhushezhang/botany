@@ -45,9 +45,8 @@ class TheTreeFromWorldTask implements TaskInterface
                         $redis = RedisPool::defer('redis');
                         $redis_data = $redis->hGet(Date("Y-m-d", time()) . "_worldTree", "account_" . $re['id']);
                         if (!$redis_data) {
-                            $redis->hSet(Date("Y-m-d", time()) . "_worldTree", "account_" . $re['id'], json_encode(['water' => 0, 'present' => 0]));
+                            $redis->hSet(Date("Y-m-d", time()) . "_worldTree", "account_" . $re['id'], json_encode(['water' => 0, 'present' => 3]));
                         }
-
 
                         for ($i = 0; $i < 5; $i++) {
                             $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/world-tree/datas');
@@ -135,12 +134,12 @@ class TheTreeFromWorldTask implements TaskInterface
 
     }
 
-
     # 昨日一键收取
     function OneKey($token_value, $user_id, $account_number_id)
     {
         try {
             $redis = RedisPool::defer("redis");
+            $result = 0;
             for ($i = 0; $i < 5; $i++) {
                 $headers = array(
                     'authority' => 'backend-farm.plantvsundead.com',
@@ -177,7 +176,15 @@ class TheTreeFromWorldTask implements TaskInterface
                 }
                 \co::sleep(2); # 五秒循环一次
             }
-            Tools::WriteLogger($user_id, 2, "一键收取昨日失败", $account_number_id, 10);
+            # 一键收取失败
+            $redis_data = $redis->hGet(Date("Y-m-d", time()) . "_worldTree", "account_" . $account_number_id);
+            if ($redis_data) {
+                $redis_array = json_decode($redis_data, true);
+                $redis_array['present'] = 0;
+                $redis->hSet(Date("Y-m-d", time()) . "_worldTree", "account_" . $account_number_id, json_encode($redis_array));
+            }
+
+            Tools::WriteLogger($user_id, 2, "一键收取昨日失败 :" . $result, $account_number_id, 10);
             return false;
         } catch (InvalidUrl $e) {
             Tools::WriteLogger($user_id, 2, "一键收取异常:" . $e->getMessage(), $account_number_id, 10);

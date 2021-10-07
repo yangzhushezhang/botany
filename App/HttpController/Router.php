@@ -53,6 +53,8 @@ class Router extends AbstractRouter
         $routeCollector->post('/user/refresh_tools', '/User/ToolsController/refresh_tools');
         #get_tools
         $routeCollector->post('/user/get_tools', '/User/ToolsController/get_tools');
+        #getEnergy
+        $routeCollector->post('/user/getEnergy', '/User/ToolsController/getEnergy');
 
 
         /**

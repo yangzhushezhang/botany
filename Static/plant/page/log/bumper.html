@@ -75,26 +75,26 @@
                             </select>
                         </div>
                     </div>
-                    <div class="layui-inline">
-                        <label class="layui-form-label">操作类型:</label>
-                        <div class="layui-input-inline">
-                            <select name="variety" id="variety" lay-filter="variety">
-                                <option value="999">全部</option>
-                                <option value="1">浇水</option>
-                                <option value="2">种植</option>
-                                <option value="3">放花盆</option>
-                                <option value="4">移除</option>
-                                <option value="5">验证码</option>
-                                <option value="6">购买</option>
-                                <option value="8">丰收</option>
-                                <option value="9">赶走乌鸦</option>
-                            </select>
-                        </div>
-                    </div>
+<!--                    <div class="layui-inline">-->
+<!--                        <label class="layui-form-label">操作类型:</label>-->
+<!--                        <div class="layui-input-inline">-->
+<!--                            <select name="variety" id="variety" lay-filter="variety">-->
+<!--                                <option value="999">全部</option>-->
+<!--                                <option value="1">浇水</option>-->
+<!--                                <option value="2">种植</option>-->
+<!--                                <option value="3">放花盆</option>-->
+<!--                                <option value="4">移除</option>-->
+<!--                                <option value="5">验证码</option>-->
+<!--                                <option value="6">购买</option>-->
+<!--                                <option value="8">丰收</option>-->
+<!--                                <option value="9">赶走乌鸦</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                    </div>-->
                     <div class="layui-inline">&emsp;
-                        <button class="layui-btn icon-btn currSerachBtn" lay-filter="userTbSearch" lay-submit>
-                            <i class="layui-icon">&#xe615;</i>搜索
-                        </button>
+<!--                        <button class="layui-btn icon-btn currSerachBtn" lay-filter="userTbSearch" lay-submit>-->
+<!--                            <i class="layui-icon">&#xe615;</i>搜索-->
+<!--                        </button>-->
                         <button class="layui-btn icon-btn currReloadBtn" lay-filter="reloadData" lay-submit style="background-color: #926dde;border-color: #926dde;">
                             <i class="layui-icon layui-icon-refresh"></i>刷新数据
                         </button>
@@ -293,6 +293,36 @@
             })
 
 
+            /* 下拉框选中事件 */
+            form.on('select(account_number_id)', function (data) {
+
+                var postAccount_number_id = ""
+
+                currSelectReturnID = data.value
+
+                if(currSelectReturnID == "777"){
+                    postAccount_number_id = ""
+                }else{
+                    postAccount_number_id = currSelectReturnID
+                }
+
+                //重载列表
+                insTb.reload({
+                    method: 'post',
+                    where: {
+                        account_number_id:postAccount_number_id,
+                        variety:8
+                    },
+                    done: function(res, curr, count){
+
+                    }
+                },false);
+
+
+                return false;
+            });
+
+
 
             /* 表格搜索 */
             form.on('submit(userTbSearch)', function (data) {
@@ -337,7 +367,6 @@
                 // insTb.reload({where: data.field, page: {curr: 1}});
                 return false;
             });
-
 
 
 

@@ -27,6 +27,159 @@
 
             width: 50px;
         }
+
+
+        .total-le-out {
+            background: #5ba6fd;
+            border: 4px solid #133f73;
+            box-shadow: 0 4px 0 rgb(0 0 0 / 20%), inset 0 -4px 0 #3f87dd, inset 0 3px 0 #8cd6ff;
+            border-radius: 12px;
+            height: 52px;
+            min-width: 150px;
+        }
+
+        .tw-p-1 {
+            padding: 0.25rem;
+        }
+
+         .tw-gap-2 {
+             gap: 0.5rem;
+         }
+
+         .tw-flex-row {
+             flex-direction: row;
+         }
+
+         .tw-cursor-pointer {
+             cursor: pointer;
+         }
+
+         .tw-flex {
+             display: flex;
+         }
+
+         .tw-relative {
+             position: relative;
+         }
+
+        .tw-p-1 {
+            padding: 0.25rem;
+        }
+
+         .tw-bg-green-total-le {
+             --tw-bg-opacity: 1;
+             background-color: rgba(52, 119, 200, var(--tw-bg-opacity));
+         }
+
+         .tw-rounded-md {
+             border-radius: 0.375rem;
+         }
+
+         .tw-gap-2 {
+             gap: 0.5rem;
+         }
+
+         .tw-flex-row {
+             flex-direction: row;
+         }
+
+         .tw-flex-grow {
+             flex-grow: 1;
+         }
+
+        .tw-flex {
+            display: flex;
+        }
+
+        .tw-flex-grow-0 {
+            flex-grow: 0;
+        }
+
+         .tw-relative {
+             position: relative;
+         }
+
+        .tw-w-5 {
+            width: 1.25rem;
+        }
+
+         .tw-h-6 {
+             height: 1.5rem;
+         }
+
+         .tw-m-auto {
+             margin: auto;
+         }
+
+        .tw-flex-grow {
+            flex-grow: 1;
+        }
+
+        .wallet-text {
+            font-family: Poppins;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 700;
+            letter-spacing: 0;
+            text-align: left;
+            color: #fff;
+        }
+
+        .exchange-sapling {
+            background: #5ba6fd;
+            border: 4px solid #133f73;
+            box-shadow: 0 4px 0 rgb(0 0 0 / 20%), inset 0 -4px 0 #3f87dd, inset 0 3px 0 #8cd6ff;
+            border-radius: 12px;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            cursor: pointer;
+            justify-content: space-around;
+        }
+
+
+        .exchange-sapling-inner {
+            background: #3477c8;
+            border-radius: 6px;
+            padding: 0 24px 0 8px;
+        }
+
+         .tw-items-center {
+             align-items: center;
+         }
+
+         .tw-flex {
+             display: flex;
+         }
+
+
+        .exchange-sapling img {
+            width: 34px;
+        }
+
+        .exchange-number {
+            font-weight: 700;
+            font-size: 28px;
+            line-height: 18px;
+            color: #fff;
+            margin-left: 16px;
+        }
+
+
+         .tw-w-4 {
+             width: 1rem;
+         }
+
+         .tw-h-6 {
+             height: 1.5rem;
+         }
+
+         .tw-ml-2 {
+             margin-left: 0.5rem;
+         }
+
+
     </style>
 
 
@@ -65,6 +218,38 @@
                         </button>
                     </div>
 
+                    <div class="layui-inline" style="width: 150px;height: 66px">
+                        <div class="tw-flex tw-flex-row tw-gap-2 tw-relative total-le-out tw-p-1 tw-cursor-pointer" style="height: 45px;">
+                            <div class="tw-flex tw-flex-row tw-flex-grow tw-gap-2 tw-rounded-md tw-bg-green-total-le tw-p-1" style="height: 35px;">
+                                <div class="tw-flex-grow-0 tw-relative">
+                                    <img class="tw-w-5 tw-h-6 tw-m-auto" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjkiIGhlaWdodD0iMzAiIHZpZXdCb3g9IjAgMCAyOSAzMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTI3LjEyNzkgMTIuNzM3NUwyNy4xMjc4IDEyLjczNzRDMjYuOTIzNSAxMi4yNDQxIDI2LjQ0MiAxMS45MjI0IDI1LjkwODEgMTEuOTIyNEgxNy43ODE5TDE5LjMwNTIgMi4wMjExMUwxOS4zMDUyIDIuMDIxMDlDMTkuMzkyIDEuNDU2ODEgMTkuMTA2MiAwLjkwMDcwNSAxOC41OTcxIDAuNjQyNjMzTDE4LjM3MSAxLjA4ODYyTDE4LjU5NzEgMC42NDI2MzNDMTguMDg3NiAwLjM4NDQzNiAxNy40NzAyIDAuNDgzMTY2IDE3LjA2NjYgMC44ODY3NzJMMi4xMjk2NSAxNS44MjM3TDIuNDgzMjEgMTYuMTc3MkwyLjEyOTY1IDE1LjgyMzdDMS43NTIwMyAxNi4yMDEzIDEuNjM5MTMgMTYuNzY5MiAxLjg0MzQgMTcuMjYyNUwxLjg0MzQzIDE3LjI2MjZDMi4wNDc4IDE3Ljc1NTkgMi41MjkyMyAxOC4wNzc2IDMuMDYzMjIgMTguMDc3NkgxMS4xODkzTDkuNjY2MDUgMjcuOTc4OUw5LjY2NjA1IDI3Ljk3ODlDOS41NzkyNiAyOC41NDMyIDkuODY0OTcgMjkuMDk5MyAxMC4zNzQyIDI5LjM1NzRDMTAuODgzNiAyOS42MTU2IDExLjUwMSAyOS41MTY4IDExLjkwNDYgMjkuMTEzMkwyNi44NDE2IDE0LjE3NjNDMjcuMjE5MiAxMy43OTg3IDI3LjMzMjIgMTMuMjMwOSAyNy4xMjc5IDEyLjczNzVaIiBmaWxsPSIjOENENkZGIiBzdHJva2U9IiMxNDE2NDciLz4KPC9zdmc+Cg==">
+                                </div>
+                                <div class="tw-flex-grow">
+                                    <p class="wallet-text" id="leWallet">0</p>
+                                </div>
+                            </div>
+                            <div class="tw-flex-grow-0 tw-relative tw-m-auto">
+                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE2IDIuNUwxMiA2LjUwMDAzSDE1VjEzLjVDMTUgMTQuNjA1IDE0LjEwNSAxNS41IDEzIDE1LjVDMTEuODk1IDE1LjUgMTEgMTQuNjA1IDExIDEzLjVWNi41MDAwM0MxMSA0LjI5NTAzIDkuMjA0OTggMi41MDAwNSA2Ljk5OTk4IDIuNTAwMDVDNC43OTQ5OCAyLjUwMDA1IDMgNC4yOTUwMyAzIDYuNTAwMDNWMTMuNUgwTDMuOTk5OTggMTcuNUw4LjAwMDAxIDEzLjVINS4wMDAwMVY2LjUwMDAzQzUuMDAwMDEgNS4zOTUwNSA1Ljg5NSA0LjUwMDAxIDcuMDAwMDMgNC41MDAwMUM4LjEwNTA2IDQuNTAwMDEgOC45OTk5OSA1LjM5NSA4Ljk5OTk5IDYuNTAwMDNWMTMuNUM4Ljk5OTk5IDE1LjcwNSAxMC43OTUgMTcuNSAxMyAxNy41QzE1LjIwNSAxNy41IDE3IDE1LjcwNSAxNyAxMy41VjYuNTAwMDNIMjBMMTYgMi41WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg==">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="layui-inline" style="width: 180px;height: 66px;margin-left: 20px">
+                        <div class="exchange-sapling">
+                            <div class="tw-flex tw-items-center exchange-sapling-inner" style="margin-left: 20px;">
+                                <img src="../../assets/images/sm1.png">
+                                <span class="exchange-number" id="usagesSunflower">0</span>
+                            </div>
+                            <div>
+                                <img class="tw-w-4 tw-h-6 tw-ml-2" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE2IDIuNUwxMiA2LjUwMDAzSDE1VjEzLjVDMTUgMTQuNjA1IDE0LjEwNSAxNS41IDEzIDE1LjVDMTEuODk1IDE1LjUgMTEgMTQuNjA1IDExIDEzLjVWNi41MDAwM0MxMSA0LjI5NTAzIDkuMjA0OTggMi41MDAwNSA2Ljk5OTk4IDIuNTAwMDVDNC43OTQ5OCAyLjUwMDA1IDMgNC4yOTUwMyAzIDYuNTAwMDNWMTMuNUgwTDMuOTk5OTggMTcuNUw4LjAwMDAxIDEzLjVINS4wMDAwMVY2LjUwMDAzQzUuMDAwMDEgNS4zOTUwNSA1Ljg5NSA0LjUwMDAxIDcuMDAwMDMgNC41MDAwMUM4LjEwNTA2IDQuNTAwMDEgOC45OTk5OSA1LjM5NSA4Ljk5OTk5IDYuNTAwMDNWMTMuNUM4Ljk5OTk5IDE1LjcwNSAxMC43OTUgMTcuNSAxMyAxNy41QzE1LjIwNSAxNy41IDE3IDE1LjcwNSAxNyAxMy41VjYuNTAwMDNIMjBMMTYgMi41WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg==">
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
                     <div class="layui-inline" style="float: right;margin-right: 20px">
                         <image src="../../assets/images/xp.jpg" class="images_tool"></image>
                         <span id="xp">0</span>
@@ -77,6 +262,8 @@
                         <image src="../../assets/images/wy.jpg" class="images_tool"></image>
                         <span id="wy">0</span>
                     </div>
+
+
                 </div>
 
             </form>
@@ -154,7 +341,7 @@
             /* 普通table-渲染表格 */
             var insTb = table.render({
                 elem: '#userTable',
-                url: global_request_get_farmInformation+"?token="+global_token,
+                url: global_request_refresh_botany+"?token="+global_token,
                 // url: "www.baidu.com",
                 method: 'post',
                 where:get_playKind_request_param,
@@ -173,52 +360,70 @@
                 height : "full-100",
                 limit : 15,
                 limits : [15,30,50,100] ,
-                // response: {
-                //     statusName: 'code' //规定数据状态的字段名称，默认：code
-                //     ,statusCode: 200 //规定成功的状态码，默认：0
-                //     // ,msgName: 'hint' //规定状态信息的字段名称，默认：msg
-                //     // ,countName: 'total' //规定数据总数的字段名称，默认：count
-                //     ,dataName: 'result' //规定数据列表的字段名称，默认：data
-                // },
+                response: {
+                    statusName: 'status' //规定数据状态的字段名称，默认：code
+                    // ,statusCode: 0 //规定成功的状态码，默认：0
+                    // ,msgName: 'hint' //规定状态信息的字段名称，默认：msg
+                    // ,countName: 'total' //规定数据总数的字段名称，默认：count
+                    // ,dataName: 'result' //规定数据列表的字段名称，默认：data
+                },
                 // id : "systemLog",
                 cols: [[
                     {type: 'checkbox'},
-                    {field: 'id',title:'ID',sort: true,align:"center",width:130},
-                    {field: 'farm_id', title: '植物ID', sort: true,align:"center"},
+                    // {field: 'id',title:'ID',sort: true,align:"center",width:130},
+                    {field: '_id', title: 'ID', sort: true,align:"center",width:228},
 
-                    {field: 'needWater', title: '需要浇水', sort: true,align:"center",templet:function(d){
+                    // {field: 'needWater', title: '需要浇水', sort: true,align:"center",templet:function(d){
+                    //
+                    //         if(d.needWater == 2){
+                    //             // return '否';
+                    //             return '<span >'+'否'+'</span>'
+                    //         }else{
+                    //             return '<span style="color: red;font-weight: bold;font-size: 18px">'+'真'+'</span>'
+                    //         }
+                    //
+                    // }},
+                    // {field: 'hasSeed', title: '需要种子', sort: true,align:"center",templet:function(d){
+                    //
+                    //         if(d.hasSeed == 2){
+                    //             return '否';
+                    //         }else{
+                    //             return '<span style="color: red;font-weight: bold;font-size: 18px">'+'真'+'</span>'
+                    //         }
+                    //
+                    // }},
 
-                            if(d.needWater == 2){
-                                // return '否';
-                                return '<span >'+'否'+'</span>'
+                    {field: 'activeTools', title: '工具(盆/水)', sort: true,align:"center",templet:function(d){
+                            // console.log("d",d)
+                            if(d.activeTools.length === 0 ){
+                                return '<div><img src="../../assets/images/xp.jpg" ' + 'alt="" width="40px" height="40px" ><span style="vertical-align: middle;font-size: 15px !important;margin-left: 5px;">'+'0'+'</span><img src="../../assets/images/s.jpg" ' + 'alt="" width="40px" height="40px" ><span style="vertical-align: middle;font-size: 15px !important;margin-left: 5px;">'+'0'+'</span></div>';
+
                             }else{
-                                return '<span style="color: red;font-weight: bold;font-size: 18px">'+'真'+'</span>'
+                                return '<div><img src="../../assets/images/xp.jpg" ' + 'alt="" width="40px" height="40px" ><span style="vertical-align: middle;font-size: 15px !important;margin-left: 5px;">'+d.activeTools[0]['count']+'</span><img src="../../assets/images/s.jpg" ' + 'alt="" width="40px" height="40px" ><span style="vertical-align: middle;font-size: 15px !important;margin-left: 5px;">'+d.activeTools[1]['count']+'</span></div>';
                             }
 
-                    }},
-                    {field: 'hasSeed', title: '需要种子', sort: true,align:"center",templet:function(d){
-
-                            if(d.hasSeed == 2){
-                                return '否';
-                            }else{
-                                return '<span style="color: red;font-weight: bold;font-size: 18px">'+'真'+'</span>'
-                            }
 
                     }},
 
-                    {field: 'totalHarvest', title: '能量值', sort: true,align:"center"},
+
+                    {field: 'totalHarvest', title: '能量值', sort: true,align:"center",width:108},
 
                     {field: 'harvestTime', title: '收货时间',width:170, sort: true,align:"center", templet: function (d) {
-                            return util.toDateString(d.harvestTime* 1000);
+                            // return util.toDateString(d.harvestTime* 1000);
+                            return transformTimestamp(d.harvestTime)
                         }, sort: true
                     },
-                    {field: 'plant_type', title: '植物类型', sort: true,align:"center",templet:function(d){
+                    {field: 'plantType', title: '植物类型', sort: true,width:130,align:"center",templet:function(d){
 
-                           if(d.plant_type == 1){
-                               return '<div><img src="../../assets/images/sm.png" ' + 'alt="" width="40px" height="40px"></a></div>';
-                           }else if(d.plant_type == 2){
-                               return '<div><img src="../../assets/images/mm.png" ' + 'alt="" width="40px" height="40px"></a></div>';
-                           }
+                            if(d.plantId == "" ||  d.plantId == undefined ||  d.plantId == 0 ){
+                                if(d.plantType == 1){
+                                    return '<div><img src="../../assets/images/sm.png" ' + 'alt="" width="40px" height="40px"></a></div>';
+                                }else if(d.plantType == 2){
+                                    return '<div><img src="../../assets/images/mm.png" ' + 'alt="" width="40px" height="40px"></a></div>';
+                                }
+                            }else{
+                                return '<div><img src="'+d.iconUrl+'" ' + 'alt="" width="40px" height="40px"></a></div>'
+                            }
 
                     }},
                     {field: 'stage', title: '是否存在乌鸦', sort: true,align:"center",templet:function(d){
@@ -231,20 +436,20 @@
                     }},
                     {field: 'plantId', title: '植物ID',width:125, sort: true,align:"center",templet:function(d){
 
-                            if(d.plantId == "" || d.plantId.length === 0){
+                            if(d.plantId == "" ||  d.plantId == undefined ||  d.plantId == 0){
                                 return '无';
                             }else{
                                 return d.plantId
                             }
                     }},
-                    {field: 'iconUrl', title: '植物图片', sort: true,align:"center",templet:function(d){
-
-                            if(d.plantId == "" || d.plantId.length === 0){
-                                return '无';
-                            }else{
-                                return '<div><img src="'+d.iconUrl+'" ' + 'alt="" width="40px" height="40px"></a></div>'
-                            }
-                    }},
+                    // {field: 'iconUrl', title: '植物图片', sort: true,align:"center",templet:function(d){
+                    //
+                    //         if(d.plantId == "" ||  d.plantId == undefined){
+                    //             return '无';
+                    //         }else{
+                    //             return '<div><img src="'+d.iconUrl+'" ' + 'alt="" width="40px" height="40px"></a></div>'
+                    //         }
+                    // }},
                     {field: 'stage', title: '植物状态',width:115, sort: true,align:"center",templet:function(d){
 
                             //news new ?? 新种植
@@ -316,12 +521,7 @@
                     // }},
 
 
-                    // {field: 'min_bet', title: '最小投注', sort: true,align:"center",templet:function(d){
-                    //
-                    // 		return '<span style="color: red">'+d.min_bet+'</span>'
-                    //
-                    // }},
-                    //
+
                     //
                     // {field: 'max_bet', title: '最大投注', sort: true,align:"center",templet:function(d){
                     //
@@ -418,34 +618,36 @@
                     //     }},
 
 
-                    // {field: 'loss_per_cent_id', title: '当前赔率', sort: true,align:"center"},
-                    {field: 'status', title: '状态', sort: true,align:"center",width:100,templet:function(d){
 
-                            if(d.status == "1"){//正常
-                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #48b0f7;border-color: #48b0f7;">'+'正常'+'</button>'
-                            }else{
-                                return ''
-                            }
-                    }},
+                    // {field: 'status', title: '状态', sort: true,align:"center",width:100,templet:function(d){
+                    //
+                    //         if(d.status == "1"){//正常
+                    //             return '<button class="layui-btn  layui-btn-sm" style="background-color: #48b0f7;border-color: #48b0f7;">'+'正常'+'</button>'
+                    //         }else{
+                    //             return ''
+                    //         }
+                    // }},
+
                     // {
                     //     field: 'created_at', title: '创建时间',align:"center",width:175, templet: function (d) {
                     //         return util.toDateString(d.created_at* 1000);
                     //     }, sort: true
                     // },
-                    {
-                    	field: 'updated_at', title: '更新时间',align:"center",width:175, templet: function (d) {
 
-                            var timestamp = Date.parse(new Date());
-                            var timeoutNum = GetDateDiff(util.toDateString(d.updated_at* 1000),util.toDateString(timestamp),'hour')
-                            // console.log("当前时间差",timeoutNum)
-                            if(timeoutNum >= 2){
-                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #f7487f;border-color: #f7487f;">'+util.toDateString(d.updated_at* 1000)+'</button>'
-                            }else{
-                                return util.toDateString(d.updated_at* 1000);
-                            }
-
-                    	}, sort: true
-                    },
+                    // {
+                    // 	field: 'updated_at', title: '更新时间',align:"center",width:175, templet: function (d) {
+                    //
+                    //         var timestamp = Date.parse(new Date());
+                    //         var timeoutNum = GetDateDiff(util.toDateString(d.updated_at* 1000),util.toDateString(timestamp),'hour')
+                    //         // console.log("当前时间差",timeoutNum)
+                    //         if(timeoutNum >= 2){
+                    //             return '<button class="layui-btn  layui-btn-sm" style="background-color: #f7487f;border-color: #f7487f;">'+util.toDateString(d.updated_at* 1000)+'</button>'
+                    //         }else{
+                    //             return util.toDateString(d.updated_at* 1000);
+                    //         }
+                    //
+                    // 	}, sort: true
+                    // },
 
                     // {title: '操作', width:250, templet:'#orderListBar',fixed:"right",align:"center"}
                 ]],
@@ -497,32 +699,79 @@
                     //重新渲染 固定写法
                     form.render("select");
 
+
+
+                    //刷新自己的工具信息
                     var param={};
                     param['id']= currAccountID;
-                    //获取工具数据到下拉框中
                     $.ajax({
-                        url: global_request_get_tools+"?token="+global_token,
+                        url: global_request_refresh_tools+"?token="+global_token,
                         dataType: 'json',
                         type: 'post',
                         data: param,
                         success: function (dataArray) {
 
-                            if (dataArray.code != 200) {
+                            if (dataArray.status != 0) {
 
                                 // console.log(dataArray.msg)
-                                // layer.msg(dataArray.msg);
+                                layer.msg(dataArray.msg);
 
                                 return false;
 
                             }
 
+                            var dataArrayOBj = dataArray.data
+
+                            // console.log("dataArray",dataArray)
+                            dataArrayOBj.find((item)=>{
+
+                                // console.log("item",item)
+
+                                if(item.toolId == 1){
+                                    $("#xp").text(item.usages)
+                                }
+                                if(item.toolId == 2){
+
+                                }
+                                if(item.toolId == 3){
+                                    $("#s").text(item.usages)
+                                }
+                                if(item.toolId == 4){
+
+                                }
+                                if(item.toolId == 5){
+                                    $("#wy").text(item.usages)
+                                }
+
+                            })
 
 
-                            $("#s").text(dataArray.result.water)
-                            $("#xp").text(dataArray.result.samll_pot)
-                            $("#wy").text(dataArray.result.scarecrow)
-                            // $("#s").text(dataArray.result.water)
-                            // $("#s").text(dataArray.result.water)
+                        }
+                    })
+
+                    //刷新能量数据
+                    var param={};
+                    param['id']= currAccountID;
+                    $.ajax({
+                        url: global_request_getEnergy+"?token="+global_token,
+                        dataType: 'json',
+                        type: 'post',
+                        data: param,
+                        success: function (dataArray) {
+
+                            if (dataArray.status != 0) {
+
+                                // console.log(dataArray.msg)
+                                layer.msg(dataArray.msg);
+
+                                return false;
+
+                            }
+
+                            var dataArrayOBj = dataArray.data
+
+                            $("#leWallet").text(dataArrayOBj.leWallet)
+                            $("#usagesSunflower").text(dataArrayOBj.usagesSunflower)
 
                         }
                     })
@@ -536,6 +785,7 @@
                             action:'select'
                         }
                     },false);
+
 
 
                     // get_playKind_request_param['token']= $.cookie('tokenMyb');
@@ -568,9 +818,6 @@
 
 
                 currSelectReturnID = data.value
-
-
-
 
                 //重载列表
                 insTb.reload({
@@ -621,9 +868,9 @@
                     }
                 },false);
 
+                //刷新自己的工具信息
                 var param={};
                 param['id']= currSelectReturnID;
-                //刷新自己的工具信息
                 $.ajax({
                     url: global_request_refresh_tools+"?token="+global_token,
                     dataType: 'json',
@@ -631,7 +878,7 @@
                     data: param,
                     success: function (dataArray) {
 
-                        if (dataArray.code != 200) {
+                        if (dataArray.status != 0) {
 
                             // console.log(dataArray.msg)
                             layer.msg(dataArray.msg);
@@ -640,41 +887,60 @@
 
                         }
 
+                        var dataArrayOBj = dataArray.data
 
-                        // layer.msg(dataArray.msg, {icon: 1, time: 500}, function () {
-                        //
-                        //
-                        // });
+                        // console.log("dataArray",dataArray)
+                        dataArrayOBj.find((item)=>{
 
-                        //获取工具数据到右上角
-                        $.ajax({
-                            url: global_request_get_tools+"?token="+global_token,
-                            dataType: 'json',
-                            type: 'post',
-                            data: param,
-                            success: function (dataArray) {
+                            // console.log("item",item)
 
-                                if (dataArray.code != 200) {
-
-                                    // console.log(dataArray.msg)
-                                    // layer.msg(dataArray.msg);
-
-                                    return false;
-
-                                }
-
-
-
-                                $("#s").text(dataArray.result.water)
-                                $("#xp").text(dataArray.result.samll_pot)
-                                $("#wy").text(dataArray.result.scarecrow)
-                                // $("#s").text(dataArray.result.water)
-                                // $("#s").text(dataArray.result.water)
+                            if(item.toolId == 1){
+                                $("#xp").text(item.usages)
+                            }
+                            if(item.toolId == 2){
 
                             }
+                            if(item.toolId == 3){
+                                $("#s").text(item.usages)
+                            }
+                            if(item.toolId == 4){
+
+                            }
+                            if(item.toolId == 5){
+                                $("#wy").text(item.usages)
+                            }
+
                         })
 
 
+                    }
+                })
+
+
+
+                //刷新能量数据
+                var param={};
+                param['id']= currSelectReturnID;
+                $.ajax({
+                    url: global_request_getEnergy+"?token="+global_token,
+                    dataType: 'json',
+                    type: 'post',
+                    data: param,
+                    success: function (dataArray) {
+
+                        if (dataArray.status != 0) {
+
+                            // console.log(dataArray.msg)
+                            layer.msg(dataArray.msg);
+
+                            return false;
+
+                        }
+
+                        var dataArrayOBj = dataArray.data
+
+                        $("#leWallet").text(dataArrayOBj.leWallet)
+                        $("#usagesSunflower").text(dataArrayOBj.usagesSunflower)
 
                     }
                 })
@@ -685,9 +951,9 @@
 
             $("#reload_tool").click(function () {
 
+                //刷新自己的工具信息
                 var param={};
                 param['id']= currSelectReturnID;
-                //刷新自己的工具信息
                 $.ajax({
                     url: global_request_refresh_tools+"?token="+global_token,
                     dataType: 'json',
@@ -695,7 +961,7 @@
                     data: param,
                     success: function (dataArray) {
 
-                        if (dataArray.code != 200) {
+                        if (dataArray.status != 0) {
 
                             // console.log(dataArray.msg)
                             layer.msg(dataArray.msg);
@@ -704,40 +970,30 @@
 
                         }
 
+                        var dataArrayOBj = dataArray.data
 
-                        layer.msg(dataArray.msg, {icon: 1, time: 500}, function () {
+                        // console.log("dataArray",dataArray)
+                        dataArrayOBj.find((item)=>{
 
+                            // console.log("item",item)
 
-                        });
-
-                        //获取工具数据到右上角
-                        $.ajax({
-                            url: global_request_get_tools+"?token="+global_token,
-                            dataType: 'json',
-                            type: 'post',
-                            data: param,
-                            success: function (dataArray) {
-
-                                if (dataArray.code != 200) {
-
-                                    // console.log(dataArray.msg)
-                                    // layer.msg(dataArray.msg);
-
-                                    return false;
-
-                                }
-
-
-
-                                $("#s").text(dataArray.result.water)
-                                $("#xp").text(dataArray.result.samll_pot)
-                                $("#wy").text(dataArray.result.scarecrow)
-                                // $("#s").text(dataArray.result.water)
-                                // $("#s").text(dataArray.result.water)
+                            if(item.toolId == 1){
+                                $("#xp").text(item.usages)
+                            }
+                            if(item.toolId == 2){
 
                             }
-                        })
+                            if(item.toolId == 3){
+                                $("#s").text(item.usages)
+                            }
+                            if(item.toolId == 4){
 
+                            }
+                            if(item.toolId == 5){
+                                $("#wy").text(item.usages)
+                            }
+
+                        })
 
 
                     }
@@ -782,6 +1038,22 @@
                 return false
 
             })
+
+
+            function transformTimestamp (timestamp) {
+                //let a = new Date(timestamp).getTime();
+                //const date = new Date(a);
+                const date=new Date(timestamp)
+                const Y = date.getFullYear() + '-';
+                const M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+                const D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + '  ';
+                const h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+                const m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes())+ ':';
+                const s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()); // 秒
+                const dateString = Y + M + D + h + m+s;
+                return dateString;
+            }
+
 
         });
 

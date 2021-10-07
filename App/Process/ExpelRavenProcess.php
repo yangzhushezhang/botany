@@ -25,7 +25,6 @@ class ExpelRavenProcess extends AbstractProcess
         var_dump("这里一个驱逐乌鸦的进程");
         go(function () {
             while (true) {
-
                 try {
                     \EasySwoole\RedisPool\RedisPool::invoke(function (\EasySwoole\Redis\Redis $redis) {
                         # 监听 赶乌鸦的接口
@@ -40,7 +39,7 @@ class ExpelRavenProcess extends AbstractProcess
                                     $two = ToolsModel::invoke($client)->get(['account_number_id' => $array_data[1]]);
                                     $there = FarmModel::invoke($client)->get(['id' => $array_data[0]]);
                                     if ($two && $two['scarecrow'] < 1) {
-                                        Tools::WriteLogger($array_data[2], 2, "进程 ExpelRavenProcess 稻草人数量不足", $array_data[1], 9);
+                                        Tools::WriteLogger($array_data[2], 2, "进程 ExpelRavenProcess 稻草人不足,驱赶乌鸦失败", $array_data[1], 9, $there['farm_id']);
                                         return false;
                                     }
                                     if ($one && $there) {
@@ -71,15 +70,15 @@ class ExpelRavenProcess extends AbstractProcess
                                         $data = json_decode($response, true);
                                         if (!$data) {
                                             # 解析失败 赶跑乌鸦失败
-                                            \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
+                                            \EasySwoole\Component\Timer::getInstance()->after(15 * 1000, function () use ($id, $redis) {
                                                 $redis->rPush("CROW_IDS", $id);  # account_number_id  种子类型 user_id
                                             });
-                                            Tools::WriteLogger($array_data[2], 2, "账户id:" . $array_data[1] . " 种子id:" . $one['farm_id'] . "赶走乌鸦失败.....json解析失败", $array_data[1], 9);
+                                            Tools::WriteLogger($array_data[2], 2, "进程 ExpelRavenProcess 数据返回失败,驱赶乌鸦失败,过15秒重试", $array_data[1], 9, $there['farm_id']);
                                             return false;
                                         }
+
                                         if ($data['status'] != 0) {
                                             if ($data['status'] == 556) {
-                                                var_dump("验证码出现...准备去处理它");
                                                 #判断是否已经在处理验证码了!
                                                 $IfDoingVerification = $redis->get("IfDoingVerification");
                                                 if (!$IfDoingVerification) {
@@ -90,28 +89,24 @@ class ExpelRavenProcess extends AbstractProcess
                                                 \EasySwoole\Component\Timer::getInstance()->after(120 * 1000, function () use ($id, $redis) {
                                                     $redis->rPush("CROW_IDS", $id);  # 赶乌鸦  2分钟
                                                 });
-                                                Tools::WriteLogger($array_data[2], 2, "进程 WateringProcess 种子id:" . $one['farm_id'] . "浇水失败了,出现了验证码 result:" . $response, $array_data[1], 9);
+                                                Tools::WriteLogger($array_data[2], 2, "进程 ExpelRavenProcess 账号出现验证,赶走乌鸦失败,2分钟后重试" . $response, $array_data[1], 9, $there['farm_id']);
                                                 return false;
                                             }
-
-                                            Tools::WriteLogger($array_data[2], 2, "账户id:" . $array_data[1] . " 种子id:" . $one['farm_id'] . "赶走乌鸦失败....." . $response, $array_data[1], 9);
+                                            Tools::WriteLogger($array_data[2], 2, "进程 ExpelRavenProcess 返回状态不准确,result: " . $response, $array_data[1], 9, $there['farm_id']);
                                             return false;
                                         }
-                                        Tools::WriteLogger($array_data[2], 1, "账户id:" . $array_data[1] . " 种子id:" . $one['farm_id'] . "赶走乌鸦成功....." . $response, $array_data[1], 9);
+                                        Tools::WriteLogger($array_data[2], 1, "进程 ExpelRavenProcess 乌鸦赶走成功" . $response, $array_data[1], 9, $there['farm_id']);
                                         #
                                     } else {
-                                        var_dump("ExpelRavenProcess");
+                                        Tools::WriteLogger($array_data[2], 1, "进程 ExpelRavenProcess count() 不等于三,ids:" . $id, $array_data[1], 9);
                                     }
-
                                 }
-
                             });
-
                         }
                     }, 'redis');
                     \co::sleep(5); # 五秒循环一次
-                }catch (\Throwable $exception){
-                    Tools::WriteLogger(0, 2, "ExpelRavenProcess 进程 异常:" . $exception->getMessage(), "", 5);
+                } catch (\Throwable $exception) {
+                    Tools::WriteLogger(0, 2, "ExpelRavenProcess 进程 异常:" . $exception->getMessage(), "", 9);
                 }
             }
 

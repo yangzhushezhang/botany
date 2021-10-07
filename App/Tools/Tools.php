@@ -31,7 +31,6 @@ class Tools
                     'sec-fetch-dest' => 'empty',
                     'referer' => 'https://marketplace.plantvsundead.com/',
                     'accept-language' => 'zh-CN,zh;q=0.9',
-                    # 'if-none-match' => 'W/^\\^99-2xqEFdktsE4xMb9duc5cLOCwO+c^\\^',
                 );
                 $client->setHeaders($headers, false, false);
                 $client->setTimeout(5);
@@ -54,7 +53,6 @@ class Tools
     # 获取 种子 向日葵 个数
     static function getSunflowers($token_value)
     {
-
         try {
             for ($i = 0; $i < 5; $i++) {
                 $client = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/my-sunflowers');
@@ -72,7 +70,6 @@ class Tools
                     'sec-fetch-dest' => 'empty',
                     'referer' => 'https://marketplace.plantvsundead.com/',
                     'accept-language' => 'zh-CN,zh;q=0.9',
-                    #'if-none-match' => 'W/^\\^99-2xqEFdktsE4xMb9duc5cLOCwO+c^\\^',
                 );
                 $client->setHeaders($headers, false, false);
                 $client->setTimeout(5);
@@ -90,7 +87,6 @@ class Tools
             return false;
         }
     }
-
 
 
     #   购买工具
@@ -263,7 +259,9 @@ class Tools
                 if ($data && $data['status'] == 0) {
                     $redis = RedisPool::defer("redis");
                     $redis_data = $redis->hGet(Date("Y-m-d", time()) . "_worldTree", "account_" . $account_number_id);
+                    var_dump("?????");
                     if ($redis_data) {
+                        var_dump("浇水成功");
                         $redis_array = json_decode($redis_data, true);
                         $redis_array['water'] = 1;
                         $redis->hSet(Date("Y-m-d", time()) . "_worldTree", "account_" . $account_number_id, json_encode($redis_array));
@@ -280,5 +278,45 @@ class Tools
             return false;
         }
     }
+
+
+    # 获取工具信息
+    function GteNewTools($token_value)
+    {
+        try {
+            for ($i = 0; $i < 5; $i++) {
+                $client = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/my-tools');
+                $headers = array(
+                    'authority' => 'backend-farm.plantvsundead.com',
+                    'sec-ch-ua' => '^\\^Google',
+                    'accept' => 'application/json, text/plain, */*',
+                    'authorization' => $token_value,
+                    'sec-ch-ua-mobile' => '?0',
+                    'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
+                    'sec-ch-ua-platform' => '^\\^Windows^\\^',
+                    'origin' => 'https://marketplace.plantvsundead.com',
+                    'sec-fetch-site' => 'same-site',
+                    'sec-fetch-mode' => 'cors',
+                    'sec-fetch-dest' => 'empty',
+                    'referer' => 'https://marketplace.plantvsundead.com/',
+                    'accept-language' => 'zh-CN,zh;q=0.9',
+                    #   'if-none-match' => 'W/^\\^32c-sAwO7sU/nng0IT4QwrYVX61WsEY^\\^',
+                );
+                $client->setHeaders($headers, false, false);
+                $client->setTimeout(5);
+                $client->setConnectTimeout(10);
+                $response = $client->get();
+                $result = $response->getBody();
+                $data_json = json_decode($result, true);
+                if ($data_json && $data_json['status'] == 0) {
+                    return $data_json;
+                }
+            }
+            return false;
+        } catch (InvalidUrl $e) {
+            return false;
+        }
+    }
+
 
 }

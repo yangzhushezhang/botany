@@ -99,11 +99,109 @@
             width: 154px;
             height: 76px;
             background:  url("../../assets/images/js1.png") ;
-            top: 45%;
-            left: 20%;
+            top: 35%;
+            left: -5%;
         }
 
 
+        .claim {
+            background: #71c638;
+            border: 2px solid #263f2a;
+            box-shadow: inset 0 -4px 0 #47881b, inset 0 4px 0 #b5ff84;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 12px;
+            line-height: 18px;
+            color: #fff;
+            /*padding: 7px 23px;*/
+            position: absolute;
+            /*top: 25%;*/
+            /*left: 50%;*/
+            top: 105%;
+            left: 30%;
+        }
+
+
+        .status{
+            margin-top: 30px;
+            background-image: url(../../assets/images/bg-status.png);
+            background-size: cover;
+            width: 264px;
+            height: 295px;
+            position: relative;
+
+        }
+
+
+        .tw-justify-center {
+            justify-content: center;
+        }
+
+        .tw-items-center {
+            align-items: center;
+        }
+
+        .tw-flex-col {
+            flex-direction: column;
+        }
+
+        .tw-flex {
+            display: flex;
+        }
+
+        .frame {
+            position: absolute;
+            top: -9%;
+            background-image: url(../../assets/images/frame.png);
+            width: 192px;
+            height: 53px;
+        }
+
+        .frame__text {
+            font-size: 28px;
+            line-height: 119%;
+            text-align: center;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            color: #e9fbb0;
+            text-shadow: 0 3px 0 #eec27d, 0 6px 3px #914a26;
+            font-family: "Luckiest Guy";
+        }
+
+        .status__stat {
+            background-image: url(../../assets/images/paper.png);
+            width: 219px;
+            height: 98px;
+            position: relative;
+            top: -50px;
+        }
+
+        .status__stat:after {
+
+            content: "";
+            position: absolute;
+            left: 44%;
+            top: -11px;
+            background-image: url(../../assets/images/circle.png);
+            width: 11%;
+            /*width: 100%;*/
+            height: 26px;
+
+        }
+
+        .textP{
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .textP1{
+            text-align: center;
+            /*margin-top: 5px;*/
+        }
+
+        #worldExecuteBtn{
+            background-color: #c2c2c2;
+        }
 
     </style>
 </head>
@@ -118,10 +216,12 @@
 <!--        <fieldset class="layui-elem-field layui-field-title">-->
 <!--            <legend>今日数据</legend>-->
 <!--        </fieldset>-->
-        <div class="layui-col-md3 layui-col-sm4 layui-col-xs6">
-            <div class="console-link-block">
+<!--        #40D4B0-->
+
+        <div class="layui-col-md3 layui-col-sm4 layui-col-xs6" disabled="disabled" id="worldExecuteDiv">
+            <div class="console-link-block" id="worldExecuteBtn">
                 <div class="console-link-block-num" id="treeStatus">无</div>
-                <div class="console-link-block-text">当前世界树执行状态</div>
+                <div class="console-link-block-text">今日世界树是否执行</div>
                 <i class="console-link-block-icon iconfont icon-kaiqi1"></i>
 <!--                <div class="console-link-block-band">XXXX</div>-->
             </div>
@@ -168,23 +268,44 @@
 <!--        </div>-->
     </div>
 
-    <div style="display: flex;width: 100%;position: relative">
+    <div style="clear:both;display: flex;flex-direction: row;">
 
-<!--        <div id="treeTimeImage" >-->
-<!--            <image src="../../assets/images/sjs3.png" />-->
-<!--        </div>-->
-<!--        <div id="treeTime" style="margin-top: 100px;margin-left: -250px">-->
 
-<!--        </div>-->
+        <div class="status tw-flex tw-flex-col tw-justify-center tw-items-center ">
+            <div class="frame tw-flex tw-justify-center tw-items-center">
+                <p class="frame__text">STATUS</p>
+            </div>
+            <div class="status__stat">
+                <p class="textP">You have unclaimed rewardsfrom yesterday, click Claim</p>
+                <p class="textP1">button to claim</p>
+                <button class="layui-btn claim" type="button" id="claimClick">Claim</button>
+            </div>
 
-        <div  class="waterclass" id="waterClick">
-<!--            <image src="../../assets/images/js.jpg"></image>-->
         </div>
 
-        <div id="treeTimeImage" style="width:60%">
-            <image src="../../assets/images/sjs.gif" style="float: right;margin-right: -100px"></image>
-        </div>
-        <div id="treeTime" style="margin-top: 100px;">
+        <div style="display: flex;width: 1000px;position: relative;margin-left: 200px">
+
+
+            <!--        <div id="treeTimeImage" >-->
+            <!--            <image src="../../assets/images/sjs3.png" />-->
+            <!--        </div>-->
+            <!--        <div id="treeTime" style="margin-top: 100px;margin-left: -250px">-->
+
+            <!--        </div>-->
+
+
+            <div  class="waterclass" id="waterClick">
+                <!--            <image src="../../assets/images/js.jpg"></image>-->
+            </div>
+
+            <div id="treeTimeImage" style="width:60%">
+                <image src="../../assets/images/sjs.gif" style="float: right;margin-right: -100px"></image>
+            </div>
+            <div id="treeTime" style="margin-top: 100px;">
+
+            </div>
+
+
 
         </div>
 
@@ -193,105 +314,6 @@
     </div>
 
 
-
-
-
-
-
-
-<!--     统计图表 -->
-<!--    <div class="layui-row layui-col-space15">-->
-<!--        <div class="layui-col-md4 layui-col-sm6">-->
-<!--            <div class="layui-card" style="overflow: hidden;">-->
-<!--                <div class="layui-card-header">日统计</div>-->
-<!--                <div class="layui-card-body">-->
-<!--                    <div id="consoleChartsDay" style="height: 300px;"></div>-->
-<!--                    <div style="color: #10B4E8;font-size: 18px;position: absolute;bottom: 85px;left: 0;right:0;text-align: center;cursor: pointer;">-->
-<!--                        签到明细<i class="layui-icon layui-icon-right" style="font-size: 16px;"></i>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="layui-col-md4 layui-col-sm6">-->
-<!--            <div class="layui-card" style="overflow: hidden;">-->
-<!--                <div class="layui-card-header">周统计</div>-->
-<!--                <div class="layui-card-body">-->
-<!--                    <div id="consoleChartsWeek" style="height: 300px;"></div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="layui-col-md4 layui-col-sm6">-->
-<!--            <div class="layui-card" style="overflow: hidden;">-->
-<!--                <div class="layui-card-header">月统计</div>-->
-<!--                <div class="layui-card-body">-->
-<!--                    <div id="consoleChartsMonth" style="height: 300px;"></div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="layui-col-md4 layui-col-sm6">-->
-<!--            <div class="layui-card" style="overflow: hidden;">-->
-<!--                <div class="layui-card-header">热门搜索</div>-->
-<!--                <div class="layui-card-body">-->
-<!--                    <div id="consoleChartsWord" style="height: 300px;"></div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="layui-col-md8 layui-col-sm12">-->
-<!--            <div class="layui-card" style="overflow: hidden;">-->
-<!--                <div class="layui-card-header">用户分布</div>-->
-<!--                <div class="layui-card-body">-->
-<!--                    <div class="layui-row">-->
-<!--                        <div class="layui-col-md8 layui-col-sm7">-->
-<!--                            <div id="consoleChartsMap" style="height: 300px;"></div>-->
-<!--                        </div>-->
-<!--                        <div class="layui-col-md4 layui-col-sm5">-->
-<!--                            <table class="layui-table" lay-skin="line" style="margin-top: 15px;">-->
-<!--                                <thead>-->
-<!--                                <tr>-->
-<!--                                    <td>排名</td>-->
-<!--                                    <td>地区</td>-->
-<!--                                    <td>人数</td>-->
-<!--                                </tr>-->
-<!--                                </thead>-->
-<!--                                <tbody>-->
-<!--                                <tr>-->
-<!--                                    <td>1</td>-->
-<!--                                    <td>浙江</td>-->
-<!--                                    <td>62310</td>-->
-<!--                                </tr>-->
-<!--                                <tr>-->
-<!--                                    <td>2</td>-->
-<!--                                    <td>上海</td>-->
-<!--                                    <td>59190</td>-->
-<!--                                </tr>-->
-<!--                                <tr>-->
-<!--                                    <td>3</td>-->
-<!--                                    <td>广东</td>-->
-<!--                                    <td>55891</td>-->
-<!--                                </tr>-->
-<!--                                <tr>-->
-<!--                                    <td>4</td>-->
-<!--                                    <td>北京</td>-->
-<!--                                    <td>51919</td>-->
-<!--                                </tr>-->
-<!--                                <tr>-->
-<!--                                    <td>5</td>-->
-<!--                                    <td>山东</td>-->
-<!--                                    <td>39231</td>-->
-<!--                                </tr>-->
-<!--                                <tr>-->
-<!--                                    <td>6</td>-->
-<!--                                    <td>湖北</td>-->
-<!--                                    <td>37109</td>-->
-<!--                                </tr>-->
-<!--                                </tbody>-->
-<!--                            </table>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
 </div>
 
 
@@ -306,6 +328,7 @@
 <script type="text/javascript" src="../../assets/js/jquery.min.js"></script>
 <script type="text/javascript" src="../../assets/js/jquery.cookie.min.js"></script>
 <script type="text/javascript" src="../../assets/js/config.url.js"></script>
+<script type="text/javascript" src="../../assets/js/moment.js"></script>
 
 <script>
     var mybck= $.cookie('tokenMyb');
@@ -324,6 +347,8 @@
         // });
 
         var idNumType = ''
+        //所有失败的ID
+        var allFailData = ""
 
         layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect','notice','treeTable','drawer'], function () {
             var $ = layui.jquery;
@@ -364,7 +389,7 @@
 
                     var returnDataArray = dataArray.data
 
-                    console.log("植物账号",returnDataArray)
+                    // console.log("植物账号",returnDataArray)
 
                 }
             })
@@ -393,16 +418,28 @@
                     }
 
 
-                    var responed = dataArray.result
+                    // console.log("aaa",moment('12:00:00', 'HH:mm:ss').subtract(0, 'day'))
 
-                    if(responed == "" || responed.length === 0){
+                    var responed = dataArray.result
+                    // responed = []
+                    if((responed == "" || responed.length === 0)){
 
                         // console.log("世界树没有执行")
-                        $("#treeStatus").text("没有执行")
+                        $("#treeStatus").text("未执行")
+                        $("#worldExecuteBtn").css("background-color","#40D4B0");
+                        // $("#worldExecuteBtn").removeClass("disable");
+                        $("#worldExecuteBtn").css({"pointer-events": "auto" });
+
+                        // $('#worldExecuteBtn').prop('css','background-color:#40D4B0')
+
                         return  false
                     }
 
                     $("#treeStatus").text("已执行")
+                    $("#worldExecuteBtn").css("background-color","#c2c2c2");
+                    // $("#worldExecuteBtn").addClass("disable");
+                    $("#worldExecuteBtn").css({"pointer-events": "none" });
+
 
                     var totalNum  = responed.total
                     var dataObj  = responed.data
@@ -411,6 +448,7 @@
                     var presentTotalNum = 0
                     var totalArrayObj = {}
                     var currTreeData = []
+
 
                     $("#treeTotalNum").text(totalNum)
 
@@ -435,19 +473,27 @@
 
                                 waterTotalNum = waterTotalNum +1
 
+                                currTreeData.push({
+                                    id:item.split('_')[1],
+                                    water:dataObj[item]['water'],
+                                    present:dataObj[item]['present'],
+                                })
+
+                                allFailData = allFailData + item.split('_')[1] +"@"
                             }
 
-                            if(dataObj[item]['present'] == 0){
+                            if(dataObj[item]['present'] == 0 && dataObj[item]['present'] != 3){
 
                                 presentTotalNum = presentTotalNum +1
+
+                                currTreeData.push({
+                                    id:item.split('_')[1],
+                                    water:dataObj[item]['water'],
+                                    present:dataObj[item]['present'],
+                                })
+
+                                allFailData = allFailData + item.split('_')[1] +"@"
                             }
-
-
-                            currTreeData.push({
-                                id:item.split('_')[1],
-                                water:dataObj[item]['water'],
-                                present:dataObj[item]['present'],
-                            })
 
 
                         }
@@ -539,10 +585,133 @@
             })
 
 
+            //一键浇水点击事件
+            $("#waterClick").click(function () {
+
+                allFailData = allFailData.substr(0, allFailData.length - 1);
+
+                // console.log("一键浇水点击",allFailData)
+
+
+                layer.confirm('确定对ID('+allFailData+')一键浇水吗？', {
+                    icon:2,
+                    title:'温馨提示',
+                    skin: 'layui-layer-admin',
+                    shade: .1,
+                    btn: ['确认', '取消', ], //可以无限个按钮
+                    btn1:function (i) {
+                        //按钮确认的事件
+                        layer.close(i);
+                        var loadIndex = layer.load(2);
+
+
+                        var param = {}
+                        param['ids']= allFailData;
+                        //获取账号列表添加到下拉框中
+                        $.ajax({
+                            url: global_request_yesterdayWatering+"?token="+$.cookie('tokenMyb'),
+                            dataType: 'json',
+                            type: 'post',
+                            data: param,
+                            success: function (dataArray) {
+
+                                if (dataArray.code != 200) {
+
+                                    // console.log(dataArray.msg)
+                                    // layer.msg(dataArray.msg);
+                                    layer.close(loadIndex);
+                                    return false;
+
+                                }
+
+                                // layer.msg(dataArray.msg);
+                                notice.msg(dataArray.msg, {icon: 5});
+
+                                // var returnDataArray = dataArray.data
+                                layer.close(loadIndex);
+                            }
+                        })
+
+
+                    }, btn2:function(index){
+                        // 按钮取消的事件
+                        notice.msg("取消操作", {icon: 5});
+
+                        layer.close(index);
+                    } ,cancel:function(index){//取消事件
+
+                        notice.msg("取消操作", {icon: 5});
+
+                        layer.close(index);
+                    },
+                });
 
 
 
+            })
+
+
+            //一键收取点击事件
+
+            $("#claimClick").click(function () {
+
+                // console.log("一键浇水点击")
+
+                notice.msg('一键收取点击测试!', {icon: 5});
+
+                // var param = {}
+                // param['ids']= '1';
+                // param['limit']= '3000';
+                // param['action']= 'select';
+                //
+                // //获取账号列表添加到下拉框中
+                // $.ajax({
+                //     url: global_request_yesterdayWatering+"?token="+$.cookie('tokenMyb'),
+                //     dataType: 'json',
+                //     type: 'post',
+                //     data: param,
+                //     success: function (dataArray) {
+                //
+                //         if (dataArray.code != 0) {
+                //
+                //             // console.log(dataArray.msg)
+                //             // layer.msg(dataArray.msg);
+                //
+                //             return false;
+                //
+                //         }
+                //
+                //
+                //         var returnDataArray = dataArray.data
+                //
+                //         console.log("植物账号",returnDataArray)
+                //
+                //     }
+                // })
+
+
+
+            })
+
+
+
+            //世界树执行
+            $("#worldExecuteBtn").click(function () {
+
+                $("#treeStatus").text("已执行")
+                $("#worldExecuteBtn").css("background-color","#c2c2c2");
+                // $("#worldExecuteBtn").addClass("disable");
+                $("#worldExecuteBtn").css({"pointer-events": "none" });
+
+
+                notice.msg('世界树执行测试!', {icon: 5});
+
+
+            })
         })
+
+
+
 
         function lookLogBtn(event){
 
@@ -611,12 +780,7 @@
         }
 
 
-        //一键浇水点击事件
-        $("#waterClick").click(function () {
 
-            console.log("一键浇水点击")
-
-        })
 
 
     }

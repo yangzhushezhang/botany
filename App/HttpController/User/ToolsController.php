@@ -26,7 +26,6 @@ class ToolsController extends UserBase
         if (!$this->check_parameter($id, "账号id")) {
             return false;
         }
-
         try {
             return DbManager::getInstance()->invoke(function ($client) use ($id) {
                 $one = AccountNumberModel::invoke($client)->get(['id' => $id]);
@@ -34,41 +33,13 @@ class ToolsController extends UserBase
                     $this->writeJson(-101, [], "账户id 不存在");
                     return false;
                 }
-                $token_value = $one['token_value'];
-                $client = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/my-tools');
-                $headers = array(
-                    'authority' => 'backend-farm.plantvsundead.com',
-                    'sec-ch-ua' => '^\\^Google',
-                    'accept' => 'application/json, text/plain, */*',
-                    'authorization' => $one['token_value'],
-                    'sec-ch-ua-mobile' => '?0',
-                    'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
-                    'sec-ch-ua-platform' => '^\\^Windows^\\^',
-                    'origin' => 'https://marketplace.plantvsundead.com',
-                    'sec-fetch-site' => 'same-site',
-                    'sec-fetch-mode' => 'cors',
-                    'sec-fetch-dest' => 'empty',
-                    'referer' => 'https://marketplace.plantvsundead.com/',
-                    'accept-language' => 'zh-CN,zh;q=0.9',
-                 #   'if-none-match' => 'W/^\\^32c-sAwO7sU/nng0IT4QwrYVX61WsEY^\\^',
-                );
-                $client->setHeaders($headers, false, false);
-                $response = $client->get();
-                $result = $response->getBody();
 
-
-                $data_json = json_decode($result, true);
-
+                $data_json = (new  Tools())->GteNewTools($one['token_value']);
                 if (!$data_json) {
-                    $this->WriteLogger($this->who['id'], 2, "接口 refresh_tools json 解析失败");
-                    $this->writeJson(-101, [], "接口  refresh_tools json 解析失败");
+                    $this->writeJson(-101, [], "获取数据失败");
                     return false;
                 }
-                if ($data_json['status'] != 0) {
-                    $this->WriteLogger($this->who['id'], 2, "接口 refresh_tools json status!=0");
-                    $this->writeJson(-101, [], "接口 refresh_tools son status!=0");
-                    return false;
-                }
+
 
                 return DbManager::getInstance()->invoke(function ($client) use ($data_json, $id) {
 
@@ -96,7 +67,6 @@ class ToolsController extends UserBase
                         $one = ToolsModel::invoke($client)->where(['account_number_id' => $id])->update($update_data);
                         if (!$one) {
                             $this->WriteLogger($this->who['id'], 2, "接口 refresh_tools 更新失败");
-                            $this->writeJson(-101, [], "接口 refresh_tools 更新失败");
                             return false;
                         }
 
@@ -106,16 +76,13 @@ class ToolsController extends UserBase
                         $one = ToolsModel::invoke($client)->data($update_data)->save();
                         if (!$one) {
                             $this->WriteLogger($this->who['id'], 2, "接口 refresh_tools 插入失败");
-                            $this->writeJson(-101, [], "接口 refresh_tools 插入失败");
                             return false;
                         }
                     }
-                    $this->writeJson(200, [], "调用成功");
+
+                    $this->response()->write(json_encode($data_json));
                     return true;
-
                 });
-
-
             });
 
         } catch (\Throwable $e) {
@@ -139,16 +106,40 @@ class ToolsController extends UserBase
                 $res = ToolsModel::invoke($client)->get(['account_number_id' => $id]);
                 $this->writeJson(200, $res, "获取成功");
                 return true;
-
-
             });
-
         } catch (\Throwable $e) {
             $this->writeJson(-1, [], $e->getMessage());
             return false;
-
         }
+    }
 
+
+    # 获取能量
+    function getEnergy()
+    {
+        $id = $this->request()->getParsedBody('id'); #需要刷新的 账号
+        if (!$this->check_parameter($id, "账号id")) {
+            return false;
+        }
+        try {
+            return DbManager::getInstance()->invoke(function ($client) use ($id) {
+                $res = AccountNumberModel::invoke($client)->get(['id' => $id, 'user_id' => $this->who['id']]);
+                if (!$res) {
+                    $this->writeJson(-101, [], "查询的账号不存在");
+                    return false;
+                }
+                $res = Tools::getLeWallet($res['token_value']);
+                if (!$res) {
+                    $this->writeJson(-101, [], "获取失败");
+                    return false;
+                }
+                $this->response()->write(json_encode($res));
+                return true;
+            });
+        } catch (\Throwable $e) {
+            $this->writeJson(-1, [], $e->getMessage());
+            return false;
+        }
     }
 
 

@@ -171,7 +171,7 @@
                     ,last: "尾页"//不显示尾页
                 },
                 height : "full-100",
-                limit : 15,
+                limit : 100,
                 limits : [15,30,50,100] ,
                 // response: {
                 //     statusName: 'code' //规定数据状态的字段名称，默认：code
@@ -253,6 +253,7 @@
 
 
                     // {field: 'loss_per_cent_id', title: '当前赔率', sort: true,align:"center"},
+
                     {field: 'status', title: '状态', sort: true,align:"center",width:130,templet:function(d){
 
                             if(d.status == "1"){//正常
@@ -261,6 +262,7 @@
                                 return ''
                             }
                     }},
+
                     // {
                     //     field: 'created_at', title: '创建时间',align:"center",width:175, templet: function (d) {
                     //         return util.toDateString(d.created_at* 1000);

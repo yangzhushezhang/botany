@@ -46,11 +46,11 @@ class RemoveSeedProcess extends AbstractProcess
                                     }
                                     if ($two['status'] != 2) {
                                         # 说明这个种子还没有收获 不可以移除
-                                        Tools::WriteLogger($id_array[2], 2, "进程 RemoveSeedProcess 种子:" . $one['farm_id'] . " 不可以移除,原因:改种子还没有收获", $id_array[1], 4);
+                                        Tools::WriteLogger($id_array[2], 2, "进程 RemoveSeedProcess 种子铲除失败,该种子还没有成熟", $id_array[1], 4, $two['farm_id']);
                                         return false;
                                     }
                                     if ($two['remove'] == 2) {
-                                        Tools::WriteLogger($id_array[2], 2, "进程 RemoveSeedProcess 种子:" . $one['farm_id'] . " 不可以移除,原因:已经移除过了", $id_array[1], 4);
+                                        Tools::WriteLogger($id_array[2], 2, "进程 RemoveSeedProcess 种子铲除失败,不可以重复操作", $id_array[1], 4, $two['farm_id']);
                                         return false;
                                     }
                                     #准备去收获 种子
@@ -78,34 +78,39 @@ class RemoveSeedProcess extends AbstractProcess
                                     $response = $client_http->post($data);
                                     $result = $response->getBody();
                                     $data = json_decode($result, true);
-
                                     if (!$data) {
                                         # 解析失败 收获失败
                                         \EasySwoole\Component\Timer::getInstance()->after(10 * 1000, function () use ($id, $redis) {
                                             $redis->rPush("RemoveSeed", $id);  # account_number_id  种子类型 user_id
                                         });
-                                        Tools::WriteLogger($id_array[2], 2, "进程 RemoveSeedProcess 种子:" . $one['farm_id'] . " 移除失败,原因:json解析失败 result:" . $result, $id_array[1], 4);
+                                        Tools::WriteLogger($id_array[2], 2, "进程 RemoveSeedProcess 种子铲除失败,数据解析失败" . $result, $id_array[1], 4, $two['farm_id']);
                                         return false;
                                     }
-
                                     if ($data['status'] != 0) {
-                                        Tools::WriteLogger($id_array[2], 2, "进程 RemoveSeedProcess 种子:" . $one['farm_id'] . " 移除失败,原因: result:" . $result, $id_array[1], 4);
+                                        if ($data['status'] == 556) {
+                                            $IfDoingVerification = $redis->get("IfDoingVerification");
+                                            if (!$IfDoingVerification) {
+                                                #  不存在 就去处理
+                                                $redis->rPush("DecryptCaptcha", $id_array[1] . "@" . $id_array[2]);
+                                                $redis->set("IfDoingVerification", 1, 600);# 10分钟
+                                            }
+                                            Tools::WriteLogger($id_array[2], 2, "进程 RemoveSeedProcess 出现了验证码!" . $response, $id_array[1], 3, $two['farm_id']);
+                                            return false;
+                                        }
+                                        Tools::WriteLogger($id_array[2], 2, "进程 RemoveSeedProcess 种子铲除失败,数据状态错误,result:" . $result, $id_array[1], 4, $two['farm_id']);
                                         return false;
                                     }
-
                                     FarmModel::invoke($client)->where(['id' => $id_array[0]])->update(['remove' => 2, 'updated_at' => time()]);
-                                    # 移除成功   # 准备去种种子
-                                    Tools::WriteLogger($id_array[2], 1, "进程 RemoveSeedProcess 种子:" . $one['farm_id'] . " 移除成功 result:" . $result, $id_array[1], 4);
-                                    # 铲除成功后 需要 去 推入 放种子  浇水的 进程
+                                    # 移除成功
                                     $redis->rPush("Seed_Fruit", $id_array[1] . "@" . $two['plant_type'] . "@" . $one['user_id']);  # account_number_id  种子类型 user_id
+                                    Tools::WriteLogger($id_array[2], 1, "进程 RemoveSeedProcess  种子铲除成功,并将该种子推入PlantSeedProcess 进程 result: " . $result, $id_array[1], 4, $two['farm_id']);
                                 }
-
                             });
 
                         }
                     }, 'redis');
                     \co::sleep(5); # 五秒循环一次
-                }catch (\Throwable $exception){
+                } catch (\Throwable $exception) {
                     Tools::WriteLogger(0, 2, "RemoveSeedProcess 进程 异常:" . $exception->getMessage(), "", 5);
                 }
 

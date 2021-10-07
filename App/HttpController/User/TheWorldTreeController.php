@@ -85,11 +85,17 @@ class TheWorldTreeController extends UserBase
                 DbManager::getInstance()->invoke(function ($client) use ($item) {
                     $one = AccountNumberModel::invoke($client)->get(['id' => $item]);
                     if ($one) {
-                        (new Tools())->Watering($one['token_value'], $one['user_id'], $one['id']); #$token_value, $user_id, $account_number_id
+                        # 判断是否可以浇水
+                        $redis = RedisPool::defer('redis');
+                        $redis_data = $redis->hGet(Date("Y-m-d", time()) . "_worldTree", "account_" .$item);
+                        $redis_array = json_decode($redis_data, true);
+                        if ($redis_array['water'] == 0) {
+                            # 说明今天没有浇过水
+                            (new Tools())->Watering($one['token_value'], $one['user_id'], $one['id']); #$token_value, $user_id, $account_number_id
+                        }
                     }
                 });
             }
-
             $this->writeJson(200, [], "yesterdayGetOne 执行成功");
         } catch (\Throwable $e) {
             $this->writeJson(-1, [], "yesterdayGetOne 执行异常:" . $e->getMessage());

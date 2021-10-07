@@ -53,7 +53,7 @@ class FarmInformationController extends UserBase
                         'sec-fetch-dest' => 'empty',
                         'referer' => 'https://marketplace.plantvsundead.com/',
                         'accept-language' => 'zh-CN,zh;q=0.9',
-                        'if-none-match' => 'W/"1bf5-RySZLkdJ7uwQuWZ+zLfe+hxM36c"',
+                        # 'if-none-match' => 'W/"1bf5-RySZLkdJ7uwQuWZ+zLfe+hxM36c"',
                     );
                     $client->setHeaders($headers, false, false);
                     $client->setTimeout(5);
@@ -119,8 +119,6 @@ class FarmInformationController extends UserBase
     }
 
 
-
-
     #  获取农场信息
     function get_farmInformation()
     {
@@ -178,7 +176,7 @@ class FarmInformationController extends UserBase
         try {
             return DbManager::getInstance()->invoke(function ($client) use ($limit, $page) {
                 $model = AccountNumberModel::invoke($client)->limit($limit * ($page - 1), $limit)->withTotalCount();
-                $list = $model->all(['user_id' => $this->who['id']]);
+                $list = $model->all(['user_id' => $this->who['id'],'status'=>1]);
                 foreach ($list as $k => $value) {
 
                     $one = ToolsModel::invoke($client)->get(['account_number_id' => $value['id']]);
