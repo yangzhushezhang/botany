@@ -143,8 +143,6 @@ class MonitorTools extends AbstractProcess
     {
         try {
 
-            var_dump("------");
-            return false;
             # 判断 自己的能量值是否 足够
             if ($id == 1 || $id == 3) {
                 if ($leWallet < 50) {
@@ -326,7 +324,6 @@ class MonitorTools extends AbstractProcess
                 $one = true;
                 $update_data['water'] = $value['usages'];
                 if ($value['usages'] < 25) { #水小 25 直接就买水
-
                     $this->Shop_tools(3, $token_value, $user_id, $account_number_id, $leWallet);
                 }
             }
@@ -334,36 +331,27 @@ class MonitorTools extends AbstractProcess
                 $two = true;
                 $update_data['samll_pot'] = $value['usages'];
                 if ($value['usages'] < 1) {
-
                     $this->Shop_tools(1, $token_value, $user_id, $account_number_id, $leWallet);
                 }
             }
-
             if ($value['type'] == "SCARECROW") {
-                $three = true;
+                $update_data['scarecrow'] = $value['usages'];
                 if ($value['usages'] < 1) {
-
                     $this->Shop_tools(4, $token_value, $user_id, $account_number_id, $leWallet);
                 }
             }
-
-
         }
 
         if (!$one) {
-
             $this->Shop_tools(3, $token_value, $user_id, $account_number_id, $leWallet);
         }
         if (!$three) {
-
             $this->Shop_tools(4, $token_value, $user_id, $account_number_id, $leWallet);
         }
 
         if (!$two) {
-
             $this->Shop_tools(1, $token_value, $user_id, $account_number_id, $leWallet);
         }
-
         return $update_data;
     }
 
