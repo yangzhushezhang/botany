@@ -316,31 +316,43 @@ class MonitorTools extends AbstractProcess
 
         ];
 
+
+        $one = false;
+        $two = false;
+        $three = false;
         foreach ($data as $k => $value) {
             if ($value['type'] == "WATER") { #水
+                $one = true;
                 $update_data['water'] = $value['usages'];
                 if ($value['usages'] < 25) { #水小 25 直接就买水
                     $this->Shop_tools(3, $token_value, $user_id, $account_number_id, $leWallet);
-                } else {
-                    $this->Shop_tools(3, $token_value, $user_id, $account_number_id, $leWallet);
                 }
             }
+            if (!$one) {
+                $this->Shop_tools(3, $token_value, $user_id, $account_number_id, $leWallet);
+
+            }
             if ($value['toolId'] == 1) {
+                $two = true;
                 $update_data['samll_pot'] = $value['usages'];
                 if ($value['usages'] < 1) {
                     $this->Shop_tools(1, $token_value, $user_id, $account_number_id, $leWallet);
-                } else {
-                    $this->Shop_tools(1, $token_value, $user_id, $account_number_id, $leWallet);
                 }
             }
+            if (!$two) {
+                $this->Shop_tools(1, $token_value, $user_id, $account_number_id, $leWallet);
+            }
             if ($value['type'] == "SCARECROW") {
+                $three = true;
                 if ($value['usages'] < 1) {
                     $this->Shop_tools(4, $token_value, $user_id, $account_number_id, $leWallet);
                 }
-            } else {
-                # 没有找到这个元素  #直接就去购买
+            }
+            if (!$three) {
                 $this->Shop_tools(4, $token_value, $user_id, $account_number_id, $leWallet);
             }
+
+
         }
 
         return $update_data;
