@@ -40,7 +40,7 @@ class CheckIfRipe extends AbstractProcess
                                     # 说明这个 种子已经成熟了  理论上可以收获了    可以收获了  但是要先请求下  接口是否有乌鸦的 导致 收获验证
                                     $one = AccountNumberModel::invoke($client)->get(['id' => $re['account_number_id']]);
                                     if (!$one) {
-                                        Tools::WriteLogger($one['user_id'], 2, "CheckIfRipe 进程请求 账号:" . $one['id'] . " 不存在");
+                                        Tools::WriteLogger(0, 2, "CheckIfRipe 进程请求 账号:" . $one['id'] . " 不存在");
                                         continue;
                                     }
                                     $data = $this->getFarms($one['token_value'], $one['user_id'], $one['id'], $re['farm_id']);

@@ -66,7 +66,6 @@ class MonitorTools extends AbstractProcess
                                     $update_data = $this->IfShopTools($data_json['data'], $six['token_value'], $six['user_id'], $six['id'], $six['leWallet']);
                                     ToolsModel::invoke($client)->where(['account_number_id' => $six['id']])->update($update_data);
                                     Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools  更新成功", $six['id'], 7);
-                                    break;
                                 }
                                 $token_value = $six['token_value'];
                                 # 更新我的 种子 个数
@@ -306,7 +305,7 @@ class MonitorTools extends AbstractProcess
         $update_data = [
             'updated_at' => time()
         ];
-        foreach ($data['data'] as $k => $value) {
+        foreach ($data as $k => $value) {
             if ($value['type'] == "WATER") { #水
                 $update_data['water'] = $value['usages'];
                 if ($value['usages'] < 25) { #水小 25 直接就买水
