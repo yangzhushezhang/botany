@@ -142,6 +142,9 @@ class MonitorTools extends AbstractProcess
     function Shop_tools($id, $token_value, $user_id, $account_number_id, $leWallet)
     {
         try {
+
+            var_dump("------");
+            return false;
             # 判断 自己的能量值是否 足够
             if ($id == 1 || $id == 3) {
                 if ($leWallet < 50) {
@@ -318,39 +321,48 @@ class MonitorTools extends AbstractProcess
         $one = false;
         $two = false;
         $three = false;
+        var_dump("账号: " . $account_number_id . "进来检查---------------------------------------------");
         foreach ($data as $k => $value) {
             if ($value['type'] == "WATER") { #水
                 $one = true;
                 $update_data['water'] = $value['usages'];
                 if ($value['usages'] < 25) { #水小 25 直接就买水
+
                     $this->Shop_tools(3, $token_value, $user_id, $account_number_id, $leWallet);
                 }
-            }
-
-            if (!$one) {
-                $this->Shop_tools(3, $token_value, $user_id, $account_number_id, $leWallet);
             }
             if ($value['toolId'] == 1) {
                 $two = true;
                 $update_data['samll_pot'] = $value['usages'];
                 if ($value['usages'] < 1) {
+
                     $this->Shop_tools(1, $token_value, $user_id, $account_number_id, $leWallet);
                 }
             }
-            if (!$two) {
-                $this->Shop_tools(1, $token_value, $user_id, $account_number_id, $leWallet);
-            }
+
             if ($value['type'] == "SCARECROW") {
                 $three = true;
                 if ($value['usages'] < 1) {
+
                     $this->Shop_tools(4, $token_value, $user_id, $account_number_id, $leWallet);
                 }
             }
-            if (!$three) {
-                $this->Shop_tools(4, $token_value, $user_id, $account_number_id, $leWallet);
-            }
 
 
+        }
+
+        if (!$one) {
+
+            $this->Shop_tools(3, $token_value, $user_id, $account_number_id, $leWallet);
+        }
+        if (!$three) {
+
+            $this->Shop_tools(4, $token_value, $user_id, $account_number_id, $leWallet);
+        }
+
+        if (!$two) {
+
+            $this->Shop_tools(1, $token_value, $user_id, $account_number_id, $leWallet);
         }
 
         return $update_data;
