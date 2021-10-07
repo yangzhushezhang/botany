@@ -87,8 +87,8 @@
     <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="updated_leWallet"><i class="layui-icon layui-icon-refresh"></i>更新能量</a>
     <a class="layui-btn layui-btn-sm layui-btn-normal layui-btn-radius " lay-event="changebtn"><i class="layui-icon layui-icon-edit"></i>修改</a>
     <a class="layui-btn layui-btn-sm layui-btn layui-btn layui-btn-danger layui-btn-radius" lay-event="delbtn"><i class="layui-icon">&#x1006;</i>删除</a>
-    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="refresh_tool" style="background-color: #33cabb"><i class="layui-icon layui-icon-refresh"></i>刷新工具</a>
-    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="refresh_farm" style="background-color: #926dde"><i class="layui-icon layui-icon-refresh"></i>刷新农场</a>
+<!--    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="refresh_tool" style="background-color: #33cabb"><i class="layui-icon layui-icon-refresh"></i>刷新工具</a>-->
+<!--    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="refresh_farm" style="background-color: #926dde"><i class="layui-icon layui-icon-refresh"></i>刷新农场</a>-->
 </script>
 <script>
 
@@ -156,55 +156,12 @@
                 cols: [[
                     {type: 'checkbox'},
                     {field: 'id',title:'ID',sort: true,align:"center",width:130},
-                    // {field: 'player_id', title: '玩家uid', sort: true,align:"center"},
-                    // {field: 'head_images', title: '头像', sort: true,align:"center"},
-                    // {field: 'head_images', title: '头像',sort: true,width:100, height:100, align:'center',templet: function(d){
-                    //
-                    //
-                    //         // var  imageName = "/recreation/Static/rech5/static/images/tx"+d.head_images+".png";
-                    //         var imageName = "../../../rech5/static/images/tx/tx"+d.head_images+".png";
-                    //         // var imageName = "../../../rech5/static/images/tx"+d.head_images+".png";
-                    //
-                    //
-                    //         return '<div><img src="'+imageName+'" ' + 'alt="" width="40px" height="40px"></a></div>';
-                    //
-                    // }},
-
-
                     {field: 'remark', title: '名字', sort: true,align:"center"},
                     {field: 'leWallet', title: '能量', sort: true,align:"center"},
-                    {field: 'token_md5', title: 'token', sort: true,align:"center"},
+                    {field: 'usagesSunflower', title: '植物币', sort: true,align:"center"},
+                    // {field: 'token_md5', title: 'token', sort: true,align:"center"},
 
-                    // {field: 'status', title: '状态', sort: true,align:"center"},
 
-
-                    // {field: 'play_kinds_id', title: '归属玩法总类', sort: true,align:"center"},
-                    // {field: 'money', title: '余额', sort: true,align:"center"},
-                    // {field: 'min_money', title: '押注金额区间', sort: true,align:"center", templet: function (d) {
-                    //         return d.min_money+"-"+d.max_money;
-                    //     }, sort: true
-                    // },
-                    // {field: 'status', title: '状态', sort: true,align:"center",width:130,templet:function(d){
-                    //         var state = "";
-                    //
-                    //         if(d.status == "1"){//开启
-                    //             // return '<button class="layui-btn  layui-btn-xs" style="background-color: #33cabb;border-color: #33cabb;">'+'活跃'+'</button>'
-                    //
-                    //
-                    //             state = "<input type='checkbox' value='" + d.status + "' id='status' lay-filter='status'  name='status'  lay-skin='switch' lay-text='开启|关闭' checked>";
-                    //
-                    //             return state;
-                    //
-                    //         }else if(d.status == "2"){//关闭
-                    //
-                    //             state = "<input type='checkbox' value='" + d.status + "' id='status' lay-filter='status'  name='status'  lay-skin='switch' lay-text='开启|关闭'>";
-                    //
-                    //             return state;
-                    //
-                    //         }else{
-                    //             return ''
-                    //         }
-                    // }},
                     // {
                     //     field: 'created_at', title: '创建时间',align:"center", templet: function (d) {
                     //         return util.toDateString(d.created_at* 1000);
@@ -215,7 +172,7 @@
                             return util.toDateString(d.updated_at* 1000);
                         }, sort: true,width:165
                     },
-                    {title: '操作', width:475, templet:'#orderListBar',fixed:"right",align:"center"}
+                    {title: '操作', width:330, templet:'#orderListBar',fixed:"right",align:"center"}
                 ]],
                 done: function (res, curr, count) {
                     $('tr').css({'background-color': '#fff', 'color': '#191a1c'});
