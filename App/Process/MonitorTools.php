@@ -67,6 +67,7 @@ class MonitorTools extends AbstractProcess
                                     ToolsModel::invoke($client)->where(['account_number_id' => $six['id']])->update($update_data);
                                     Tools::WriteLogger($six['user_id'], 2, "MonitorTools refresh_tools  更新成功", $six['id'], 7);
                                 }
+
                                 $token_value = $six['token_value'];
                                 # 更新我的 种子 个数
                                 $data = Tools::getSunflowers($token_value);
@@ -128,7 +129,7 @@ class MonitorTools extends AbstractProcess
                     Tools::WriteLogger(0, 2, "MonitorTools   结束 ", "", 7);
                     \co::sleep(60 * 10); # 10 分钟执行一次
                 } catch (\Throwable $exception) {
-                    Tools::WriteLogger(0, 2, "MonitorTools 异常:" . $exception->getMessage(), "", 9);
+                    Tools::WriteLogger(0, 2, "MonitorTools 异常:" . $exception->getMessage(), "", 7);
                 }
 
             }
@@ -192,6 +193,7 @@ class MonitorTools extends AbstractProcess
             }
         } catch (InvalidUrl $e) {
             Tools::WriteLogger($user_id, 2, "购买 异常:" . $e->getMessage(), $account_number_id, 6);
+            return false;
 
         }
     }
@@ -302,6 +304,13 @@ class MonitorTools extends AbstractProcess
 
     function IfShopTools($data, $token_value, $user_id, $account_number_id, $leWallet)
     {
+
+
+        if ($account_number_id==236){
+
+            var_dump($data);
+        }
+
         $update_data = [
             'updated_at' => time()
         ];
