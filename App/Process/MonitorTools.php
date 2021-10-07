@@ -305,9 +305,7 @@ class MonitorTools extends AbstractProcess
         $update_data = [
             'updated_at' => time()
         ];
-        if ($account_number_id == 236) {
-           var_dump("账号236进来了");
-        }
+
         foreach ($data as $k => $value) {
             if ($value['type'] == "WATER") { #水
                 $update_data['water'] = $value['usages'];
@@ -323,7 +321,11 @@ class MonitorTools extends AbstractProcess
                 }
             }
             if ($value['type'] == "SCARECROW") {
-                var_dump($value['usages']);
+                if ($account_number_id == 236) {
+                    var_dump("账号236进来了");
+                    var_dump($value['usages']);
+
+                }
                 $update_data['scarecrow'] = $value['usages'];
                 if ($value['usages'] < 1) {
                     $this->Shop_tools(4, $token_value, $user_id, $account_number_id, $leWallet);
