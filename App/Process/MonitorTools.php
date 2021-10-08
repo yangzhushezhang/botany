@@ -323,7 +323,7 @@ class MonitorTools extends AbstractProcess
             if ($value['type'] == "WATER") { #水
                 $one = true;
                 $update_data['water'] = $value['usages'];
-                if ($value['usages'] < 25) { #水小 25 直接就买水
+                if ($value['usages'] < 46) { #水小 25 直接就买水
                     $this->Shop_tools(3, $token_value, $user_id, $account_number_id, $leWallet);
                 }
             }

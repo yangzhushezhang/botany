@@ -74,7 +74,6 @@ class MonitorFarmProcess extends AbstractProcess
                                             }
                                         }
 
-
                                         if ($value['stage'] == "cancelled") {
                                             # 判断种子 是否可以 收获
                                             if (isset($value['plantId']) && $value['plantId'] != 0) {   # 特殊的种子
