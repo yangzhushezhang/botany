@@ -40,8 +40,9 @@ class PlantSeedProcess extends AbstractProcess
                                         Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  账户不存在 ", $id_array[0], 2);
                                         return false;
                                     }
+
                                     if ($id_array[1] == 1) {  #判断种子的 分类 这里只判断  向日葵 和向日葵宝宝
-                                        if ($one['all_sapling'] < 1) {
+                                        if ($one['all_sapling'] < 1) {  #all_sunflower  可以用的
                                             Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  没有树苗可以种植了! ", $id_array[0], 2);
                                             return false;
                                         }
@@ -51,7 +52,6 @@ class PlantSeedProcess extends AbstractProcess
                                             return false;
                                         }
                                     }
-
                                     $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms');
                                     $headers = array(
                                         'authority' => 'backend-farm.plantvsundead.com',
@@ -83,10 +83,13 @@ class PlantSeedProcess extends AbstractProcess
                                         Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  种植失败,返回数据是失败,15秒后重试" . $result, $id_array[0], 2);
                                         return false;
                                     }
+
                                     if ($data['status'] != 0) {
                                         Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  种植失败,数据返回状态不正确: result" . $result, $id_array[0], 2);
                                         return false;
                                     }
+
+
                                     $add = [
                                         'account_number_id' => $id_array[0],
                                         'farm_id' => $data['data']['_id'],
@@ -102,12 +105,13 @@ class PlantSeedProcess extends AbstractProcess
                                     ];
                                     $res = FarmModel::invoke($client)->data($add)->save();
                                     if (!$res) {
-                                        Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  插入数据失败 种子id: " . $add['farm_id'], $id_array[0], 2);
+                                        Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  插入数据失败 种子id: " . $add['farm_id'], $id_array[0], 2, $data['data']['_id']);
+                                    } else {
+                                        Tools::WriteLogger($id_array[2], 1, "进程 PlantSeedProcess 插入数据成功,成功种植!" . $result, $id_array[0], 2, $data['data']['_id']);
                                     }
-                                    Tools::WriteLogger($id_array[2], 1, "账户id:" . $id_array[0] . " PlantSeedProcess 种植成功 种子:" . $result);
                                     #需要 去放小盆
                                     $redis->rPush("PutPot", $res . "@" . $id_array[0] . "@" . $one['user_id']);
-
+                                    Tools::WriteLogger($id_array[2], 1, "进程 PlantSeedProcess 种植成功,准备放盆,推入进程 PutPotProcess" . $result, $id_array[0], 2, $data['data']['_id']);
                                 }
                             });
 
@@ -123,9 +127,6 @@ class PlantSeedProcess extends AbstractProcess
 
         });
     }
-
-
-
 
 
     protected function onException(\Throwable $throwable, ...$args)

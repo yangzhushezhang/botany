@@ -41,12 +41,10 @@ class WateringProcess extends AbstractProcess
                                         Tools::WriteLogger($id_array[2], 2, "进程 WateringProcess 没有找到该账号 ", $id_array[1], 1);
                                         return false;
                                     }
-
                                     if ($three['water'] && $three['water'] < 41) {
                                         Tools::WriteLogger($id_array[2], 2, "进程 WateringProcess 账号的水量不足,无法浇水,水还剩下:".$three['water'], $id_array[1], 1, $two['farm_id']);
                                         return false;
                                     }
-
                                     # 种子放花盆
                                     $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms/apply-tool');
                                     $headers = array(
