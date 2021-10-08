@@ -84,32 +84,35 @@ class MonitorTools extends AbstractProcess
                                 ];
                                 foreach ($data['data'] as $datum) {  # 向日葵 有优先级
                                     if ($datum['plantType'] == 1) {
-                                        $update['all_sapling'] = $datum['usages'];
-                                        $update['already_sapling'] = $datum['total'];
+                                        $update['all_sapling'] = $datum['usages'];  # 可用
+                                        $update['already_sapling'] = $datum['total']; #总数
 
                                     }
                                     if ($datum['plantType'] == 2) {
-                                        $update['all_sunflower'] = $datum['usages'];
-                                        $update['already_sunflower'] = $datum['total'];
+                                        $update['all_sunflower'] = $datum['usages'];  #可用
+                                        $update['already_sunflower'] = $datum['total'];  #总数
                                     }
                                 }
                                 #  调整向日葵的优先级
-                                if (!isset($update['already_sapling']) || $update['already_sapling'] == 0) {
-                                    if (isset($update['already_sunflower']) && $update['already_sunflower'] > 0) {  #购买向日葵种子
+                                if (!isset($update['all_sapling']) || $update['all_sapling'] == 0) {
+                                    if (isset($update['all_sunflower']) && $update['all_sunflower'] > 0) {  #购买向日葵种子
                                         var_dump("账号:" . $six['id'] . " 需要购买 向日葵宝宝");
                                         $po = $this->shopSeed($token_value, 1, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
                                         if ($po) {
-                                            $update['already_sapling'] = 1;
+                                            $update['all_sapling'] = 1;
+                                            $update['already_sapling'] = $update['already_sapling'] + 1;
                                         }
                                     }
                                 }
 
                                 # 向日葵 为0  购买  不存在需要购买
-                                if (!isset($update['already_sunflower']) || $update['already_sunflower'] == 0) { #购买向日葵
+                                if (!isset($update['all_sunflower']) || $update['all_sunflower'] == 0) { #购买向日葵
                                     var_dump("账号:" . $six['id'] . " 需要购买 向日葵");
                                     $po = $this->shopSeed($token_value, 2, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
                                     if ($po) {
-                                        $update['already_sunflower'] = 1;
+                                        $update['all_sunflower'] = 1;
+                                        $update['already_sunflower'] = $update['already_sunflower'] + 1;
+
                                     }
                                 }
 
