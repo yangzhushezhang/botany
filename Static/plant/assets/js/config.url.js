@@ -43,12 +43,18 @@ global_request_getTodayTheWorldTree="/user/getTodayTheWorldTree";
 //获取能量
 global_request_getEnergy="/user/getEnergy";
 
+//执行世界树功能(慎用)
+global_request_TheWorldTree="/user/TheWorldTree";
+
 
 //一键浇水
 global_request_yesterdayWatering="/user/yesterdayWatering";
 
 //一键收取
 
+
+//世界树总开关控制
+theWorldTreeIsOpen = 1  //1为开启,0为关闭
 
 
 

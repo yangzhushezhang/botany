@@ -203,6 +203,7 @@
             background-color: #c2c2c2;
         }
 
+
     </style>
 </head>
 <body style="background-color: #ffffff">
@@ -422,15 +423,37 @@
 
                     var responed = dataArray.result
                     // responed = []
-                    if((responed == "" || responed.length === 0)){
+
+
+
+                    var totalNum  = responed.total
+                    var dataObj  = responed.data
+
+
+                    var nowtime = new Date()
+                    var nowhour = nowtime.getHours()
+                    // dataObj = []
+                    // nowhour = 16
+                    // console.log(nowhour)
+
+                    if(dataObj.length === 0 ){
 
                         // console.log("世界树没有执行")
                         $("#treeStatus").text("未执行")
-                        $("#worldExecuteBtn").css("background-color","#40D4B0");
-                        // $("#worldExecuteBtn").removeClass("disable");
-                        $("#worldExecuteBtn").css({"pointer-events": "auto" });
 
-                        // $('#worldExecuteBtn').prop('css','background-color:#40D4B0')
+
+                        if(nowhour >= 12 && nowhour<=23){
+
+                            $("#treeStatus").text("未执行,可以点击此处手动执行")
+                            $("#worldExecuteBtn").css("background-color","#40D4B0");
+                            // $("#worldExecuteBtn").removeClass("disable");
+                            $("#worldExecuteBtn").css({"pointer-events": "auto" });
+
+                            // $('#worldExecuteBtn').prop('css','background-color:#40D4B0')
+                        }else{
+                            $("#treeStatus").text("未执行,未到开放时间(12点-23点)")
+                        }
+
 
                         return  false
                     }
@@ -440,9 +463,6 @@
                     // $("#worldExecuteBtn").addClass("disable");
                     $("#worldExecuteBtn").css({"pointer-events": "none" });
 
-
-                    var totalNum  = responed.total
-                    var dataObj  = responed.data
 
                     var waterTotalNum = 0
                     var presentTotalNum = 0
@@ -590,7 +610,13 @@
 
                 allFailData = allFailData.substr(0, allFailData.length - 1);
 
-                // console.log("一键浇水点击",allFailData)
+                if(allFailData == "" || allFailData.length === 0 ){
+
+                    notice.msg("无可待浇水账号", {icon: 2});
+                    // console.log("一键浇水点击",allFailData)
+
+                    return false
+                }
 
 
                 layer.confirm('确定对ID('+allFailData+')一键浇水吗？', {
@@ -698,13 +724,60 @@
             //世界树执行
             $("#worldExecuteBtn").click(function () {
 
+                var loading = layer.load(1, {shade: [0.8, '#393D49'], time: 0});
+
                 $("#treeStatus").text("已执行")
                 $("#worldExecuteBtn").css("background-color","#c2c2c2");
                 // $("#worldExecuteBtn").addClass("disable");
                 $("#worldExecuteBtn").css({"pointer-events": "none" });
 
+                if(theWorldTreeIsOpen === 0 ){
+                    
+                    layer.close(loading);
 
-                notice.msg('世界树执行测试!', {icon: 5});
+                    //当前世界树总配置开关为关闭状态
+                    notice.success({
+                        title: '消息通知',
+                        message: '世界树执行测试成功!'
+                    });
+                    return false
+                }
+
+                // console.log("测试1111")
+
+
+
+                var param = {}
+                //执行世界树请求(慎用点击)
+                $.ajax({
+                    url: global_request_TheWorldTree+"?token="+$.cookie('tokenMyb'),
+                    dataType: 'json',
+                    type: 'post',
+                    data: param,
+                    success: function (dataArray) {
+
+                        if (dataArray.code != 200) {
+
+                            // console.log(dataArray.msg)
+                            // layer.msg(dataArray.msg);
+                            layer.close(loading);
+
+                            notice.msg('世界树执行-'+dataArray.msg, {icon: 2});
+                            return false;
+
+                        }
+
+                        layer.close(loading);
+                        notice.success({
+                            title: '消息通知',
+                            message: '世界树执行-'+dataArray.msg+'!'
+                        });
+
+                    }
+                })
+
+
+
 
 
             })

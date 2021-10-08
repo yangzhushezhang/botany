@@ -47,7 +47,6 @@ class WateringProcess extends AbstractProcess
                                         return false;
                                     }
 
-
                                     # 种子放花盆
                                     $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms/apply-tool');
                                     $headers = array(

@@ -257,10 +257,10 @@
                         <span id="dp">0</span>
                         <image src="../../assets/images/s.jpg" class="images_tool"></image>
                         <span id="s">0</span>
-                        <image src="../../assets/images/ws.jpg" class="images_tool"></image>
-                        <span id="ws">0</span>
                         <image src="../../assets/images/wy.jpg" class="images_tool"></image>
                         <span id="wy">0</span>
+                        <image src="../../assets/images/ws.jpg" class="images_tool"></image>
+                        <span id="ws">0</span>
                     </div>
 
 
@@ -422,7 +422,7 @@
                                     return '<div><img src="../../assets/images/mm.png" ' + 'alt="" width="40px" height="40px"></a></div>';
                                 }
                             }else{
-                                return '<div><img src="'+d.iconUrl+'" ' + 'alt="" width="40px" height="40px"></a></div>'
+                                return '<div><img src="'+d['plant']['iconUrl']+'" ' + 'alt="" width="40px" height="40px"></a></div>'
                             }
 
                     }},
@@ -737,10 +737,9 @@
                                     $("#s").text(item.usages)
                                 }
                                 if(item.toolId == 4){
-
+                                    $("#wy").text(item.usages)
                                 }
                                 if(item.toolId == 5){
-                                    $("#wy").text(item.usages)
                                 }
 
                             })
@@ -905,9 +904,9 @@
                             }
                             if(item.toolId == 4){
 
+                                $("#wy").text(item.usages)
                             }
                             if(item.toolId == 5){
-                                $("#wy").text(item.usages)
                             }
 
                         })
@@ -988,9 +987,9 @@
                             }
                             if(item.toolId == 4){
 
+                                $("#wy").text(item.usages)
                             }
                             if(item.toolId == 5){
-                                $("#wy").text(item.usages)
                             }
 
                         })
