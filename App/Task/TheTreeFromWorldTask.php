@@ -92,7 +92,7 @@ class TheTreeFromWorldTask implements TaskInterface
                         } else {
                             $this->Watering($re['token_value'], $re['user_id'], $re['id']);
                         }
-                        \co::sleep(2); # 五秒循环一次
+                        \co::sleep(2); # 五秒循环一次git
                     }
                 }
                 Tools::WriteLogger(0, 1, "任务 TheTreeFromWorldTask 开始,运行结束,共检查了" . count($res) . "次", '', 10);
