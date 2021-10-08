@@ -167,10 +167,12 @@ class MonitorFarmProcess extends AbstractProcess
                                             $redis = RedisPool::defer('redis');
                                             if ($i == 0 && !$if_sunflowerId_2) {
                                                 # 添加向日葵
+                                                var_dump("账号:" . $re['id'] . "需要种向日葵");
                                                 $redis->rPush("Seed_Fruit", $re['id'] . "@" . 2 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
                                                 Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要播种向日葵 并且 把账号推入到 PlantSeedProcess进程', $re['id'], 11);
                                             } else {
                                                 # 添加普通种子
+                                                var_dump("账号:" . $re['id'] . "需要种向日葵宝宝");
                                                 $redis->rPush("Seed_Fruit", $re['id'] . "@" . 1 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
                                                 Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要播种普通种子 并且 把账号推入到 PlantSeedProcess进程', $re['id'], 11);
                                             }

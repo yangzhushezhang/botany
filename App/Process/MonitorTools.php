@@ -95,7 +95,8 @@ class MonitorTools extends AbstractProcess
                                 }
                                 #  调整向日葵的优先级
                                 if (!isset($update['already_sapling']) || $update['already_sapling'] == 0) {
-                                    if (isset($update['already_sunflower']) &&  $update['already_sunflower'] > 0) {
+                                    if (isset($update['already_sunflower']) && $update['already_sunflower'] > 0) {  #购买向日葵种子
+                                        var_dump("账号:" . $six['id'] . " 需要购买 向日葵宝宝");
                                         $po = $this->shopSeed($token_value, 1, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
                                         if ($po) {
                                             $update['already_sapling'] = 1;
@@ -104,12 +105,15 @@ class MonitorTools extends AbstractProcess
                                 }
 
                                 # 向日葵 为0  购买  不存在需要购买
-                                if (!isset($update['already_sunflower']) || $update['already_sunflower'] == 0) {
+                                if (!isset($update['already_sunflower']) || $update['already_sunflower'] == 0) { #购买向日葵
+                                    var_dump("账号:" . $six['id'] . " 需要购买 向日葵");
                                     $po = $this->shopSeed($token_value, 2, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
                                     if ($po) {
                                         $update['already_sunflower'] = 1;
                                     }
                                 }
+
+
                                 $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update($update);
                                 # 获取 账号的能量
                                 $data = Tools::getLeWallet($token_value);
@@ -276,6 +280,7 @@ class MonitorTools extends AbstractProcess
      */
     function shopSeed($token_value, $sunflowerId, $user_id, $account_number_id)
     {
+        $result = "";
         for ($i = 0; $i < 5; $i++) {
             $client = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/buy-sunflowers');
             $headers = array(
@@ -302,11 +307,11 @@ class MonitorTools extends AbstractProcess
             $result = $response->getBody();
             $data_json = json_decode($result, true);
             if ($data_json && $data_json['status'] == 0) {
-                Tools::WriteLogger($user_id, 1, "购买向日葵/或者向日葵宝宝 成功", $account_number_id, 6);
+                Tools::WriteLogger($user_id, 1, "类型id :" . $sunflowerId . "购买向日葵/或者向日葵宝宝 成功 ,成功信息:" . $result, $account_number_id, 6);
                 return true;
             }
         }
-        Tools::WriteLogger($user_id, 2, "购买向日葵/或者向日葵宝宝 失败", $account_number_id, 6);
+        Tools::WriteLogger($user_id, 2, "类型id :" . $sunflowerId . "购买向日葵/或者向日葵宝宝 失败 错误信息:" . $result, $account_number_id, 6);
         return false;
     }
 

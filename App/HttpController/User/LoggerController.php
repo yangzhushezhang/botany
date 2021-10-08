@@ -20,6 +20,7 @@ class LoggerController extends UserBase
         $page = $this->request()->getParsedBody('page');
         $variety = $this->request()->getParsedBody('variety');
         $account_number_id = $this->request()->getParsedBody('account_number_id');
+        $farm_id = $this->request()->getParsedBody('farm_id');
 
 
         if (!$this->check_parameter($limit, "limit") || !$this->check_parameter($page, "page")) {
@@ -36,6 +37,12 @@ class LoggerController extends UserBase
                 if (isset($account_number_id) && !empty($account_number_id)) {
                     $model = $model->where(['account_number_id' => $account_number_id]);
                 }
+
+
+                if (isset($farm_id) && !empty($farm_id)) {
+                    $model = $model->where(['farm_id' => $farm_id]);
+                }
+
 
                 $list = $model->all(['user_id' => $this->who['id']]);
                 foreach ($list as $k => $item) {
@@ -66,9 +73,6 @@ class LoggerController extends UserBase
         }
 
     }
-
-
-
 
 
 }
