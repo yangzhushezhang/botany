@@ -95,7 +95,7 @@ class MonitorTools extends AbstractProcess
                                 }
                                 #  调整向日葵的优先级
                                 if (!isset($update['all_sapling']) || $update['all_sapling'] == 0) {
-                                    if (isset($update['all_sunflower']) && $update['all_sunflower'] > 0) {  #购买向日葵种子
+                                    if (isset($update['already_sunflower']) && $update['already_sunflower'] > 0) {  #购买向日葵种子
                                         var_dump("账号:" . $six['id'] . " 需要购买 向日葵宝宝");
                                         $po = $this->shopSeed($token_value, 1, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
                                         if ($po) {
@@ -105,8 +105,8 @@ class MonitorTools extends AbstractProcess
                                     }
                                 }
 
-                                # 向日葵 为0  购买  不存在需要购买
-                                if (!isset($update['all_sunflower']) || $update['all_sunflower'] == 0) { #购买向日葵
+                                # 向日葵 为0  购买  不存在需要购买   不购买向日葵
+                                if (!isset($update['already_sunflower']) || $update['already_sunflower'] == 0) { #购买向日葵
                                     var_dump("账号:" . $six['id'] . " 需要购买 向日葵");
                                     $po = $this->shopSeed($token_value, 2, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
                                     if ($po) {
