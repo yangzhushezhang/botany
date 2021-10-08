@@ -26,7 +26,7 @@ class TheWorldTreeController extends UserBase
             $task->async(new TheTreeFromWorldTask(['user' => 'custom']));
             $this->writeJson(200, [], "调用成功");
         } catch (\Throwable $e) {
-            $this->WriteLogger(-1, [], "TheWorldTree 执行异常:" . $e->getMessage());
+            $this->writeJson(-1, [], "TheWorldTree 执行异常:" . $e->getMessage());
             return false;
         }
     }
@@ -87,7 +87,7 @@ class TheWorldTreeController extends UserBase
                     if ($one) {
                         # 判断是否可以浇水
                         $redis = RedisPool::defer('redis');
-                        $redis_data = $redis->hGet(Date("Y-m-d", time()) . "_worldTree", "account_" .$item);
+                        $redis_data = $redis->hGet(Date("Y-m-d", time()) . "_worldTree", "account_" . $item);
                         $redis_array = json_decode($redis_data, true);
                         if ($redis_array['water'] == 0) {
                             # 说明今天没有浇过水
