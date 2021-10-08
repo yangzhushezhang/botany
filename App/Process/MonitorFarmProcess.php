@@ -67,7 +67,14 @@ class MonitorFarmProcess extends AbstractProcess
                                         if (isset($value['plantId']) && $value['plantId'] != 0) {
                                             $plantId = $value['plantId'];
                                             $iconUrl = $value['plant']['iconUrl'];
+                                            if (isset($value['totalHarvest']) && $value['totalHarvest'] > 0) { # 特殊种子成熟
+                                                $redis = RedisPool::defer("redis");
+                                                $redis->rPush("Harvest_Fruit", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id'] . "@" . "999");  #种子的 id 种子的  账户id
+                                                Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  种子已经成熟,将其推入HarvestFruitProcess 进程", $re['id'], 11, $value['_id']);
+                                            }
                                         }
+
+
                                         if ($value['stage'] == "cancelled") {
                                             # 判断种子 是否可以 收获
                                             if (isset($value['plantId']) && $value['plantId'] != 0) {   # 特殊的种子
