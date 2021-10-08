@@ -23,9 +23,13 @@ class TheWorldTreeController extends UserBase
         # 获取所有的行号
         try {
             $task = \EasySwoole\EasySwoole\Task\TaskManager::getInstance();
+
+
             $task->async(new TheTreeFromWorldTask(['user' => 'custom']));
 
+
             $this->writeJson(200, [], "调用成功");
+            return true;
 
         } catch (\Throwable $e) {
             $this->writeJson(-1, [], "TheWorldTree 执行异常:" . $e->getMessage());

@@ -6,7 +6,6 @@ namespace App\Task;
 
 use App\Model\AccountNumberModel;
 use App\Tools\Tools;
-use Cassandra\Date;
 use EasySwoole\HttpClient\Exception\InvalidUrl;
 use EasySwoole\ORM\DbManager;
 use EasySwoole\ORM\Exception\Exception;
@@ -37,6 +36,7 @@ class TheTreeFromWorldTask implements TaskInterface
     function run(int $taskId, int $workerIndex)
     {
         try {
+
             DbManager::getInstance()->invoke(function ($client) {
                 $res = AccountNumberModel::invoke($client)->all(['status' => 1]);
                 Tools::WriteLogger(0, 1, "任务 TheTreeFromWorldTask 开始,共有:" . count($res) . "需要去检查,", '', 10,);
