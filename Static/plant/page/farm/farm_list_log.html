@@ -353,7 +353,7 @@
                 //查询当前状态的
                 insTb.reload({
                     where: {
-                        farm_id:postAccount_number_id,
+                        farm_id:currIdMNum,
                         variety:postVariety
                     }, page: {curr: 1}});
 
@@ -373,6 +373,9 @@
                     //重载列表
                     insTb.reload({
                         method: 'post',
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        },
                         where: {
                             farm_id:currIdMNum,
                             variety:9
@@ -387,6 +390,9 @@
                     //重载列表
                     insTb.reload({
                         method: 'post',
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        },
                         where: {
                             farm_id:currIdMNum,
                             variety:1
@@ -399,7 +405,10 @@
 
                     //重载列表
                     insTb.reload({
-                        method: 'post',
+                        method: 'post' ,
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        },
                         where: {
                             farm_id:currIdMNum,
                             variety:''

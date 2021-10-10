@@ -432,8 +432,9 @@
 
                     var nowtime = new Date()
                     var nowhour = nowtime.getHours()
+
                     // dataObj = []
-                    // nowhour = 16
+                    // nowhour = 15
                     // console.log(nowhour)
 
                     if(dataObj.length === 0 ){
@@ -452,6 +453,8 @@
                             // $('#worldExecuteBtn').prop('css','background-color:#40D4B0')
                         }else{
                             $("#treeStatus").text("未执行,未到开放时间(12点-23点)")
+                            $("#worldExecuteBtn").css("background-color","#c2c2c2");
+                            $("#worldExecuteBtn").css({"pointer-events": "none" });
                         }
 
 
@@ -724,57 +727,87 @@
             //世界树执行
             $("#worldExecuteBtn").click(function () {
 
-                var loading = layer.load(1, {shade: [0.8, '#393D49'], time: 0});
+                layer.confirm('系统将执行世界树操作，确认要操作吗(危险操作行为!)？', {
+                    icon:3,
+                    title:'温馨提示',
+                    skin: 'layui-layer-admin',
+                    shade: .1,
+                    btn: ['确认', '取消', ], //可以无限个按钮
+                    btn1:function (i) {
+                        //按钮确认的事件
+                        layer.close(i);
 
-                $("#treeStatus").text("已执行")
-                $("#worldExecuteBtn").css("background-color","#c2c2c2");
-                // $("#worldExecuteBtn").addClass("disable");
-                $("#worldExecuteBtn").css({"pointer-events": "none" });
-
-                if(theWorldTreeIsOpen === 0 ){
-
-                    layer.close(loading);
-
-                    //当前世界树总配置开关为关闭状态
-                    notice.success({
-                        title: '消息通知',
-                        message: '世界树执行测试成功!'
-                    });
-                    return false
-                }
-
-                // console.log("测试1111")
+                        var loading = layer.load(1, {shade: [0.8, '#393D49'], time: 0});
 
 
+                        $("#treeStatus").text("已执行")
+                        $("#worldExecuteBtn").css("background-color","#c2c2c2");
+                        // $("#worldExecuteBtn").addClass("disable");
+                        $("#worldExecuteBtn").css({"pointer-events": "none" });
 
-                var param = {}
-                //执行世界树请求(慎用点击)
-                $.ajax({
-                    url: global_request_TheWorldTree+"?token="+$.cookie('tokenMyb'),
-                    dataType: 'json',
-                    type: 'post',
-                    data: param,
-                    success: function (dataArray) {
+                        if(theWorldTreeIsOpen === 0 ){
 
-                        if (dataArray.code != 200) {
-
-                            // console.log(dataArray.msg)
-                            // layer.msg(dataArray.msg);
                             layer.close(loading);
 
-                            notice.msg('世界树执行-'+dataArray.msg, {icon: 2});
-                            return false;
+                            //当前世界树总配置开关为关闭状态
+                            // notice.success({
+                            //     title: '消息通知',
+                            //     message: '世界树执行测试成功!'
+                            // });
 
+                            notice.msg("世界树执行测试成功", {icon: 2});
+
+                            return false
                         }
 
-                        layer.close(loading);
-                        notice.success({
-                            title: '消息通知',
-                            message: '世界树执行-'+dataArray.msg+'!'
-                        });
+                        // console.log("测试1111")
 
+
+
+                        var param = {}
+                        //执行世界树请求(慎用点击)
+                        $.ajax({
+                            url: global_request_TheWorldTree+"?token="+$.cookie('tokenMyb'),
+                            dataType: 'json',
+                            type: 'post',
+                            data: param,
+                            success: function (dataArray) {
+
+                                if (dataArray.code != 200) {
+
+                                    // console.log(dataArray.msg)
+                                    // layer.msg(dataArray.msg);
+                                    layer.close(loading);
+
+                                    notice.msg('世界树执行-'+dataArray.msg, {icon: 2});
+                                    return false;
+
+                                }
+
+                                layer.close(loading);
+                                notice.success({
+                                    title: '消息通知',
+                                    message: '世界树执行-'+dataArray.msg+'!'
+                                });
+
+                            }
+                        })
+
+
+
+                    }, btn2:function(index){
+                        // 按钮取消的事件
+                        notice.msg("取消操作", {icon: 5});
+                        layer.close(index);
+
+                    } ,cancel:function(index){//取消事件
+                        notice.msg("取消操作", {icon: 5});
+                        layer.close(index);
                     }
-                })
+                });
+
+
+
 
 
 

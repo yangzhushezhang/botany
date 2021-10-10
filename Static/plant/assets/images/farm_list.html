@@ -496,6 +496,7 @@
         }
 
 
+
         .images_tool{
 
             width: 100%;
@@ -522,15 +523,6 @@
             width: 96px;
             height: 26px;
         }
-
-        .worldtree{
-            width: 76px;
-            height: 57px;
-            cursor: pointer;
-        }
-
-
-
 
     </style>
 
@@ -600,10 +592,6 @@
                         </div>
 
 
-                    </div>
-                    
-                    <div class="layui-inline" id="worldTreeBtn">
-                        <img src="../../assets/images/world-tree.png" class="worldtree">
                     </div>
 
 
@@ -755,9 +743,7 @@
         var idNumType = ''
 
         global_token = mybck
-        var currSelectReturnID;
-        var currSelectReturnTokenValue;
-        var currSelectReturnDataArray;
+        var currSelectReturnID
         var jsondata ;
         var playKindsArray;
         var playKindsOneArray;
@@ -996,11 +982,9 @@
 
 
                     var returnDataArray = dataArray.data
-                    currSelectReturnDataArray= returnDataArray
+
                     var currAccountID = returnDataArray[0].id
-                    var currAccountTokenValue = returnDataArray[0]['token_value']
                     currSelectReturnID = currAccountID
-                    currSelectReturnTokenValue= currAccountTokenValue
                     // console.log("returnDataArray",returnDataArray)
 
                     $("#plant_account_id").empty();
@@ -1199,7 +1183,7 @@
 
 
 
-                                if(item.activeTools.length >= 2){
+                                if(item.activeTools.length === 2){
 
                                     if(item.activeTools[0]['count'] > 1 ){
                                         str = str + '<div class="text_num">'
@@ -1222,7 +1206,7 @@
 
                                 console.log("工具值",item.activeTools)
 
-                                if(item.activeTools.length >= 2){
+                                if(item.activeTools.length === 2){
 
                                     if(item.activeTools[1]['count'] >= 1 ){
                                         str = str + '<div class="text_num">'
@@ -1254,6 +1238,7 @@
                                 str = str + '</div>'
                                 str = str + '</div>'
 
+                                
                                 //判断是不是存在plantid,特殊种子才有的
                                 if(item.plantId == "" ||  item.plantId == undefined ||  item.plantId == 0){
                                     str = str + '<div class="item_energy_one">'
@@ -1335,14 +1320,6 @@
                 var loadIndex = layer.load(3,{shade:[0.7,'#fff'],time:10*1000});
 
                 currSelectReturnID = data.value
-
-                // currSelectReturnDataArray.find()
-               let tempObj =  currSelectReturnDataArray.filter((item) =>{
-                    return item.id == currSelectReturnID
-               })
-
-                // console.log('tempObj',tempObj[0].token_value)
-                currSelectReturnTokenValue = tempObj[0].token_value
 
                 // //重载列表
                 // insTb.reload({
@@ -1557,12 +1534,12 @@
 
                             str = str + '</div>'
                             str = str + '</div>'
+                            str = str + '<div class="item_energy">'
 
                             //判断是不是存在plantid,特殊种子才有的
                             if(item.plantId == "" ||  item.plantId == undefined ||  item.plantId == 0){
-                                str = str + '<div class="item_energy_one">'
+
                             }else{
-                                str = str + '<div class="item_energy">'
                                 str = str + '<div class="item_energy_plantID">'
                                 str = str + '<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjMwIiB2aWV3Qm94PSIwIDAgODIgMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHg9IjAuNSIgeT0iMC41IiB3aWR0aD0iODEiIGhlaWdodD0iMTkiIHJ4PSI0LjUiIGZpbGw9InVybCgjcGFpbnQwX2xpbmVhcikiIHN0cm9rZT0idXJsKCNwYWludDFfbGluZWFyKSIvPgo8cmVjdCB4PSIxIiB5PSIxIiB3aWR0aD0iODAiIGhlaWdodD0iMTgiIHJ4PSI0IiBmaWxsPSIjMUMyMTQ4Ii8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MF9saW5lYXIiIHgxPSI0MSIgeTE9IjAiIHgyPSI0MSIgeTI9IjIwIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIHN0b3AtY29sb3I9IiM4NUNFRkYiLz4KPHN0b3Agb2Zmc2V0PSIwLjQ2ODc1IiBzdG9wLWNvbG9yPSIjNDk4RUMxIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzNDNjE4QSIvPgo8L2xpbmVhckdyYWRpZW50Pgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MV9saW5lYXIiIHgxPSI0MSIgeTE9IjAiIHgyPSI0MSIgeTI9IjIwIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIHN0b3AtY29sb3I9IiM1N0E1Q0YiLz4KPHN0b3Agb2Zmc2V0PSIwLjUzMTI1IiBzdG9wLWNvbG9yPSIjMzQ4MkMxIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzFDNEY5QSIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPgo=" >'
                                 str = str + '<p class="item_energy_plantID_num">1001426351</p>'
@@ -1775,35 +1752,6 @@
                 })
 
                 return false
-
-            })
-
-
-            //世界树查看按钮点击事件
-            $("#worldTreeBtn").click(function () {
-
-                var index = layer.open({
-                    area: ['670px', '700px'],
-                    fixed: false, //不固定
-                    maxmin: false,
-                    title : "查看当前世界树信息",
-                    shadeClose:true,
-                    skin: 'layui-layer-rim',//加上边框
-                    type : 2,
-                    content : "worldTree.html",
-                    success : function(layero, index){
-
-                    },
-
-
-                })
-
-                window.sessionStorage.setItem("index",index);
-                //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
-                $(window).on("resize",function(){
-                    layui.layer.full(window.sessionStorage.getItem("index"));
-                })
-
 
             })
 

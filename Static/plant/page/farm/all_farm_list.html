@@ -216,7 +216,22 @@
                             return d.all_sunflower+"/"+d.already_sunflower
                     }},
 
-                    // {field: 'already_sunflower', title: '总种植向日葵', sort: true,align:"center",width:140},
+                    {field: 'usagesSunflower', title: '兑换条件', sort: true,align:"center",width:140, templet: function (d) {
+
+
+                            if(d.leWallet + (d.usagesSunflower * 100) >= 10000){
+
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #0fc16d;border-color: #0fc16d;">'+'请及时兑换'+'</button>'
+
+                            }else{
+
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #c90b0b;border-color: #c90b0b;">'+'未达到'+'</button>'
+
+                            }
+
+
+                    }},
+
 
                     // {field: 'stage', title: '是否存在乌鸦', sort: true,align:"center",templet:function(d){
                     //

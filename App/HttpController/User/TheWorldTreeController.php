@@ -36,7 +36,6 @@ class TheWorldTreeController extends UserBase
             return false;
         }
     }
-
     # 获取当日世界树的 执行结果
     function getTodayTheWorldTree()
     {
@@ -59,7 +58,6 @@ class TheWorldTreeController extends UserBase
             $this->writeJson(-1, [], "获取异常:" . $exception->getMessage());
         }
     }
-
     # 昨日一键收取
     function yesterdayGetOne()
     {
@@ -79,8 +77,6 @@ class TheWorldTreeController extends UserBase
             return false;
         }
     }
-
-
     #世界树浇水
     function yesterdayWatering()
     {

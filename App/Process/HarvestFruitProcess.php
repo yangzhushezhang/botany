@@ -38,7 +38,7 @@ class HarvestFruitProcess extends AbstractProcess
                                         Tools::WriteLogger($id_array[2], 2, "进程 HarvestFruitProcess 账户不存在 ", $id_array[1], 8);
                                         return false;
                                     }
-                                    if ($one['status'] != 1) {
+                                    if ($one['status'] != 1 && count($id_array) == 3) {  #普通种子才可以这样
                                         # 说明这个种子已经 收获过了
                                         Tools::WriteLogger($id_array[2], 2, "进程 HarvestFruitProcess 丰收失败,请不要重复摘取果实", $id_array[1], 8, $one['farm_id']);
                                         return false;
