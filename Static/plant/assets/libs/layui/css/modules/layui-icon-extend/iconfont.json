@@ -6,6 +6,55 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "798261",
+      "name": "emi种子",
+      "font_class": "emizhongzi",
+      "unicode": "e64a",
+      "unicode_decimal": 58954
+    },
+    {
+      "icon_id": "925424",
+      "name": "emi种子",
+      "font_class": "emizhongzi1",
+      "unicode": "e636",
+      "unicode_decimal": 58934
+    },
+    {
+      "icon_id": "7659437",
+      "name": "sunflower seeds",
+      "font_class": "sunflowerseeds",
+      "unicode": "e638",
+      "unicode_decimal": 58936
+    },
+    {
+      "icon_id": "7659447",
+      "name": "melon seeds",
+      "font_class": "melonseeds",
+      "unicode": "e639",
+      "unicode_decimal": 58937
+    },
+    {
+      "icon_id": "7827575",
+      "name": "瓜子",
+      "font_class": "guazi",
+      "unicode": "e63a",
+      "unicode_decimal": 58938
+    },
+    {
+      "icon_id": "23419605",
+      "name": "种子",
+      "font_class": "a-agriculturefarmingfarmorganicseeds",
+      "unicode": "e8a5",
+      "unicode_decimal": 59557
+    },
+    {
+      "icon_id": "24659394",
+      "name": "种子",
+      "font_class": "a-57",
+      "unicode": "e920",
+      "unicode_decimal": 59680
+    },
+    {
       "icon_id": "1396",
       "name": "树",
       "font_class": "shu",

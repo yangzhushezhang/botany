@@ -83,6 +83,12 @@ class Router extends AbstractRouter
         $routeCollector->post('/user/yesterdayGetOne', '/User/TheWorldTreeController/yesterdayGetOne');
         $routeCollector->post('/user/yesterdayWatering', '/User/TheWorldTreeController/yesterdayWatering');
 
+        /**
+         * SpecialSeedController
+         */
+        $routeCollector->post('/user/getWaitingToHatch', '/User/SpecialSeedController/getWaitingToHatch');
+        #getDoingToHatch
+        $routeCollector->post('/user/getDoingToHatch', '/User/SpecialSeedController/getDoingToHatch');
 
         $routeCollector->get('/closure', function (Request $request, Response $response) {
             $response->write('this is closure router');

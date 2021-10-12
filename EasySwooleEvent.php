@@ -224,5 +224,19 @@ class EasySwooleEvent implements Event
         \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
 
 
+        /**
+         * SpecialSeedProcess
+         */
+        $processConfig = new  \EasySwoole\Component\Process\Config([
+            'processName' => 'SpecialSeedProcess', // 设置 进程名称为 TickProcess
+            'processGroup' => 'SpecialSeedProcess', // 设置 进程组名称为 Tick
+            'arg' => [
+
+            ], // 传递参数到自定义进程中
+            'enableCoroutine' => true, // 设置 自定义进程自动开启协程环境
+        ]);
+        $PeriodsProcess = (new \App\Process\SpecialSeedProcess($processConfig));
+        \EasySwoole\Component\Di::getInstance()->set('SpecialSeedProcess', $PeriodsProcess->getProcess());
+        \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
     }
 }

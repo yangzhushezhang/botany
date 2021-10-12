@@ -36,7 +36,7 @@ class MonitorTools extends AbstractProcess
                     DbManager::getInstance()->invoke(function ($client) {
                         $fix = AccountNumberModel::invoke($client)->all(['status' => 1]);
                         if ($fix) {
-                            # 更新 鼠标 和 向日葵 个数
+                            # 更新 向日葵宝宝 和 向日葵 个数
                             foreach ($fix as $six) {
                                 $one = ToolsModel::invoke($client)->get(['account_number_id' => $six['id']]);
                                 if (!$one) {
@@ -128,7 +128,9 @@ class MonitorTools extends AbstractProcess
                                     Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     result: status " . $data['status'], $six['id'], 7);
                                     continue;
                                 }
-                                $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update(['updated_at' => time(), 'leWallet' => $data['data']['leWallet'], 'usagesSunflower' => $data['data']['usagesSunflower']]);
+                                $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update(['updated_at' => time(), 'leWallet' => $data['data']['leWallet'], 'usagesSunflower' => $data['data']['usagesSunflower'],'pvuMyFarmed'=>$data['data']['pvuMyFarmed']]);
+
+
                                 Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     更新leWallet usagesSunflower  成功", $six['id'], 7);
                             }
                             \co::sleep(3); # 每个账号之间 间隔 5 秒钟

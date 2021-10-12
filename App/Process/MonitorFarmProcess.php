@@ -51,16 +51,20 @@ class MonitorFarmProcess extends AbstractProcess
                                         }
                                         # 判断 农场 没有有 这个 种子 id
                                         $one = FarmModel::invoke($client)->get(['account_number_id' => $re['id'], 'farm_id' => $value['_id']]);
-
                                         $harvestTime = 0;
                                         if (isset($value['harvestTime'])) {
                                             $unix = str_replace(array('T', 'Z'), ' ', $value['harvestTime']);
                                             $harvestTime = strtotime($unix) + 8 * 60 * 60;
                                         }
                                         if ($value['stage'] == "new") { #放花盆
-                                            $redis = RedisPool::defer('redis');
-                                            $redis->rPush("PutPot", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']); #
-                                            Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  种子需要花盆,将其推入PutPotProcess 进程", $re['id'], 11, $value['_id']);
+                                            if (isset($one['id'])) {
+                                                $redis = RedisPool::defer('redis');
+                                                $redis->rPush("PutPot", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']); #
+                                                Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  种子需要花盆,将其推入PutPotProcess 进程", $re['id'], 11, $value['_id']);
+                                            } else {
+                                                Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  种子需要花盆,将其推入PutPotProcess 进程 失败,因为改种子还没有入库", $re['id'], 11, $value['_id']);
+                                            }
+
                                         }
                                         $plantId = "";
                                         $iconUrl = "";
@@ -121,6 +125,10 @@ class MonitorFarmProcess extends AbstractProcess
                                                     });
                                                 }
                                             } else if (count($value['activeTools']) == 2) {  # 需要浇1滴水
+                                                $redis = RedisPool::defer('redis');
+                                                $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
+                                                Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  需要浇水,将其推出WateringProcess 进程 First", $re['id'], 11, $value['_id']);
+                                            } else if (count($value['activeTools']) == 3) {  #特殊种子 浇1滴水  特殊种子
                                                 $redis = RedisPool::defer('redis');
                                                 $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
                                                 Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  需要浇水,将其推出WateringProcess 进程 First", $re['id'], 11, $value['_id']);

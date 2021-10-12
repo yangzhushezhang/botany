@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2844667 */
-  src: url('iconfont.woff2?t=1633523123602') format('woff2'),
-       url('iconfont.woff?t=1633523123602') format('woff'),
-       url('iconfont.ttf?t=1633523123602') format('truetype');
+  src: url('iconfont.woff2?t=1633866218697') format('woff2'),
+       url('iconfont.woff?t=1633866218697') format('woff'),
+       url('iconfont.ttf?t=1633866218697') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,34 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-emizhongzi:before {
+  content: "\e64a";
+}
+
+.icon-emizhongzi1:before {
+  content: "\e636";
+}
+
+.icon-sunflowerseeds:before {
+  content: "\e638";
+}
+
+.icon-melonseeds:before {
+  content: "\e639";
+}
+
+.icon-guazi:before {
+  content: "\e63a";
+}
+
+.icon-a-agriculturefarmingfarmorganicseeds:before {
+  content: "\e8a5";
+}
+
+.icon-a-57:before {
+  content: "\e920";
 }
 
 .icon-shu:before {

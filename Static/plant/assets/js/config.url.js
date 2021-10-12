@@ -46,15 +46,21 @@ global_request_getEnergy="/user/getEnergy";
 //执行世界树功能(慎用)
 global_request_TheWorldTree="/user/TheWorldTree";
 
-
 //一键浇水
 global_request_yesterdayWatering="/user/yesterdayWatering";
 
 //一键收取
 
+//待孵化请求接口
+global_request_getWaitingToHatch="/user/getWaitingToHatch";
+
+//孵化中请求接口
+global_request_getDoingToHatch="/user/getDoingToHatch";
+
+
 
 //世界树总开关控制
-theWorldTreeIsOpen = 1  //1为开启,0为关闭
+theWorldTreeIsOpen = 1 //1为开启,0为关闭
 
 
 
@@ -221,4 +227,33 @@ function GetDateDiff(startTime, endTime, diffType) {
 			break;
 	}
 	return parseInt((eTime.getTime() - sTime.getTime()) / parseInt(divNum));
+}
+
+
+//别人封装的时间工具
+function transferTime(cTime) {
+	var jsonDate = new Date(parseInt(cTime));
+	Date.prototype.format = function (format) {
+		var o = {
+			"y+": this.getFullYear(),
+			"M+": this.getMonth() + 1,
+			"d+": this.getDate(),
+			"h+": this.getHours(),
+			"m+": this.getMinutes(),
+			"s+": this.getSeconds()
+		};
+
+		if (/(y+)/.test(format)) {
+			format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+		}
+
+		for (var k in o) {
+			if (new RegExp("(" + k + ")").test(format)) {
+				format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("" + o[k]).substr("" + o[k].length));
+			}
+		}
+		return format;
+	};
+	var newDate = jsonDate.format("yyyy-MM-dd hh:mm:ss");
+	return newDate
 }
