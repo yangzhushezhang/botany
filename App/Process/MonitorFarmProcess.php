@@ -86,8 +86,7 @@ class MonitorFarmProcess extends AbstractProcess
                                                     $redis = RedisPool::defer("redis");
                                                     $redis->rPush("Harvest_Fruit", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id'] . "@" . "999");  #种子的 id 种子的  账户id
                                                     Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  种子已经成熟,将其推入HarvestFruitProcess 进程", $re['id'], 11, $value['_id']);
-                                                    # 重新更新种子的状态
-                                                    FarmModel::invoke($client)->where(['farm_id' => $value['_id']])->update(['updated_at' => time(), 'status' => 2]);
+
                                                 }
                                             } else {
                                                 if ($value['totalHarvest'] == 0) {
@@ -95,6 +94,8 @@ class MonitorFarmProcess extends AbstractProcess
                                                     $redis = RedisPool::defer("redis");
                                                     $redis->rPush("RemoveSeed", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']);  #种子的 id 种子的  账户id
                                                     Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  种子已经摘取了,将其推入RemoveSeedProcess 进程", $re['id'], 11, $value['_id']);
+                                                    # 重新更新种子的状态
+                                                    FarmModel::invoke($client)->where(['farm_id' => $value['_id']])->update(['updated_at' => time(), 'status' => 2]);
                                                 } else {
                                                     # 说明这个 可以去收获  直接 push  到  收获进程去
                                                     $redis = RedisPool::defer("redis");
