@@ -114,7 +114,7 @@
             var log_login_request_param = {};
             // log_login_request_param['player_id']= '1';
             // log_login_request_param['token']= $.cookie('tokenMyb');
-            log_login_request_param['status']='1';
+            // log_login_request_param['status']='1';
             // log_login_request_param['min_Time']='';
             // log_login_request_param['max_Time']='';
             // log_login_request_param['play_kinds_id']='-1';
@@ -155,9 +155,9 @@
 
                         // console.log("list",list)
 
-                        newList = list.filter((item)=>{
+                         newList = list.filter((item)=>{
 
-                            if(item.status == 1 && item.growthTime != 0){  //筛选出符合已种植和未种植的数据
+                            if(item.status == 2 || (item.status == 1 && item.growthTime == 0) || (item.status == 0 && item.growthTime == 0)){  //筛选出符合已种植和未种植的数据
 
                                 return item
                             }
@@ -178,18 +178,50 @@
                 cols: [[
                     {type: 'checkbox'},
                     {field: 'id',title:'ID',sort: true,align:"center",width:130},
-                    {field: 'remark',title:'remark',sort: true,align:"center",width:130},
-                    // {field: 'plantId',title:'plantId',sort: true,align:"center",width:130},
-                    // {field: 'tokenId', title: 'tokenId', sort: true,align:"center"},
-                    {field: 'growthTime', title: '预计孵化完成时间', sort: true,align:"center", templet: function (d) {
-                            return util.toDateString(d.growthTime);
+                    {field: 'remark',title:'remark',sort: true,align:"center",width:170},
+                    {field: 'plantId',title:'植物类型',sort: true,align:"center",width:130,templet:function(d){
 
-                            // return transferTime(d.growthTime)
-                        }, sort: true
-                    },
+                            var plantId =  d.plantId.toString();
+                            // console.log(plantId,typeof plantId)
+                         // console.log(d.plantId.substr(0,1))
+                            if(plantId.substr(0,1) >= 2){
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #926dde;border-color: #926dde;">'+'母树'+'</button>'
+                            }else {
+                                return "普通"
+                            }
+                    }},
+
+                    // {field: 'tokenId', title: 'tokenId', sort: true,align:"center"},
+                    // {field: 'growthTime', title: '预计孵化完成时间', sort: true,align:"center", templet: function (d) {
+                    //         return util.toDateString(d.growthTime);
+                    //
+                    //         // return transferTime(d.growthTime)
+                    //     }, sort: true
+                    // },
                     {field: 'icon_URL', title: '孵化种子图片', sort: true,align:"center",templet:function(d){
 
                             return '<div><img src="'+d.icon_URL+'" ' + 'alt="" width="50px" height="60px"></a></div>'
+                    }},
+
+                    {field: 'status', title: '状态', sort: true,align:"center",templet:function(d){
+
+
+
+
+                            if(d.status == 2){ //已种植
+
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #0fc16d;border-color: #0fc16d;">'+'已种植'+'</button>'
+
+                            }else if(d.status == 1 && d.growthTime == 0){ //在售
+
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #0b41c9;border-color: #0b41c9;">'+'在售'+'</button>'
+                            }else if(d.status == 0 && d.growthTime == 0){ //未种植
+
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #c90b0b;border-color: #c90b0b;">'+'未种植'+'</button>'
+                            }else{
+
+                                return ''
+                            }
                     }},
 
                     //
@@ -207,6 +239,8 @@
                 ]],
                 done: function (res, curr, count) {
                     $('tr').css({'background-color': '#fff', 'color': '#191a1c'});
+
+
                 }
             });
 
