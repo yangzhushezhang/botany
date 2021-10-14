@@ -38,6 +38,11 @@ class SpecialSeedProcess extends AbstractProcess
                             }
                             #更新需要孵化时间的
                             $this->GetSeedsInventory($re['token_value'], $re['id'], $re['user_id']);
+                            #更新孵化完毕的种子
+                            $this->GetPlantsInventory($re['token_value'], $re['id'], $re['user_id']);
+                            # 获取木梳
+                            $this->GetPlantsInventorType2($re['token_value'], $re['id'], $re['user_id']);
+
                         }
                     }
                 });
@@ -121,10 +126,15 @@ class SpecialSeedProcess extends AbstractProcess
                 if ($data_json && $data_json['status'] == 0) {
                     if (count($data_json['data']['seeds']) != 0) {
                         # 说明有正在孵化的种子  更新到数据库
+
                         DbManager::getInstance()->invoke(function ($client) use ($data_json, $account_number_id, $user_id) {
                             foreach ($data_json['data']['seeds'] as $datum) {
+
+
                                 $one = SpecialSeedModel::invoke($client)->get(['plantId' => $datum['plantId'], 'account_number_id' => $account_number_id]);
                                 if (!$one) {
+
+
                                     $add = [
                                         'account_number_id' => $account_number_id,
                                         'tokenId' => $datum['tokenId'],
@@ -134,6 +144,8 @@ class SpecialSeedProcess extends AbstractProcess
                                         'created_at' => time(),
                                         'updated_at' => time()
                                     ];
+                                    # var_dump($add);
+
                                     $two = SpecialSeedModel::invoke($client)->data($add)->save();
                                     if (!$two) {
                                         Tools::WriteLogger($user_id, 2, "进程 SpecialSeedProcess  方法 GetSeedsInventory 插入数据失败", $account_number_id, 12);
@@ -156,5 +168,158 @@ class SpecialSeedProcess extends AbstractProcess
         }
     }
 
+
+    # 获取孵化完毕的种子
+    function GetPlantsInventory($token_value, $account_number_id, $user_id)
+    {
+        try {
+            for ($i = 0; $i < 5; $i++) {
+                $client = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/get-plants-inventory-v3?offset=0&limit=15&type=1');
+                $headers = array(
+                    'authority' => 'backend-farm.plantvsundead.com',
+                    'sec-ch-ua' => '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
+                    'accept' => 'application/json, text/plain, */*',
+                    'authorization' => $token_value,
+                    'sec-ch-ua-mobile' => '?0',
+                    'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36',
+                    'sec-ch-ua-platform' => '"Windows"',
+                    'origin' => 'https://marketplace.plantvsundead.com',
+                    'sec-fetch-site' => 'same-site',
+                    'sec-fetch-mode' => 'cors',
+                    'sec-fetch-dest' => 'empty',
+                    'referer' => 'https://marketplace.plantvsundead.com/',
+                    'accept-language' => 'zh-CN,zh;q=0.9',
+                );
+                $client->setHeaders($headers, false, false);
+                $client->setTimeout(5);
+                $client->setConnectTimeout(10);
+                $response = $client->get();
+                $result = $response->getBody();
+                $data_json = json_decode($result, true);
+                if ($data_json && $data_json['status'] == 0) {
+                    if (count($data_json['data']['data']) != 0) {
+                        # 说明有正在孵化的种子  更新到数据库
+                        DbManager::getInstance()->invoke(function ($client) use ($data_json, $account_number_id, $user_id) {
+                            foreach ($data_json['data']['data'] as $datum) {
+                                $one = SpecialSeedModel::invoke($client)->get(['plantId' => $datum['plantId'], 'account_number_id' => $account_number_id]);
+                                $add = [
+                                    'account_number_id' => $account_number_id,
+                                    'tokenId' => $datum['tokenId'],
+                                    'growthTime' => 0,
+                                    'icon_URL' => $datum['iconUrl'],
+                                    'plantId' => $datum['plantId'],
+                                    # 'created_at' => time(),
+                                    'updated_at' => time(),
+                                    'status' => $datum['status']
+                                ];
+                                if (!$one) {
+                                    $add['created_at'] = time();
+                                    $two = SpecialSeedModel::invoke($client)->data($add)->save();
+                                    if (!$two) {
+                                        Tools::WriteLogger($user_id, 2, "进程 SpecialSeedProcess  方法 GetSeedsInventory 插入数据失败", $account_number_id, 12);
+                                    } else {
+                                        Tools::WriteLogger($user_id, 2, "进程 SpecialSeedProcess  方法 GetSeedsInventory 插入数据成功", $account_number_id, 12);
+                                    }
+                                } else {
+                                    #更新数据
+                                    $two = SpecialSeedModel::invoke($client)->where(['plantId' => $datum['plantId'], 'account_number_id' => $account_number_id])->update($add);
+                                    if (!$two) {
+                                        Tools::WriteLogger($user_id, 2, "进程 SpecialSeedProcess  方法 GetSeedsInventory 更新数据失败", $account_number_id, 12);
+                                    } else {
+                                        Tools::WriteLogger($user_id, 2, "进程 SpecialSeedProcess  方法 GetSeedsInventory 更新数据成功", $account_number_id, 12);
+                                    }
+
+                                }
+                            }
+                        });
+                    }
+                    Tools::WriteLogger($user_id, 2, "进程 SpecialSeedProcess  方法 GetSeedsInventory 获取数据成功", $account_number_id, 12);
+                    return $data_json;
+                }
+            }
+            Tools::WriteLogger($user_id, 2, "进程 SpecialSeedProcess  方法 GetSeedsInventory 获取数据失败", $account_number_id, 12);
+            return false;
+        } catch (\Throwable $e) {
+            Tools::WriteLogger($user_id, 2, "进程 SpecialSeedProcess  方法 GetPlantsInventory 异常:" . $e->getMessage(), $account_number_id, 12);
+            return false;
+        }
+    }
+
+
+    # 获取木梳
+    function GetPlantsInventorType2($token_value, $account_number_id, $user_id)
+    {
+        try {
+            for ($i = 0; $i < 5; $i++) {
+                $client = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/get-plants-inventory-v3?offset=0&limit=15&type=2');
+                $headers = array(
+                    'authority' => 'backend-farm.plantvsundead.com',
+                    'sec-ch-ua' => '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
+                    'accept' => 'application/json, text/plain, */*',
+                    'authorization' => $token_value,
+                    'sec-ch-ua-mobile' => '?0',
+                    'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36',
+                    'sec-ch-ua-platform' => '"Windows"',
+                    'origin' => 'https://marketplace.plantvsundead.com',
+                    'sec-fetch-site' => 'same-site',
+                    'sec-fetch-mode' => 'cors',
+                    'sec-fetch-dest' => 'empty',
+                    'referer' => 'https://marketplace.plantvsundead.com/',
+                    'accept-language' => 'zh-CN,zh;q=0.9',
+                );
+                $client->setHeaders($headers, false, false);
+                $client->setTimeout(5);
+                $client->setConnectTimeout(10);
+                $response = $client->get();
+                $result = $response->getBody();
+                $data_json = json_decode($result, true);
+                if ($data_json && $data_json['status'] == 0) {
+                    if (count($data_json['data']['data']) != 0) {
+                        # 说明有正在孵化的种子  更新到数据库
+                        DbManager::getInstance()->invoke(function ($client) use ($data_json, $account_number_id, $user_id) {
+                            foreach ($data_json['data']['data'] as $datum) {
+                                $one = SpecialSeedModel::invoke($client)->get(['plantId' => $datum['plantId'], 'account_number_id' => $account_number_id]);
+                                $add = [
+                                    'account_number_id' => $account_number_id,
+                                    'tokenId' => $datum['tokenId'],
+                                    'growthTime' => 0,
+                                    'icon_URL' => $datum['iconUrl'],
+                                    'plantId' => $datum['plantId'],
+                                    # 'created_at' => time(),
+                                    'updated_at' => time(),
+                                    'status' => $datum['status']
+                                ];
+                                if (!$one) {
+                                    $add['created_at'] = time();
+                                    $two = SpecialSeedModel::invoke($client)->data($add)->save();
+                                    if (!$two) {
+                                        Tools::WriteLogger($user_id, 2, "进程 SpecialSeedProcess  方法 GetSeedsInventory 插入数据失败", $account_number_id, 12);
+                                    } else {
+                                        Tools::WriteLogger($user_id, 2, "进程 SpecialSeedProcess  方法 GetSeedsInventory 插入数据成功", $account_number_id, 12);
+                                    }
+                                } else {
+                                    #更新数据
+                                    $two = SpecialSeedModel::invoke($client)->where(['plantId' => $datum['plantId'], 'account_number_id' => $account_number_id])->update($add);
+                                    if (!$two) {
+                                        Tools::WriteLogger($user_id, 2, "进程 SpecialSeedProcess  方法 GetSeedsInventory 更新数据失败", $account_number_id, 12);
+                                    } else {
+                                        Tools::WriteLogger($user_id, 2, "进程 SpecialSeedProcess  方法 GetSeedsInventory 更新数据成功", $account_number_id, 12);
+                                    }
+
+                                }
+                            }
+                        });
+                    }
+                    Tools::WriteLogger($user_id, 2, "进程 SpecialSeedProcess  方法 GetSeedsInventory 获取数据成功", $account_number_id, 12);
+                    return $data_json;
+                }
+            }
+            Tools::WriteLogger($user_id, 2, "进程 SpecialSeedProcess  方法 GetSeedsInventory 获取数据失败", $account_number_id, 12);
+            return false;
+        } catch (\Throwable $e) {
+            Tools::WriteLogger($user_id, 2, "进程 SpecialSeedProcess  方法 GetPlantsInventory 异常:" . $e->getMessage(), $account_number_id, 12);
+            return false;
+        }
+    }
 
 }

@@ -34,8 +34,13 @@ class SpecialSeedController extends UserBase
     {
         try {
             $status = $this->request()->getParsedBody('status');
+            $growthTime = $this->request()->getParsedBody('growthTime');
             DbManager::getInstance()->invoke(function ($client) use ($status) {
-                $res = SpecialSeedModel::invoke($client)->all(['status' => $status]);
+                if (isset($status)) {
+                    $res = SpecialSeedModel::invoke($client)->all(['status' => $status]);
+                } else {
+                    $res = SpecialSeedModel::invoke($client)->all();
+                }
                 if ($res) {
                     foreach ($res as $k => $re) {
                         $one = AccountNumberModel::invoke($client)->get(['id' => $re['account_number_id']]);
@@ -44,8 +49,6 @@ class SpecialSeedController extends UserBase
                         }
                     }
                 }
-
-
                 $this->writeJson(200, $res, "获取成功");
                 return true;
             });
