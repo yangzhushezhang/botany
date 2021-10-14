@@ -53,6 +53,7 @@ class RemoveSeedProcess extends AbstractProcess
                                         Tools::WriteLogger($id_array[2], 2, "进程 RemoveSeedProcess 种子铲除失败,不可以重复操作", $id_array[1], 4, $two['farm_id']);
                                         return false;
                                     }
+
                                     #准备去收获 种子
                                     $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms/' . $two['farm_id'] . '/deactivate');
                                     $headers = array(
