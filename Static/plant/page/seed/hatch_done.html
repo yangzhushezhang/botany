@@ -49,6 +49,20 @@
             <!-- 表格工具栏 -->
             <form class="layui-form toolbar">
                 <div class="layui-form-item" >
+                    <div class="layui-inline" style="margin-left: -30px;">
+                        <label class="layui-form-label">植物状态:</label>
+                        <div class="layui-input-inline">
+                            <select name="plant_status" id="plant_status"  lay-filter="plant_status_filter">
+                                <option value="7777777" selected>全部</option>
+                                <option value="0">未种植</option>
+                                <option value="1">在售</option>
+                                <option value="2">已种植</option>
+                                <option value="3">待种植</option>
+                                <option value="8">已售</option>
+                            </select>
+                        </div>
+
+                    </div>
                     <div class="layui-inline">&emsp;
 <!--                        <button class="layui-btn icon-btn currSerachBtn" lay-filter="userTbSearch" lay-submit>-->
 <!--                            <i class="layui-icon layui-icon-add-1"></i>添加账号-->
@@ -254,6 +268,161 @@
                 }
             });
 
+
+
+            /* 下拉框选中事件 */
+            form.on('select(plant_status_filter)', function (data) {
+
+                // var loadIndex = layer.load(3,{shade:[0.7,'#fff'],time:10*1000});
+
+                currSelectReturnID = data.value
+
+                if(currSelectReturnID == "7777777"){
+
+                    // console.log("全部选中"+currSelectReturnID)
+
+                    //重载列表
+                    insTb.reload({
+                        url: global_request_getDoingToHatch+"?token="+global_token,
+                        method: 'post',
+                        parseData: function(res){ //res 即为原始返回的数据
+                            let newList
+                            //可以在这块区域修改原始数据
+                            if(res.result.length != 0 ){
+                                var list = res.result;
+
+                                // console.log("list",list)
+
+                                newList = list.filter((item)=>{
+
+                                    if(item.status == 3 || item.status == 8 || item.status == 2 || (item.status == 1 && item.growthTime == 0) || (item.status == 0 && item.growthTime == 0)){  //筛选出符合已种植和未种植的数据
+
+                                        return item
+                                    }
+
+                                })
+
+
+
+
+                                // console.log("newList",newList)
+
+
+                            }
+                            return {
+                                "code": res.code, //解析接口状态
+                                "msg": res.msg, //解析提示文本
+                                "result": newList //解析数据列表
+                            };
+                        },
+                        done: function(res, curr, count){
+
+
+                        }
+                    },false);
+
+
+                }else{
+
+                    // console.log("其他值"+currSelectReturnID)
+
+                    //重载列表
+                    insTb.reload({
+                        url: global_request_getDoingToHatch+"?token="+global_token,
+                        method: 'post',
+                        parseData: function(res){ //res 即为原始返回的数据
+                            let newList
+                            //可以在这块区域修改原始数据
+                            if(res.result.length != 0 ){
+                                var list = res.result;
+
+                                // console.log("list",list)
+
+
+                                if(currSelectReturnID == "0"){
+                                    newList = list.filter((item)=>{
+
+                                        if( (item.status == 0 && item.growthTime == 0)){  //筛选出符合已种植和未种植的数据
+
+                                            return item
+                                        }
+
+                                    })
+                                }else if(currSelectReturnID == "1"){
+                                    newList = list.filter((item)=>{
+
+                                        if((item.status == 1 && item.growthTime == 0)){  //筛选出符合已种植和未种植的数据
+
+                                            return item
+                                        }
+
+                                    })
+                                }else if(currSelectReturnID == "2"){
+                                    newList = list.filter((item)=>{
+
+                                        if( item.status == 2 ){  //筛选出符合已种植和未种植的数据
+
+                                            return item
+                                        }
+
+                                    })
+                                }else if(currSelectReturnID == "3"){
+                                    newList = list.filter((item)=>{
+
+                                        if(item.status == 3 ){  //筛选出符合已种植和未种植的数据
+
+                                            return item
+                                        }
+
+                                    })
+                                }else if(currSelectReturnID == "8"){
+                                    newList = list.filter((item)=>{
+
+                                        if( item.status == 8){  //筛选出符合已种植和未种植的数据
+
+                                            return item
+                                        }
+
+                                    })
+                                }
+
+
+
+
+
+
+                                // console.log("newList",newList)
+
+
+                            }
+                            return {
+                                "code": res.code, //解析接口状态
+                                "msg": res.msg, //解析提示文本
+                                "result": newList //解析数据列表
+                            };
+                        },
+                        done: function(res, curr, count){
+
+
+                        }
+                    },false);
+
+
+                }
+
+                // // currSelectReturnDataArray.find()
+                // let tempObj =  currSelectReturnDataArray.filter((item) =>{
+                //     return item.id == currSelectReturnID
+                // })
+                //
+                // // console.log('tempObj',tempObj[0].token_value)
+                // currSelectReturnTokenValue = tempObj[0].token_value
+
+
+
+                return false;
+            });
+
             //添加公告点击事件弹窗
             form.on('submit(userTbSearch)', function (data) {
 
@@ -327,7 +496,7 @@
                 } else if (obj.event === 'delbtn') { // 删除
                     doDel(obj);
                 }else if (obj.event === 'farming_btn') { // 种植
-                    console.log("种植按钮点击了")
+                    // console.log("种植按钮点击了")
 
                     layer.confirm('系统将对当前植物进行种植,确认种植吗？', {
                         icon:3,
