@@ -330,7 +330,7 @@ class SpecialSeedProcess extends AbstractProcess
             DbManager::getInstance()->invoke(function ($client) {
                 $res = SpecialSeedModel::invoke($client)->all(['status' => 1]);
                 foreach ($res as $re) {
-                    if (time() - $re['updated'] > 10800 ) {
+                    if (time() - $re['updated'] > 10800  && $re['growthTime']==0 ) {
                         # 说明已经 售出了
                         SpecialSeedModel::invoke($client)->where(['id' => $re['id']])->update(['updated_at' => time(), 'status' => 8]);
                         Tools::WriteLogger(0, 2, "进程 SpecialSeedProcess  方法 GetShopped 在售更新成功", $re['account_number_id'], 12);
