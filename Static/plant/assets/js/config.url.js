@@ -57,6 +57,9 @@ global_request_getWaitingToHatch="/user/getWaitingToHatch";
 //孵化中请求接口
 global_request_getDoingToHatch="/user/getDoingToHatch";
 
+//未种植和种植互相切换的请求接口
+global_request_IfPlanted="/user/IfPlanted";
+
 
 
 //世界树总开关控制

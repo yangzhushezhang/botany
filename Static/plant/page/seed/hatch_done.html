@@ -7,6 +7,7 @@
     <title>账单</title>
     <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
     <link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
+    <link rel="stylesheet" href="../../assets/libs/layui/css/modules/layui-icon-extend/iconfont.css"/>
 
     <style>
 
@@ -79,9 +80,16 @@
 
 <!--数据表格操作工具栏-->
 <script type="text/html" id="orderListBar">
-    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="updated_leWallet"><i class="layui-icon layui-icon-refresh"></i>更新能量</a>
-    <a class="layui-btn layui-btn-sm layui-btn-normal layui-btn-radius " lay-event="changebtn"><i class="layui-icon layui-icon-edit"></i>修改</a>
-    <a class="layui-btn layui-btn-sm layui-btn layui-btn layui-btn-danger layui-btn-radius" lay-event="delbtn"><i class="layui-icon">&#x1006;</i>删除</a>
+
+
+    {{#  if(d.status == 0){ }}
+      <button class="layui-btn layui-btn-sm layui-btn-radius" lay-event="farming_btn"><i class="iconfont icon-zhiwu6"></i>种植操作</button>
+    {{#  } else if(d.status == 3){ }}
+      <button class="layui-btn layui-btn-sm layui-btn-radius"  lay-event="farm_not_btn" style="background-color: #33cabb"><i class="iconfont icon-farm-"></i> 恢复未种植</button>
+    {{#  } }}
+
+<!--    <a class="layui-btn layui-btn-sm layui-btn-normal layui-btn-radius " lay-event="changebtn"><i class="layui-icon layui-icon-edit"></i>修改</a>-->
+<!--    <a class="layui-btn layui-btn-sm layui-btn layui-btn layui-btn-danger layui-btn-radius" lay-event="delbtn"><i class="layui-icon">&#x1006;</i>删除</a>-->
 <!--    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="refresh_tool" style="background-color: #33cabb"><i class="layui-icon layui-icon-refresh"></i>刷新工具</a>-->
 <!--    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="refresh_farm" style="background-color: #926dde"><i class="layui-icon layui-icon-refresh"></i>刷新农场</a>-->
 </script>
@@ -157,7 +165,7 @@
 
                          newList = list.filter((item)=>{
 
-                            if(item.status == 2 || (item.status == 1 && item.growthTime == 0) || (item.status == 0 && item.growthTime == 0)){  //筛选出符合已种植和未种植的数据
+                            if(item.status == 3 || item.status == 8 || item.status == 2 || (item.status == 1 && item.growthTime == 0) || (item.status == 0 && item.growthTime == 0)){  //筛选出符合已种植和未种植的数据
 
                                 return item
                             }
@@ -178,7 +186,7 @@
                 cols: [[
                     {type: 'checkbox'},
                     {field: 'id',title:'ID',sort: true,align:"center",width:130},
-                    {field: 'remark',title:'remark',sort: true,align:"center",width:170},
+                    {field: 'remark',title:'名字',sort: true,align:"center",width:170},
                     {field: 'plantId',title:'植物类型',sort: true,align:"center",width:130,templet:function(d){
 
                             var plantId =  d.plantId.toString();
@@ -205,9 +213,6 @@
 
                     {field: 'status', title: '状态', sort: true,align:"center",templet:function(d){
 
-
-
-
                             if(d.status == 2){ //已种植
 
                                 return '<button class="layui-btn  layui-btn-sm" style="background-color: #0fc16d;border-color: #0fc16d;">'+'已种植'+'</button>'
@@ -218,11 +223,16 @@
                             }else if(d.status == 0 && d.growthTime == 0){ //未种植
 
                                 return '<button class="layui-btn  layui-btn-sm" style="background-color: #c90b0b;border-color: #c90b0b;">'+'未种植'+'</button>'
+                            }else if(d.status == 8){ //已售
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #860bc9;border-color: #860bc9;">'+'已售'+'</button>'
+                            }else if(d.status == 3){ //待种植
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #c9c60b;border-color: #c9c60b;">'+'待种植'+'</button>'
                             }else{
 
                                 return ''
                             }
                     }},
+
 
                     //
                     // {
@@ -235,7 +245,7 @@
                             return util.toDateString(d.updated_at* 1000);
                         }, sort: true,width:165
                     },
-                    // {title: '操作', width:330, templet:'#orderListBar',fixed:"right",align:"center"}
+                    {title: '操作', width:150, templet:'#orderListBar',fixed:"right",align:"center"}
                 ]],
                 done: function (res, curr, count) {
                     $('tr').css({'background-color': '#fff', 'color': '#191a1c'});
@@ -316,66 +326,10 @@
 
                 } else if (obj.event === 'delbtn') { // 删除
                     doDel(obj);
-                }else if (obj.event === 'refresh_tool') { // 刷新工具
+                }else if (obj.event === 'farming_btn') { // 种植
+                    console.log("种植按钮点击了")
 
-                    var param={};
-                    param['id']= currDatas.id;
-                    //刷新最新农场信息
-                    $.ajax({
-                        url: global_request_refresh_tools+"?token="+global_token,
-                        dataType: 'json',
-                        type: 'post',
-                        data: param,
-                        success: function (dataArray) {
-
-                            if (dataArray.code != 200) {
-
-                                // console.log(dataArray.msg)
-                                layer.msg(dataArray.msg);
-
-                                return false;
-
-                            }
-
-                            layer.msg(dataArray.msg, {icon: 1, time: 500}, function () {
-
-
-                            });
-                        }
-                    })
-                }else if (obj.event === 'refresh_farm') { // 刷新农场
-                    // console.log("刷新农场")
-                    var param={};
-                    param['id']= currDatas.id;
-                    //刷新自己的工具信息
-                    $.ajax({
-                        url: global_request_refresh_botany+"?token="+global_token,
-                        dataType: 'json',
-                        type: 'post',
-                        data: param,
-                        success: function (dataArray) {
-
-                            if (dataArray.code != 200) {
-
-                                // console.log(dataArray.msg)
-                                // layer.msg(dataArray.msg);
-
-                                return false;
-
-                            }
-
-
-                            layer.msg(dataArray.msg, {icon: 1, time: 500}, function () {
-
-
-
-                            });
-
-
-                        }
-                    })
-                }else if (obj.event === 'updated_leWallet') { // 充值
-                    layer.confirm('系统将更新当前账号的能量，确认要更新？', {
+                    layer.confirm('系统将对当前植物进行种植,确认种植吗？', {
                         icon:3,
                         title:'温馨提示',
                         skin: 'layui-layer-admin',
@@ -390,11 +344,11 @@
                         // param['status'] = 2;
 
                         param['id'] = currDatas.id;
-                        param['page'] = 1;
-                        param['limit'] = 1;
+                        param['status'] = 3;
+                        // param['limit'] = 1;
 
                         $.ajax({
-                            url: global_request_updated_leWallet+"?token="+global_token,
+                            url: global_request_IfPlanted+"?token="+global_token,
                             data: param,
                             type: "POST",
                             dataType: "json",
@@ -406,8 +360,8 @@
                                     setTimeout(function () {
                                         var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
                                         parent.layer.close(index);
-                                        $(".layui-laypage-btn")[0].click()
-                                        // window.parent.location.reload();
+                                        // $(".layui-laypage-btn")[0].click()
+                                        window.location.reload();
                                     }, 1300)
 
                                 } else {
@@ -419,13 +373,71 @@
 
 
                             },
-                            end : function() {//弹窗关闭后的回调函数
-                                //利用laypage实现局部刷新,以下两种方式都可以
-                                // $(".layui-laypage-btn").click()
-                                //直接刷新当前修改的行
-                                // $(".layui-laypage-btn")[0].click()
-                                // window.parent.location.reload();
-                            }
+                            // end : function() {//弹窗关闭后的回调函数
+                            //     //利用laypage实现局部刷新,以下两种方式都可以
+                            //     // $(".layui-laypage-btn").click()
+                            //     //直接刷新当前修改的行
+                            //     // $(".layui-laypage-btn")[0].click()
+                            //     // window.parent.location.reload();
+                            // }
+
+                        });
+
+                    });
+                }else if (obj.event === 'farm_not_btn'){//恢复未种植
+                    // console.log("恢复未种植按钮点击了")
+
+                    layer.confirm('系统将对当前植物恢复成未种植状态,确认恢复吗？', {
+                        icon:3,
+                        title:'温馨提示',
+                        skin: 'layui-layer-admin',
+                        shade: .1
+                    }, function (i) {
+                        layer.close(i);
+                        // var loadIndex = layer.load(2);
+
+                        var param = {};
+                        // param['token'] = $.cookie('tokenMyb');
+                        // param['action'] = 'update';
+                        // param['status'] = 2;
+
+                        param['id'] = currDatas.id;
+                        param['status'] = 0;
+                        // param['limit'] = 1;
+
+                        $.ajax({
+                            url: global_request_IfPlanted+"?token="+global_token,
+                            data: param,
+                            type: "POST",
+                            dataType: "json",
+                            success: function (addResult) {
+
+                                if (addResult.code === 200) {
+                                    // layer.msg(addResult.msg);
+                                    notice.msg(addResult.msg, {icon: 1});
+                                    setTimeout(function () {
+                                        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                                        parent.layer.close(index);
+                                        // $(".layui-laypage-btn")[0].click()
+                                        window.location.reload();
+                                    }, 1300)
+
+                                } else {
+
+                                    // layer.msg(addResult.msg);
+                                    notice.msg(addResult.msg, {icon: 2});
+
+                                }
+
+
+                            },
+                            // end : function() {//弹窗关闭后的回调函数
+                            //     //利用laypage实现局部刷新,以下两种方式都可以
+                            //     // $(".layui-laypage-btn").click()
+                            //     //直接刷新当前修改的行
+                            //     // $(".layui-laypage-btn")[0].click()
+                            //     // window.parent.location.reload();
+                            // }
 
                         });
 

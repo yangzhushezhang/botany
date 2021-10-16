@@ -178,11 +178,58 @@
                 cols: [[
                     {type: 'checkbox'},
                     {field: 'id',title:'ID',sort: true,align:"center",width:130},
-                    {field: 'remark',title:'remark',sort: true,align:"center",width:130},
+                    {field: 'remark',title:'名字',sort: true,align:"center",width:130},
                     // {field: 'plantId',title:'plantId',sort: true,align:"center",width:130},
                     // {field: 'tokenId', title: 'tokenId', sort: true,align:"center"},
+                    {field: 'growthTime', title: '孵化完成倒计时', sort: true,align:"center",minWidth:'170', templet:function(a){
+
+                            // var abc = 1616427900;*60
+                            // var endTime = Math.floor((abc + configTime * 60));
+                            var endTime = parseInt(a.growthTime)+60*60*24*1000;
+
+                            // console.log("计算时间:"+endTime);
+                            // 计算 剩下的秒，即留给剩下的倒计时
+                            // var curTime = Math.round(new Date().getTime()  / 1000);
+                            var curTime = parseInt(new Date().getTime());
+                            // console.log("系统当前时间："+curTime);
+                            var t = parseInt((endTime -  curTime) / 1000)
+                            // console.log("时间戳的差：",endTime -  curTime);
+                            // var t = endTime - Math.floor(new Date().getTime() / 1000);
+                            // 设置每一条数据唯一的key
+                            var key = 'key_' + a.id;
+                            // 判断是否逾期
+                            if(t <= 0){
+
+                                // return
+                                return `<label  id=${key} style="color: red">已孵化完毕!</label>`;
+                            }
+                            //未逾期 > 开始处理剩余时间，将秒转为n日n时n分n秒的形式，代码在下方88-108行
+                            var left_time =  secondToStr(t);
+                            var html = `<label id=${key} style="color: red;">${left_time}</label>`;
+                            addTask(key, function () {
+                                t--;
+                                var left =  secondToStr(t);
+                                $('#' + key).text(left);
+                                if (t == 0) {
+                                    //倒计时结束，删除定时任务
+                                    $('#' + key).css("color","black");
+                                    $('#' + key).text("已失效.");
+                                    delTask(key);
+                                    // 可根据情况，进行孵化完毕之后的操作
+                                    //...........
+                                    // console.log("倒计时结束");
+
+                                    // changeStatusList(a.id);
+                                }
+                            });
+                            return html;
+
+
+                    }},
                     {field: 'growthTime', title: '预计孵化完成时间', sort: true,align:"center", templet: function (d) {
-                            return util.toDateString(d.growthTime);
+
+                        // console.log(parseInt(d.growthTime)+60*60*24*1000)
+                            return util.toDateString(parseInt(d.growthTime)+60*60*24*1000);
 
                             // return transferTime(d.growthTime)
                         }, sort: true
@@ -707,6 +754,55 @@
                     }, 'json');
                 });
             }
+
+
+
+            /*  倒计时相关 ↓↓↓ */
+            // 该map可以定义在最上面
+            var tasks = new Map();
+            // 定时计时任务，这里是1秒执行一次
+            setInterval(function () {
+                for (var key in tasks) {
+                    tasks[key]();
+                }
+            }, 1000)
+            // 添加定时任务
+            function addTask(key, value) {
+                if (typeof value === "function") {
+                    tasks[key] = value;
+                }
+            }
+            // 删除定时任务
+            function delTask(task) {
+                delete tasks[task];
+            }
+            // 剩余秒 转化为 剩余日时分秒
+            function secondToStr(t){
+                //日
+                var left_day = parseInt(t / ( 60 * 60 * 24));
+                //时
+                var left_hour = parseInt((t % ( 60 * 60 * 24)) / (60 * 60));
+                if (left_hour < 10) {
+                    left_hour = "0" + left_hour;
+                }
+
+                // console.log(t);
+                //分
+                var left_minute = parseInt((t%3600) /60);
+                if (left_minute < 10) {
+                    left_minute = "0" + left_minute;
+                }
+                //秒
+                var left_second = t % 60;
+                if (left_second < 10) {
+                    left_second = "0" + t % 60;
+                }
+                return left_day+"天 "+left_hour+"时 "+left_minute+"分 "+left_second+"秒";
+                // return left_minute+"分 "+left_second+"秒";
+
+            }
+            /*  倒计时相关 结束 ↑↑↑ */
+
 
         });
 

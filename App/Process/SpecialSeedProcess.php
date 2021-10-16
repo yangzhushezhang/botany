@@ -10,6 +10,8 @@ use App\Tools\Tools;
 use EasySwoole\Component\Process\AbstractProcess;
 use EasySwoole\HttpClient\Exception\InvalidUrl;
 use EasySwoole\ORM\DbManager;
+use EasySwoole\ORM\Exception\Exception;
+use EasySwoole\Pool\Exception\PoolEmpty;
 
 class SpecialSeedProcess extends AbstractProcess
 {
@@ -42,6 +44,8 @@ class SpecialSeedProcess extends AbstractProcess
                             $this->GetPlantsInventory($re['token_value'], $re['id'], $re['user_id']);
                             # 获取木梳
                             $this->GetPlantsInventorType2($re['token_value'], $re['id'], $re['user_id']);
+                            #更新在售的状态
+                            $this->GetShopped();
 
                         }
                     }
@@ -318,6 +322,28 @@ class SpecialSeedProcess extends AbstractProcess
             return false;
         } catch (\Throwable $e) {
             Tools::WriteLogger($user_id, 2, "进程 SpecialSeedProcess  方法 GetPlantsInventory 异常:" . $e->getMessage(), $account_number_id, 12);
+            return false;
+        }
+    }
+
+
+    #判断是否已收
+    function GetShopped()  # 获取已经已经出售的的
+    {
+        try {
+            DbManager::getInstance()->invoke(function ($client) {
+                $res = SpecialSeedModel::invoke($client)->all(['status' => 1]);
+                foreach ($res as $re) {
+                    if (time() - $re['updated'] > 10800) {
+                        # 说明已经 售出了
+                        SpecialSeedModel::invoke($client)->where(['id' => $re['id']])->update(['updated_at' => time(), 'status' => 8]);
+                        Tools::WriteLogger(0, 2, "进程 SpecialSeedProcess  方法 GetShopped 在售更新成功", $re['account_number_id'], 12);
+
+                    }
+                }
+            });
+        } catch (\Throwable $e) {
+            Tools::WriteLogger(0, 2, "进程 SpecialSeedProcess  方法 GetShopped 异常:" . $e->getMessage(), 0, 12);
             return false;
         }
     }
