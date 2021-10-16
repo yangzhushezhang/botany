@@ -45,17 +45,17 @@ class PlantSeedProcess extends AbstractProcess
                                     if ($id_array[1] == 1) {  #判断种子的 分类 这里只判断  向日葵 和向日葵宝宝
 
                                         # 判断要不要种植 特殊种子
-//                                        if ($redis->hExists("SpecialSeed_" . $id_array[0], "value")) {
-//                                            $all_data = $redis->hGetAll("SpecialSeed_" . $id_array[0]);
-//                                            if ($all_data) {
-//                                                foreach ($all_data as $k => $all_datum) {
-//                                                    if ($all_datum == 3) {  #发现了 需要种植的 特殊种子
-//                                                        Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  发现了需要种植的特殊种子 ", $id_array[0], 2);
-//                                                        return false;
-//                                                    }
-//                                                }
-//                                            }
-//                                        }
+                                        if ($redis->hExists("SpecialSeed_" . $id_array[0], "value")) {
+                                            $all_data = $redis->hGetAll("SpecialSeed_" . $id_array[0]);
+                                            if ($all_data) {
+                                                foreach ($all_data as $k => $all_datum) {
+                                                    if ($all_datum == 3) {  #发现了 需要种植的 特殊种子
+                                                        Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  发现了需要种植的特殊种子 ", $id_array[0], 2);
+                                                        return false;
+                                                    }
+                                                }
+                                            }
+                                        }
 
 
                                         if ($one['all_sapling'] < 1) {  #all_sunflower  可以用的
