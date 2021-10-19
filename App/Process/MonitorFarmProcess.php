@@ -123,10 +123,10 @@ class MonitorFarmProcess extends AbstractProcess
                                                     $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
                                                     Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  需要浇水,将其推出WateringProcess 进程 First", $re['id'], 11, $value['_id']);
                                                     $farm_id = $value['_id'];
-                                                    \EasySwoole\Component\Timer::getInstance()->after(10 * 6 * 30 * 1000, function () use ($one, $re, $redis, $farm_id) { # 30秒后进行
+                               /*                     \EasySwoole\Component\Timer::getInstance()->after(10 * 6 * 30 * 1000, function () use ($one, $re, $redis, $farm_id) { # 30秒后进行
                                                         $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
                                                         Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  需要浇水,将其推出WateringProcess 进程 First", $re['id'], 11, $farm_id);
-                                                    });
+                                                    });*/
                                                 }
                                             } else if (count($value['activeTools']) == 2) {  # 需要浇1滴水
                                                 $redis = RedisPool::defer('redis');

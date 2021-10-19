@@ -109,10 +109,10 @@ class PutPotProcess extends AbstractProcess
                                     $new = $three['samll_pot'] - 1;
                                     $farm_id = $two['farm_id'];
                                     ToolsModel::invoke($client)->where(['account_number_id' => $id_array[1]])->update(['updated_at' => time(), 'samll_pot' => $new]); # 更新工具
-                                    \EasySwoole\Component\Timer::getInstance()->after(60 * 1000, function () use ($id, $redis, $id_array, $farm_id) {
-                                        $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
-                                        Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 放花盆成功,并推入 WateringProcess 进程 Second", $id_array[1], 3, $farm_id);
-                                    });
+//                                    \EasySwoole\Component\Timer::getInstance()->after(60 * 1000, function () use ($id, $redis, $id_array, $farm_id) {
+//                                        $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
+//                                        Tools::WriteLogger($id_array[2], 2, "进程 PutPotProcess 放花盆成功,并推入 WateringProcess 进程 Second", $id_array[1], 3, $farm_id);
+//                                    });
                                 }
                             });
                         }
