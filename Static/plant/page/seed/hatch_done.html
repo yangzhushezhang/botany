@@ -58,7 +58,7 @@
                                 <option value="1">在售</option>
                                 <option value="2">已种植</option>
                                 <option value="3">待种植</option>
-                                <option value="8">已售</option>
+<!--                                <option value="8">已售</option>-->
                             </select>
                         </div>
 
@@ -179,7 +179,7 @@
 
                          newList = list.filter((item)=>{
 
-                            if(item.status == 3 || item.status == 8 || item.status == 2 || (item.status == 1 && item.growthTime == 0) || (item.status == 0 && item.growthTime == 0)){  //筛选出符合已种植和未种植的数据
+                            if(item.status == 3 || item.status == 2 || (item.status == 1 && item.growthTime == 0) || (item.status == 0 && item.growthTime == 0)){  //筛选出符合已种植和未种植的数据
 
                                 return item
                             }
@@ -295,7 +295,7 @@
 
                                 newList = list.filter((item)=>{
 
-                                    if(item.status == 3 || item.status == 8 || item.status == 2 || (item.status == 1 && item.growthTime == 0) || (item.status == 0 && item.growthTime == 0)){  //筛选出符合已种植和未种植的数据
+                                    if(item.status == 3  || item.status == 2 || (item.status == 1 && item.growthTime == 0) || (item.status == 0 && item.growthTime == 0)){  //筛选出符合已种植和未种植的数据
 
                                         return item
                                     }
@@ -514,7 +514,7 @@
 
                         param['id'] = currDatas.id;
                         param['status'] = 3;
-                        // param['limit'] = 1;
+                        param['plantId'] = currDatas.plantId;
 
                         $.ajax({
                             url: global_request_IfPlanted+"?token="+global_token,

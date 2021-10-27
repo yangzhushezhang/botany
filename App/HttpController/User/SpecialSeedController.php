@@ -66,10 +66,12 @@ class SpecialSeedController extends UserBase
         try {
             $id = $this->request()->getRequestParam('id');
             $status = $this->request()->getRequestParam('status'); #0未种植  2 以种植  3让他准备种植
-            if (!$this->check_parameter($id, "id") ) {
+            $plantId = $this->request()->getRequestParam('plantId');
+            if (!$this->check_parameter($id, "id")) {
                 return false;
             }
-            DbManager::getInstance()->invoke(function ($client) use ($id, $status) {
+            var_dump($plantId);
+            DbManager::getInstance()->invoke(function ($client) use ($id, $status,$plantId) {
                 $one = SpecialSeedModel::invoke($client)->get(['id' => $id]);
                 if (!$one) {
                     $this->writeJson(-101, [], "此种子不存在!");
@@ -90,7 +92,7 @@ class SpecialSeedController extends UserBase
                 $redis = RedisPool::defer('redis');
                 $redis->hSet("SpecialSeed_" . $one['account_number_id'], $one['id'], $status);
                 $redis->hSet("SpecialSeed_" . $one['account_number_id'], 'value', "value");
-
+                $redis->hSet("SpecialSeed_" . $one['account_number_id'], 'plantId', $plantId);
                 $this->writeJson(200, [], "修改成功!");
                 return true;
 
