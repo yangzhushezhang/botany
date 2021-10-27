@@ -45,19 +45,16 @@ class PlantSeedProcess extends AbstractProcess
 
 
                                     if ($id_array[1] == 1) {  #判断种子的 分类 这里只判断  向日葵 和向日葵宝宝
-
                                         # 判断要不要种植 特殊种子
-                                        if ($redis->hExists("SpecialSeed_" . $id_array[0], "value")) {
-                                            $all_data = $redis->hGetAll("SpecialSeed_" . $id_array[0]);
-                                            if ($all_data) {
-                                                foreach ($all_data as $k => $all_datum) {
-                                                    if ($all_datum == 3) {  #发现了 需要种植的 特殊种子
-                                                        $plantId = $redis->hGet("SpecialSeed_" . $id_array[0], "plantId");
-                                                        $task = \EasySwoole\EasySwoole\Task\TaskManager::getInstance();
-                                                        $task->async(new SpecialSeedTask(['account_number_id' => $one['id'], 'user_id' => $one['user_id'], 'token_value' => $one['token_value'],'plantId'=>$plantId]));
-                                                        Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  发现了需要种植的特殊种子 ", $id_array[0], 2);
-                                                        return false;
-                                                    }
+                                        $all_data = $redis->hGetAll("SpecialSeed_" . $id_array[0]);
+                                        if ($all_data) {
+                                            foreach ($all_data as $k => $all_datum) {
+                                                if ($all_datum == 1) {  #发现了 需要种植的 特殊种子
+                                                    $plantId = $k;
+                                                    $task = \EasySwoole\EasySwoole\Task\TaskManager::getInstance();
+                                                    $task->async(new SpecialSeedTask(['account_number_id' => $one['id'], 'user_id' => $one['user_id'], 'token_value' => $one['token_value'], 'plantId' => $plantId]));
+                                                    Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  发现了需要种植的特殊种子 ", $id_array[0], 2);
+                                                    return false;
                                                 }
                                             }
                                         }
@@ -68,6 +65,19 @@ class PlantSeedProcess extends AbstractProcess
                                             return false;
                                         }
                                     } else if ($id_array[1] == 2) {
+                                        $all_data = $redis->hGetAll("SpecialSeed_" . $id_array[0]);
+                                        if ($all_data) {
+                                            foreach ($all_data as $k => $all_datum) {
+                                                if ($all_datum == 2) {  #发现了 需要种植的 特殊种子
+                                                    $plantId = $k;
+                                                    $task = \EasySwoole\EasySwoole\Task\TaskManager::getInstance();
+                                                    $task->async(new SpecialSeedTask(['account_number_id' => $one['id'], 'user_id' => $one['user_id'], 'token_value' => $one['token_value'], 'plantId' => $plantId]));
+                                                    Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  发现了需要种植的母树特殊种子 ", $id_array[0], 2);
+                                                    return false;
+                                                }
+                                            }
+                                        }
+
                                         if ($one['all_sunflower'] < 1) {
                                             Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  没有向日葵可以种植了! ", $id_array[0], 2);
                                             return false;

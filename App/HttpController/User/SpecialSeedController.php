@@ -67,11 +67,12 @@ class SpecialSeedController extends UserBase
             $id = $this->request()->getRequestParam('id');
             $status = $this->request()->getRequestParam('status'); #0未种植  2 以种植  3让他准备种植
             $plantId = $this->request()->getRequestParam('plantId');
-            if (!$this->check_parameter($id, "id")) {
+            $type = $this->request()->getRequestParam('type'); # 1 向日葵宝宝 2母树
+            if (!$this->check_parameter($id, "id") || !$this->check_parameter($plantId, "plantId")) {
                 return false;
             }
             var_dump($plantId);
-            DbManager::getInstance()->invoke(function ($client) use ($id, $status,$plantId) {
+            DbManager::getInstance()->invoke(function ($client) use ($id, $status, $plantId, $type) {
                 $one = SpecialSeedModel::invoke($client)->get(['id' => $id]);
                 if (!$one) {
                     $this->writeJson(-101, [], "此种子不存在!");
@@ -90,9 +91,13 @@ class SpecialSeedController extends UserBase
                 }
 
                 $redis = RedisPool::defer('redis');
-                $redis->hSet("SpecialSeed_" . $one['account_number_id'], $one['id'], $status);
-                $redis->hSet("SpecialSeed_" . $one['account_number_id'], 'value', "value");
-                $redis->hSet("SpecialSeed_" . $one['account_number_id'], 'plantId', $plantId);
+                if ($status == 3) {
+                    $redis->hSet("SpecialSeed_" . $one['account_number_id'], $plantId, $type);
+                } else {
+                    $redis->hDel("SpecialSeed_" . $one['account_number_id'], $plantId);
+                }
+
+
                 $this->writeJson(200, [], "修改成功!");
                 return true;
 

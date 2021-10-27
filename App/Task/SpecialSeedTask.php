@@ -4,7 +4,10 @@
 namespace App\Task;
 
 
+use App\Model\AccountNumberModel;
+use App\Model\FarmModel;
 use App\Tools\Tools;
+use EasySwoole\RedisPool\RedisPool;
 use EasySwoole\Task\AbstractInterface\TaskInterface;
 
 class SpecialSeedTask implements TaskInterface
@@ -25,6 +28,8 @@ class SpecialSeedTask implements TaskInterface
      * @param int $workerIndex
      * @return mixed
      * @throws \EasySwoole\HttpClient\Exception\InvalidUrl
+     * @throws \EasySwoole\ORM\Exception\Exception
+     * @throws \Throwable
      */
     function run(int $taskId, int $workerIndex)
     {
@@ -54,9 +59,54 @@ class SpecialSeedTask implements TaskInterface
             $data = '{"landId":0,"plantId":' . $this->data['plantId'] . '}';
             $response = $client_http->post($data);
             $result = $response->getBody();
-            $data = json_decode($result, true);
-            if ($data && $data['us'] == 0) {  #浇水的功能先不 做
+            $data_json = json_decode($result, true);
+            if ($data_json && $data_json['status'] == 0) {
+                #浇水的功能先不 做  浇水  买大花盘
+                #首先删除
+                $redis = RedisPool::defer('redis');
+                $redis->hDel("SpecialSeed_" . $this->data['account_number_id'], $this->data['plantId']);
+
+                $add = [
+                    'account_number_id' => $this->data['account_number_id'],
+                    'farm_id' => $data_json['data']['_id'],
+                    'harvestTime' => 0,
+                    'needWater' => 2,
+                    'hasSeed' => 2,
+                    'plant_type' => 1,  #  向日葵宝宝
+                    'updated_at' => time(),
+                    'stage' => $data_json['data']['stage'],
+                    'created_at' => time(),
+                    'plantId' => $data_json['data']['plantId'],
+                    'status' => 1,
+                    'remove' => 1,
+                    'iconUrl' => $data_json['data']['plant']['iconUrl']
+                ];
+                $res = FarmModel::create()->data($add)->save();
+                if (!$res) {
+                    Tools::WriteLogger($this->data['user_id'], 2, "任务 SpecialSeedTask  插入数据失败 种子id: " . $add['farm_id'], $this->data['account_number_id'], 2, $data_json['data']['_id']);
+                    return false;
+                } else {
+                    Tools::WriteLogger($this->data['user_id'], 1, "任务 SpecialSeedTask 插入数据成功,成功种植!" . $result, $this->data['account_number_id'], 2, $data_json['data']['_id']);
+                }
+
                 Tools::WriteLogger($this->data['user_id'], 1, '特殊种子种植成功 ' . $result, $this->data['account_number_id'], 2);
+
+
+                #先购买大花盘
+                $one = AccountNumberModel::create()->get(['id' => $this->data['account_number_id']]);
+                $leWallet = $one['leWallet'];
+                $result = Tools::shoppingTools(2, $this->data['token_value'], $data_json['data']['_id'], $this->data['account_number_id'], $this->data['user_id'], $leWallet);#($id, $token_value, $user_id, $account_number_id, $leWallet)
+                if (!$result) {
+                    #G 购买成功  大花
+                    Tools::WriteLogger($this->data['user_id'], 2, "为特殊种子购买大的花盆失败", $this->data['account_number_id'], 2, $data_json['data']['_id']);
+                    return false;  #到此为止
+
+                }
+
+
+                #推入浇水 进程
+                $redis->rPush("Watering", $res . "@" . $this->data['account_number_id'] . "@" . $this->data['user_id']);  # 农场id 账户id  用户 id
+                Tools::WriteLogger($this->data['user_id'], 2, "进程 PutPotProcess 放大花盆成功,并推入 WateringProcess 进程 First result:" . $response, $this->data['account_number_id'], 2, $data_json['data']['_id']);
                 return true;
             }
         }

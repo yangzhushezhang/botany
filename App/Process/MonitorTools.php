@@ -207,8 +207,6 @@ class MonitorTools extends AbstractProcess
                 Tools::WriteLogger($user_id, 1, "购买工具 :" . $id . "成功", $account_number_id, 6);
                 break;
             }
-
-
         } catch (InvalidUrl $e) {
             Tools::WriteLogger($user_id, 2, "购买 异常:" . $e->getMessage(), $account_number_id, 6);
             return false;

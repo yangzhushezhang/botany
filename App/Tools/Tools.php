@@ -108,6 +108,14 @@ class Tools
                 return false;
             }
         }
+
+        if ($tool_id == 2) {
+            if ($leWallet < 100) {
+                Tools::WriteLogger($user_id, 2, "能量不够,无法购买大花盆", $account_number_id, 6, $farm_id);
+                return false;
+            }
+        }
+
         $result = "";
         for ($i = 0; $i < 5; $i++) {
             $client = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/buy-tools');
@@ -319,7 +327,79 @@ class Tools
     }
 
 
-
+    #购买  工具
+//    function Shop_tools($id, $token_value, $user_id, $account_number_id, $leWallet)
+//    {
+//        try {
+//
+//            # 判断 自己的能量值是否 足够
+//            if ($id == 1 || $id == 3) {
+//                if ($leWallet < 50) {
+//                    Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  能量不够", $account_number_id, 6);
+//                    return false;
+//                }
+//            }
+//            if ($id == 4) {
+//                if ($leWallet < 20) {
+//                    Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  能量不够", $account_number_id, 6);
+//                    return false;
+//                }
+//            }
+//
+//            if ($id == 2) {
+//                if ($leWallet < 100) {
+//                    Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  能量不够", $account_number_id, 6);
+//                    return false;
+//                }
+//            }
+//
+//            for ($i = 0; $i < 5; $i++) {
+//                $client = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/buy-tools');
+//                $headers = array(
+//                    'authority' => 'backend-farm.plantvsundead.com',
+//                    'sec-ch-ua' => '"Google Chrome";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
+//                    'accept' => 'application/json, text/plain, */*',
+//                    'content-type' => 'application/json;charset=UTF-8',
+//                    'authorization' => $token_value,
+//                    'sec-ch-ua-mobile' => '?0',
+//                    'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
+//                    'sec-ch-ua-platform' => '"Windows"',
+//                    'origin' => 'https://marketplace.plantvsundead.com',
+//                    'sec-fetch-site' => 'same-site',
+//                    'sec-fetch-mode' => 'cors',
+//                    'sec-fetch-dest' => 'empty',
+//                    'referer' => 'https://marketplace.plantvsundead.com/',
+//                    'accept-language' => 'zh-CN,zh;q=0.9',
+//                );
+//                $client->setHeaders($headers, false, false);
+//                $data = '{"amount":1,"toolId":' . $id . '}';
+//                $client->setTimeout(5);
+//                $client->setConnectTimeout(10);
+//                $response = $client->post($data);
+//                $result = $response->getBody();
+//                $data_json = json_decode($result, true);
+//                if (!$data_json) {
+//                    Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  原因:解析失败", $account_number_id, 6);
+//                    continue;
+//                }
+//
+//                if ($data_json['status'] != 0) {
+//                    if ($data_json['status'] == 9) {
+//                        Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  原因:能量不足了" . $result, $account_number_id, 6);
+//                        break;
+//                    }
+//                    Tools::WriteLogger($user_id, 2, "MonitorTools  购买工具:" . $id . " 失败  原因:" . $result, $account_number_id, 6);
+//                    continue;
+//                }
+//                Tools::WriteLogger($user_id, 1, "购买工具 :" . $id . "成功", $account_number_id, 6);
+//                break;
+//            }
+//        } catch (InvalidUrl $e) {
+//            Tools::WriteLogger($user_id, 2, "购买 异常:" . $e->getMessage(), $account_number_id, 6);
+//            return false;
+//
+//        }
+//    }
 
 
 }

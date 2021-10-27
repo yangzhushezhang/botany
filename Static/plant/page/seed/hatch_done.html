@@ -304,7 +304,6 @@
 
 
 
-
                                 // console.log("newList",newList)
 
 
@@ -498,119 +497,239 @@
                 }else if (obj.event === 'farming_btn') { // 种植
                     // console.log("种植按钮点击了")
 
-                    layer.confirm('系统将对当前植物进行种植,确认种植吗？', {
-                        icon:3,
-                        title:'温馨提示',
-                        skin: 'layui-layer-admin',
-                        shade: .1
-                    }, function (i) {
-                        layer.close(i);
-                        // var loadIndex = layer.load(2);
+                    // layer.confirm('系统将对当前植物进行种植,确认种植吗？', {
+                    //     icon:3,
+                    //     title:'温馨提示',
+                    //     skin: 'layui-layer-admin',
+                    //     shade: .1
+                    // }, function (i) {
+                    //     layer.close(i);
+                    //     // var loadIndex = layer.load(2);
+                    //
+                    //     var param = {};
+                    //     // param['token'] = $.cookie('tokenMyb');
+                    //     // param['action'] = 'update';
+                    //     // param['status'] = 2;
+                    //
+                    //     param['id'] = currDatas.id;
+                    //     param['status'] = 3;
+                    //     param['plantId'] = currDatas.plantId;
+                    //     const isMotherS = currDatas.plantId.toString()
+                    //     // console.log("isMotherS",isMotherS)
+                    //     if(isMotherS.substr(0,1) >= 2){ //是母树
+                    //         param['type'] = 2;
+                    //     }else{//不是母树
+                    //         param['type'] = 1;
+                    //     }
+                    //
+                    //     $.ajax({
+                    //         url: global_request_IfPlanted+"?token="+global_token,
+                    //         data: param,
+                    //         type: "POST",
+                    //         dataType: "json",
+                    //         success: function (addResult) {
+                    //
+                    //             if (addResult.code === 200) {
+                    //                 // layer.msg(addResult.msg);
+                    //                 notice.msg(addResult.msg, {icon: 1});
+                    //                 setTimeout(function () {
+                    //                     var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                    //                     parent.layer.close(index);
+                    //                     // $(".layui-laypage-btn")[0].click()
+                    //                     window.location.reload();
+                    //                 }, 1300)
+                    //
+                    //             } else {
+                    //
+                    //                 // layer.msg(addResult.msg);
+                    //                 notice.msg(addResult.msg, {icon: 2});
+                    //
+                    //             }
+                    //
+                    //
+                    //         },
+                    //         // end : function() {//弹窗关闭后的回调函数
+                    //         //     //利用laypage实现局部刷新,以下两种方式都可以
+                    //         //     // $(".layui-laypage-btn").click()
+                    //         //     //直接刷新当前修改的行
+                    //         //     // $(".layui-laypage-btn")[0].click()
+                    //         //     // window.parent.location.reload();
+                    //         // }
+                    //
+                    //     });
+                    //
+                    // });
 
-                        var param = {};
-                        // param['token'] = $.cookie('tokenMyb');
-                        // param['action'] = 'update';
-                        // param['status'] = 2;
 
-                        param['id'] = currDatas.id;
-                        param['status'] = 3;
-                        param['plantId'] = currDatas.plantId;
+                    var param = {};
 
-                        $.ajax({
-                            url: global_request_IfPlanted+"?token="+global_token,
-                            data: param,
-                            type: "POST",
-                            dataType: "json",
-                            success: function (addResult) {
+                    param['id'] = currDatas.id;
+                    param['status'] = 3;
+                    param['plantId'] = currDatas.plantId;
+                    const isMotherS = currDatas.plantId.toString()
+                    // console.log("isMotherS",isMotherS)
+                    if(isMotherS.substr(0,1) >= 2){ //是母树
+                        param['type'] = 2;
+                    }else{//不是母树
+                        param['type'] = 1;
+                    }
 
-                                if (addResult.code === 200) {
-                                    // layer.msg(addResult.msg);
-                                    notice.msg(addResult.msg, {icon: 1});
-                                    setTimeout(function () {
-                                        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
-                                        parent.layer.close(index);
-                                        // $(".layui-laypage-btn")[0].click()
-                                        window.location.reload();
-                                    }, 1300)
+                    $.ajax({
+                        url: global_request_IfPlanted+"?token="+global_token,
+                        data: param,
+                        type: "POST",
+                        dataType: "json",
+                        success: function (addResult) {
 
-                                } else {
+                            if (addResult.code === 200) {
+                                // layer.msg(addResult.msg);
+                                notice.msg(addResult.msg, {icon: 1});
+                                setTimeout(function () {
+                                    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                                    parent.layer.close(index);
+                                    // $(".layui-laypage-btn")[0].click()
+                                    // window.location.reload();
+                                }, 1300)
 
-                                    // layer.msg(addResult.msg);
-                                    notice.msg(addResult.msg, {icon: 2});
+                            } else {
 
-                                }
+                                // layer.msg(addResult.msg);
+                                notice.msg(addResult.msg, {icon: 2});
+
+                            }
 
 
-                            },
-                            // end : function() {//弹窗关闭后的回调函数
-                            //     //利用laypage实现局部刷新,以下两种方式都可以
-                            //     // $(".layui-laypage-btn").click()
-                            //     //直接刷新当前修改的行
-                            //     // $(".layui-laypage-btn")[0].click()
-                            //     // window.parent.location.reload();
-                            // }
-
-                        });
+                        },
+                        // end : function() {//弹窗关闭后的回调函数
+                        //     //利用laypage实现局部刷新,以下两种方式都可以
+                        //     // $(".layui-laypage-btn").click()
+                        //     //直接刷新当前修改的行
+                        //     // $(".layui-laypage-btn")[0].click()
+                        //     // window.parent.location.reload();
+                        // }
 
                     });
+
+
+
                 }else if (obj.event === 'farm_not_btn'){//恢复未种植
                     // console.log("恢复未种植按钮点击了")
 
-                    layer.confirm('系统将对当前植物恢复成未种植状态,确认恢复吗？', {
-                        icon:3,
-                        title:'温馨提示',
-                        skin: 'layui-layer-admin',
-                        shade: .1
-                    }, function (i) {
-                        layer.close(i);
-                        // var loadIndex = layer.load(2);
+                    var param = {};
+                    // param['token'] = $.cookie('tokenMyb');
+                    // param['action'] = 'update';
+                    // param['status'] = 2;
 
-                        var param = {};
-                        // param['token'] = $.cookie('tokenMyb');
-                        // param['action'] = 'update';
-                        // param['status'] = 2;
+                    param['id'] = currDatas.id;
+                    param['status'] = 0;
+                    param['plantId'] = currDatas.plantId;
+                    const isMotherS = currDatas.plantId.toString()
+                    // console.log("isMotherS",isMotherS)
+                    if(isMotherS.substr(0,1) >= 2){ //是母树
+                        param['type'] = 2;
+                    }else{//不是母树
+                        param['type'] = 1;
+                    }
 
-                        param['id'] = currDatas.id;
-                        param['status'] = 0;
-                        // param['limit'] = 1;
+                    $.ajax({
+                        url: global_request_IfPlanted+"?token="+global_token,
+                        data: param,
+                        type: "POST",
+                        dataType: "json",
+                        success: function (addResult) {
 
-                        $.ajax({
-                            url: global_request_IfPlanted+"?token="+global_token,
-                            data: param,
-                            type: "POST",
-                            dataType: "json",
-                            success: function (addResult) {
+                            if (addResult.code === 200) {
+                                // layer.msg(addResult.msg);
+                                notice.msg(addResult.msg, {icon: 1});
+                                setTimeout(function () {
+                                    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                                    parent.layer.close(index);
+                                    // $(".layui-laypage-btn")[0].click()
+                                    // window.location.reload();
+                                }, 1300)
 
-                                if (addResult.code === 200) {
-                                    // layer.msg(addResult.msg);
-                                    notice.msg(addResult.msg, {icon: 1});
-                                    setTimeout(function () {
-                                        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
-                                        parent.layer.close(index);
-                                        // $(".layui-laypage-btn")[0].click()
-                                        window.location.reload();
-                                    }, 1300)
+                            } else {
 
-                                } else {
+                                // layer.msg(addResult.msg);
+                                notice.msg(addResult.msg, {icon: 2});
 
-                                    // layer.msg(addResult.msg);
-                                    notice.msg(addResult.msg, {icon: 2});
-
-                                }
+                            }
 
 
-                            },
-                            // end : function() {//弹窗关闭后的回调函数
-                            //     //利用laypage实现局部刷新,以下两种方式都可以
-                            //     // $(".layui-laypage-btn").click()
-                            //     //直接刷新当前修改的行
-                            //     // $(".layui-laypage-btn")[0].click()
-                            //     // window.parent.location.reload();
-                            // }
-
-                        });
+                        },
+                        // end : function() {//弹窗关闭后的回调函数
+                        //     //利用laypage实现局部刷新,以下两种方式都可以
+                        //     // $(".layui-laypage-btn").click()
+                        //     //直接刷新当前修改的行
+                        //     // $(".layui-laypage-btn")[0].click()
+                        //     // window.parent.location.reload();
+                        // }
 
                     });
+
+
+                    // layer.confirm('系统将对当前植物恢复成未种植状态,确认恢复吗？', {
+                    //     icon:3,
+                    //     title:'温馨提示',
+                    //     skin: 'layui-layer-admin',
+                    //     shade: .1
+                    // }, function (i) {
+                    //     layer.close(i);
+                    //     // var loadIndex = layer.load(2);
+                    //
+                    //     var param = {};
+                    //     // param['token'] = $.cookie('tokenMyb');
+                    //     // param['action'] = 'update';
+                    //     // param['status'] = 2;
+                    //
+                    //     param['id'] = currDatas.id;
+                    //     param['status'] = 0;
+                    //     param['plantId'] = currDatas.plantId;
+                    //     const isMotherS = currDatas.plantId.toString()
+                    //     // console.log("isMotherS",isMotherS)
+                    //     if(isMotherS.substr(0,1) >= 2){ //是母树
+                    //         param['type'] = 2;
+                    //     }else{//不是母树
+                    //         param['type'] = 1;
+                    //     }
+                    //
+                    //     $.ajax({
+                    //         url: global_request_IfPlanted+"?token="+global_token,
+                    //         data: param,
+                    //         type: "POST",
+                    //         dataType: "json",
+                    //         success: function (addResult) {
+                    //
+                    //             if (addResult.code === 200) {
+                    //                 // layer.msg(addResult.msg);
+                    //                 notice.msg(addResult.msg, {icon: 1});
+                    //                 setTimeout(function () {
+                    //                     var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                    //                     parent.layer.close(index);
+                    //                     // $(".layui-laypage-btn")[0].click()
+                    //                     window.location.reload();
+                    //                 }, 1300)
+                    //
+                    //             } else {
+                    //
+                    //                 // layer.msg(addResult.msg);
+                    //                 notice.msg(addResult.msg, {icon: 2});
+                    //
+                    //             }
+                    //
+                    //
+                    //         },
+                    //         // end : function() {//弹窗关闭后的回调函数
+                    //         //     //利用laypage实现局部刷新,以下两种方式都可以
+                    //         //     // $(".layui-laypage-btn").click()
+                    //         //     //直接刷新当前修改的行
+                    //         //     // $(".layui-laypage-btn")[0].click()
+                    //         //     // window.parent.location.reload();
+                    //         // }
+                    //
+                    //     });
+                    //
+                    // });
                 }
             });
 

@@ -58,9 +58,19 @@ class MonitorFarmProcess extends AbstractProcess
                                         }
                                         if ($value['stage'] == "new") { #放花盆
                                             if (isset($one['id'])) {
-                                                $redis = RedisPool::defer('redis');
-                                                $redis->rPush("PutPot", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']); #
-                                                Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  种子需要花盆,将其推入PutPotProcess 进程", $re['id'], 11, $value['_id']);
+
+                                                if (isset($one['plantId']) && $one['plantId'] > 1) {
+                                                    #这个要放大的花盆
+                                                    $redis = RedisPool::defer('redis');
+                                                    $redis->rPush("PutPot", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id'] . "@1112"); #
+                                                    Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  种子需要放入大花盆,将其推入PutPotProcess 进程", $re['id'], 11, $value['_id']);
+                                                } else {
+                                                    $redis = RedisPool::defer('redis');
+                                                    $redis->rPush("PutPot", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']); #
+                                                    Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  种子需要花盆,将其推入PutPotProcess 进程", $re['id'], 11, $value['_id']);
+                                                }
+
+
                                             } else {
                                                 Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  种子需要花盆,将其推入PutPotProcess 进程 失败,因为改种子还没有入库", $re['id'], 11, $value['_id']);
                                             }
@@ -123,10 +133,10 @@ class MonitorFarmProcess extends AbstractProcess
                                                     $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
                                                     Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  需要浇水,将其推出WateringProcess 进程 First", $re['id'], 11, $value['_id']);
                                                     $farm_id = $value['_id'];
-                               /*                     \EasySwoole\Component\Timer::getInstance()->after(10 * 6 * 30 * 1000, function () use ($one, $re, $redis, $farm_id) { # 30秒后进行
-                                                        $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
-                                                        Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  需要浇水,将其推出WateringProcess 进程 First", $re['id'], 11, $farm_id);
-                                                    });*/
+                                                    /*                     \EasySwoole\Component\Timer::getInstance()->after(10 * 6 * 30 * 1000, function () use ($one, $re, $redis, $farm_id) { # 30秒后进行
+                                                                             $redis->rPush("Watering", $one['id'] . "@" . $re['id'] . "@" . $re['user_id']);  # account_number_id   user_id
+                                                                             Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  需要浇水,将其推出WateringProcess 进程 First", $re['id'], 11, $farm_id);
+                                                                         });*/
                                                 }
                                             } else if (count($value['activeTools']) == 2) {  # 需要浇1滴水
                                                 $redis = RedisPool::defer('redis');
