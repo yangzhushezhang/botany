@@ -101,7 +101,6 @@ class PutPotProcess extends AbstractProcess
                                         }
                                     }
 
-
                                     # 更新 农作物状态
                                     FarmModel::invoke($client)->where(['id' => $id_array[0]])->update(['stage' => 'farming', 'updated_at' => time()]);
                                     $redis->rPush("Watering", $id);  # account_number_id  种子类型 user_id
