@@ -19,6 +19,7 @@ class SpecialSeedController extends UserBase
     {
         try {
             DbManager::getInstance()->invoke(function ($client) {
+
                 $res = AccountNumberModel::invoke($client)->all(['user_id' => $this->who['id'], 'claimSeeds' => 2]);
                 $this->writeJson(200, $res, "获取成功");
                 return true;

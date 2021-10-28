@@ -278,7 +278,7 @@ class SpecialSeedProcess extends AbstractProcess
                         # 说明有正在孵化的种子  更新到数据库
                         DbManager::getInstance()->invoke(function ($client) use ($data_json, $account_number_id, $user_id) {
                             foreach ($data_json['data']['data'] as $datum) {
-                                $one = SpecialSeedModel::invoke($client)->get(['plantId' => $datum['plantId'], 'account_number_id' => $account_number_id]);
+                                $one = SpecialSeedModel::invoke($client)->get(['tokenId' => $datum['tokenId'], 'account_number_id' => $account_number_id]);
                                 $add = [
                                     'account_number_id' => $account_number_id,
                                     'tokenId' => $datum['tokenId'],
@@ -323,7 +323,7 @@ class SpecialSeedProcess extends AbstractProcess
     }
 
 
-    #判断是否已收
+    #判断是否已售
     function GetShopped()  # 获取已经已经出售的的
     {
         try {
