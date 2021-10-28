@@ -6,6 +6,7 @@ namespace App\Task;
 
 use App\Model\AccountNumberModel;
 use App\Model\FarmModel;
+use App\Model\SpecialSeedModel;
 use App\Tools\Tools;
 use EasySwoole\RedisPool\RedisPool;
 use EasySwoole\Task\AbstractInterface\TaskInterface;
@@ -62,6 +63,8 @@ class SpecialSeedTask implements TaskInterface
             $result = $response->getBody();
             $data_json = json_decode($result, true);
             if ($data_json && $data_json['status'] == 0) {
+                #更新
+                SpecialSeedModel::create()->where(['plantId' => $data_json['data']['plantId']])->update(['status' => 2]);
                 #浇水的功能先不 做  浇水  买大花盘
                 #首先删除
                 $redis = RedisPool::defer('redis');
@@ -82,6 +85,8 @@ class SpecialSeedTask implements TaskInterface
                     'remove' => 1,
                     'iconUrl' => $data_json['data']['plant']['iconUrl']
                 ];
+
+
                 $res = FarmModel::create()->data($add)->save();
                 if (!$res) {
                     Tools::WriteLogger($this->data['user_id'], 2, "任务 SpecialSeedTask  插入数据失败 种子id: " . $add['farm_id'], $this->data['account_number_id'], 2, $data_json['data']['_id']);
@@ -91,7 +96,6 @@ class SpecialSeedTask implements TaskInterface
                 }
 
                 Tools::WriteLogger($this->data['user_id'], 1, '特殊种子种植成功 ' . $result, $this->data['account_number_id'], 2);
-
                 #先购买大花盘
                 $one = AccountNumberModel::create()->get(['id' => $this->data['account_number_id']]);
                 $leWallet = $one['leWallet'];

@@ -89,15 +89,12 @@ class SpecialSeedController extends UserBase
                     $this->writeJson(-101, [], "修改失败!");
                     return false;
                 }
-
                 $redis = RedisPool::defer('redis');
                 if ($status == 3) {
                     $redis->hSet("SpecialSeed_" . $one['account_number_id'], $plantId, $type);
                 } else {
                     $redis->hDel("SpecialSeed_" . $one['account_number_id'], $plantId);
                 }
-
-
                 $this->writeJson(200, [], "修改成功!");
                 return true;
 
