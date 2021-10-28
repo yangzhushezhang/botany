@@ -5,6 +5,7 @@ namespace App\Process;
 
 
 use App\Model\AccountNumberModel;
+use App\Model\SpecialSeedModel;
 use App\Model\ToolsModel;
 use App\Tools\Tools;
 use Cassandra\Date;
@@ -107,12 +108,24 @@ class MonitorTools extends AbstractProcess
 
                                 # 向日葵 为0  购买  不存在需要购买   不购买向日葵
                                 if (!isset($update['already_sunflower']) || $update['already_sunflower'] == 0) { #购买向日葵
-                                    var_dump("账号:" . $six['id'] . " 需要购买 向日葵");
-                                    $po = $this->shopSeed($token_value, 2, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
-                                    if ($po) {
-                                        $update['all_sunflower'] = 1;
-                                        $update['already_sunflower'] = $update['already_sunflower'] + 1;
+                                    var_dump("账号:" . $six['id'] . " 需要购买 向日葵");  # 购买向日葵
 
+                                    $ten = SpecialSeedModel::invoke($client)->all(['account_number_id' => $six['id'], 'status' => 2]);
+                                    $ifShopSunflower = true;
+                                    if ($ten) {
+                                        foreach ($ten as $item) {
+                                            if (substr($item['plantId'], 0, 1) == 2) {
+                                                $ifShopSunflower = false;
+                                            }
+                                        }
+                                    }
+                                    if ($ifShopSunflower) {
+                                        $po = $this->shopSeed($token_value, 2, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
+                                        if ($po) {
+                                            $update['all_sunflower'] = 1;
+                                            $update['already_sunflower'] = $update['already_sunflower'] + 1;
+
+                                        }
                                     }
                                 }
 
@@ -128,7 +141,7 @@ class MonitorTools extends AbstractProcess
                                     Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     result: status " . $data['status'], $six['id'], 7);
                                     continue;
                                 }
-                                $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update(['updated_at' => time(), 'leWallet' => $data['data']['leWallet'], 'usagesSunflower' => $data['data']['usagesSunflower'],'pvuMyFarmed'=>$data['data']['pvuMyFarmed']]);
+                                $two = AccountNumberModel::invoke($client)->where(['id' => $six['id']])->update(['updated_at' => time(), 'leWallet' => $data['data']['leWallet'], 'usagesSunflower' => $data['data']['usagesSunflower'], 'pvuMyFarmed' => $data['data']['pvuMyFarmed']]);
 
 
                                 Tools::WriteLogger($six['user_id'], 2, "进程 MonitorTools     更新leWallet usagesSunflower  成功", $six['id'], 7);
