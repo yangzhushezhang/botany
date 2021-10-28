@@ -57,7 +57,6 @@ class SpecialSeedTask implements TaskInterface
             $client_http->setHeaders($headers, false, false);
             $client_http->setTimeout(5);
             $client_http->setConnectTimeout(10);
-
             $data = '{"landId":0,"plantId":' . $this->data['plantId'] . '}';
             $response = $client_http->post($data);
             $result = $response->getBody();
@@ -69,7 +68,6 @@ class SpecialSeedTask implements TaskInterface
                 #首先删除
                 $redis = RedisPool::defer('redis');
                 $redis->hDel("SpecialSeed_" . $this->data['account_number_id'], $this->data['plantId']);
-
                 $add = [
                     'account_number_id' => $this->data['account_number_id'],
                     'farm_id' => $data_json['data']['_id'],
@@ -145,7 +143,7 @@ class SpecialSeedTask implements TaskInterface
                 return true;
             }
         }
-        Tools::WriteLogger($this->data['user_id'], 2, '特殊种子种植失败种子' . $result, $this->data['account_number_id'], 2);
+        Tools::WriteLogger($this->data['user_id'], 2, '特殊种子种植失败种子 原因:' . $result . "plantId:" . $this->data['plantId'], $this->data['account_number_id'], 2);
         return false;
     }
 
