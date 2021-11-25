@@ -53,13 +53,14 @@ class FarmInformationController extends UserBase
                         'sec-fetch-dest' => 'empty',
                         'referer' => 'https://marketplace.plantvsundead.com/',
                         'accept-language' => 'zh-CN,zh;q=0.9',
-                        # 'if-none-match' => 'W/"1bf5-RySZLkdJ7uwQuWZ+zLfe+hxM36c"',
                     );
                     $client->setHeaders($headers, false, false);
                     $client->setTimeout(5);
                     $client->setConnectTimeout(10);
                     $response = $client->get();
                     $result = $response->getBody();
+
+
                     $data = json_decode($result, true);
                     if ($data && $data['status'] == 0) {
                         $this->response()->write($result);

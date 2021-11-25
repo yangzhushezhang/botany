@@ -116,6 +116,7 @@ class PutPotProcess extends AbstractProcess
                     \co::sleep(5); # 五秒循环一次
                 } catch (\Throwable $exception) {
                     Tools::WriteLogger(0, 2, "PutPotProcess 进程 异常:" . $exception->getMessage(), "", 5);
+
                 }
             }
 

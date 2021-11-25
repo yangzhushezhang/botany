@@ -57,20 +57,18 @@ class MonitorFarmProcess extends AbstractProcess
                                             $harvestTime = strtotime($unix) + 8 * 60 * 60;
                                         }
                                         if ($value['stage'] == "new") { #放花盆
-                                            if (isset($one['id'])) {
 
+                                            if (isset($one['id'])) {
                                                 if (isset($one['plantId']) && $one['plantId'] > 1) {
                                                     #这个要放大的花盆
                                                     $redis = RedisPool::defer('redis');
-                                                    $redis->rPush("PutPot", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id'] . "@1112"); #
+                                                    $redis->rPush("PutPot", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id'] ); #
                                                     Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  种子需要放入大花盆,将其推入PutPotProcess 进程", $re['id'], 11, $value['_id']);
                                                 } else {
                                                     $redis = RedisPool::defer('redis');
                                                     $redis->rPush("PutPot", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']); #
                                                     Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  种子需要花盆,将其推入PutPotProcess 进程", $re['id'], 11, $value['_id']);
                                                 }
-
-
                                             } else {
                                                 Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  种子需要花盆,将其推入PutPotProcess 进程 失败,因为改种子还没有入库", $re['id'], 11, $value['_id']);
                                             }
@@ -189,12 +187,12 @@ class MonitorFarmProcess extends AbstractProcess
                                             $redis = RedisPool::defer('redis');
                                             if ($i == 0 && !$if_sunflowerId_2) {
                                                 # 添加向日葵
-                                                var_dump("账号:" . $re['id'] . "需要种向日葵");
+//                                                var_dump("账号:" . $re['id'] . "需要种向日葵");
                                                 $redis->rPush("Seed_Fruit", $re['id'] . "@" . 2 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
                                                 Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要播种向日葵 并且 把账号推入到 PlantSeedProcess进程', $re['id'], 11);
                                             } else {
                                                 # 添加普通种子
-                                                var_dump("账号:" . $re['id'] . "需要种向日葵宝宝");
+//                                                var_dump("账号:" . $re['id'] . "需要种向日葵宝宝");
                                                 $redis->rPush("Seed_Fruit", $re['id'] . "@" . 1 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
                                                 Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 发现需要播种普通种子 并且 把账号推入到 PlantSeedProcess进程', $re['id'], 11);
                                             }

@@ -45,7 +45,7 @@ class SpecialSeedTask implements TaskInterface
                 'content-type' => 'application/json;charset=UTF-8',
                 'authorization' => $this->data['token_value'],
                 'sec-ch-ua-mobile' => '?0',
-                'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
+                'user-agent' => 'Android-Unity-Farm',
                 'sec-ch-ua-platform' => '"Windows"',
                 'origin' => 'https://marketplace.plantvsundead.com',
                 'sec-fetch-site' => 'same-site',

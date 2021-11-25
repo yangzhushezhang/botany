@@ -51,7 +51,7 @@ class GetAnswerTask implements TaskInterface
                     'accept' => 'application/json, text/plain, */*',
                     'content-type' => 'application/json;charset=UTF-8',
                     'sec-ch-ua-mobile' => '?0',
-                    'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36',
+                    'user-agent' => 'Android-Unity-Farm',
                     'authorization' => $this->data['token_value'],
                     'sec-ch-ua-platform' => '"Windows"',
                     'origin' => 'https://marketplace.plantvsundead.com',
