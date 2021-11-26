@@ -40,6 +40,18 @@ class MonitorFarmProcess extends AbstractProcess
                             foreach ($res as $k => $re) {
                                 $data = $this->GetFarms($re['token_value'], $re['user_id'], $re['id']);
                                 if ($data) {
+
+                                    # 判断 已经种植了植物
+
+                                    if (!isset($data['total'])) {
+                                        # 说明没有种植植物   ,默认先去种一颗向日葵宝宝
+                                        $redis = RedisPool::defer('redis');
+                                        $redis->rPush("Seed_Fruit", $re['id'] . "@" . 1 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
+                                        Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 因为是空地,发现需要播种普通种子 并且 把账号推入到 PlantSeedProcess进程', $re['id'], 11);
+                                        continue;
+                                    }
+
+
                                     $if_add_new = false;
                                     $if_sunflowerId_2 = false;
                                     if (isset($data['total']) && $data['total'] != 6) {
@@ -62,7 +74,7 @@ class MonitorFarmProcess extends AbstractProcess
                                                 if (isset($one['plantId']) && $one['plantId'] > 1) {
                                                     #这个要放大的花盆
                                                     $redis = RedisPool::defer('redis');
-                                                    $redis->rPush("PutPot", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id'] ); #
+                                                    $redis->rPush("PutPot", $one['id'] . "@" . $one['account_number_id'] . "@" . $re['user_id']); #
                                                     Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  种子需要放入大花盆,将其推入PutPotProcess 进程", $re['id'], 11, $value['_id']);
                                                 } else {
                                                     $redis = RedisPool::defer('redis');
