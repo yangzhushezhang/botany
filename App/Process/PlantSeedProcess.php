@@ -6,11 +6,14 @@ namespace App\Process;
 
 use App\Model\AccountNumberModel;
 use App\Model\FarmModel;
+use App\Model\SpecialSeedModel;
 use App\Task\SpecialSeedTask;
 use App\Task\TheTreeFromWorldTask;
 use App\Tools\Tools;
 use EasySwoole\Component\Process\AbstractProcess;
 use EasySwoole\ORM\DbManager;
+use EasySwoole\ORM\Exception\Exception;
+use EasySwoole\Pool\Exception\PoolEmpty;
 
 /**
  * Class PlantSeedProcess
@@ -43,39 +46,30 @@ class PlantSeedProcess extends AbstractProcess
                                         return false;
                                     }
 
-
                                     if ($id_array[1] == 1) {  #判断种子的 分类 这里只判断  向日葵 和向日葵宝宝
                                         # 判断要不要种植 特殊种子
-                                        $all_data = $redis->hGetAll("SpecialSeed_" . $id_array[0]);
-                                        if ($all_data) {
-                                            foreach ($all_data as $k => $all_datum) {
-                                                if ($all_datum == 1) {  #发现了 需要种植的 特殊种子
-                                                    $plantId = $k;
-                                                    $task = \EasySwoole\EasySwoole\Task\TaskManager::getInstance();
-                                                    $task->async(new SpecialSeedTask(['account_number_id' => $one['id'], 'user_id' => $one['user_id'], 'token_value' => $one['token_value'], 'plantId' => $plantId]));
-                                                    Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  发现了需要种植的特殊种子 ", $id_array[0], 2);
-                                                    return false;
-                                                }
-                                            }
-                                        }
+                                        $opo = $this->GetWaitPlant($one['id'], 1);
 
+                                        if ($opo != 0) {
+
+                                            $task = \EasySwoole\EasySwoole\Task\TaskManager::getInstance();
+                                            $task->async(new SpecialSeedTask(['account_number_id' => $one['id'], 'user_id' => $one['user_id'], 'token_value' => $one['token_value'], 'plantId' => $opo]));
+                                            Tools::WriteLogger($id_array[2], 1, "进程 PlantSeedProcess  发现了需要种植的特殊种子 ", $id_array[0], 2);
+                                            return false;
+                                        }
 
                                         if ($one['all_sapling'] < 1) {  #all_sunflower  可以用的
                                             Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  没有树苗可以种植了! ", $id_array[0], 2);
                                             return false;
                                         }
                                     } else if ($id_array[1] == 2) {
-                                        $all_data = $redis->hGetAll("SpecialSeed_" . $id_array[0]);
-                                        if ($all_data) {
-                                            foreach ($all_data as $k => $all_datum) {
-                                                if ($all_datum == 2) {  #发现了 需要种植的 特殊种子
-                                                    $plantId = $k;
-                                                    $task = \EasySwoole\EasySwoole\Task\TaskManager::getInstance();
-                                                    $task->async(new SpecialSeedTask(['account_number_id' => $one['id'], 'user_id' => $one['user_id'], 'token_value' => $one['token_value'], 'plantId' => $plantId]));
-                                                    Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  发现了需要种植的母树特殊种子 ", $id_array[0], 2);
-                                                    return false;
-                                                }
-                                            }
+
+                                        $opo = $this->GetWaitPlant($one['id'], 2);
+                                        if ($opo != 0) {
+                                            $task = \EasySwoole\EasySwoole\Task\TaskManager::getInstance();
+                                            $task->async(new SpecialSeedTask(['account_number_id' => $one['id'], 'user_id' => $one['user_id'], 'token_value' => $one['token_value'], 'plantId' => $opo]));
+                                            Tools::WriteLogger($id_array[2], 1, "进程 PlantSeedProcess  发现了需要种植的特殊种子 ", $id_array[0], 2);
+                                            return false;
                                         }
 
                                         if ($one['all_sunflower'] < 1) {
@@ -148,7 +142,7 @@ class PlantSeedProcess extends AbstractProcess
 
                         }
                     }, 'redis');
-                    \co::sleep(5); # 五秒循环一次
+                    \co::sleep(1); # 五秒循环一次
                 } catch (\Throwable $exception) {
                     Tools::WriteLogger(0, 2, "PlantSeedProcess 进程 异常:" . $exception->getMessage(), "", 5);
 
@@ -171,4 +165,30 @@ class PlantSeedProcess extends AbstractProcess
         Tools::WriteLogger(0, 2, "进程 PlantSeedProcess  onShutDown");
         parent::onShutDown(); // TODO: Change the autogenerated stub
     }
+
+
+    function GetWaitPlant($account_number_id, $type) #1种子 2母树
+    {
+        try {
+            return DbManager::getInstance()->invoke(function ($client) use ($account_number_id, $type) {
+                $res = SpecialSeedModel::invoke($client)->all(['account_number_id' => $account_number_id, 'status' => 3]);
+                if ($res) {
+                    foreach ($res as $re) {
+                        if (substr($re['plantId'], 0, 1) == $type) {
+                            Tools::WriteLogger(0, 1, "找到了等待种植的特殊种子:" . $re['plantId'] . "类型:" . $type, $account_number_id, 5);
+                            return $re['plantId'];
+                        }
+
+                    }
+                }
+                return 0;
+
+            });
+
+        } catch (\Throwable $e) {
+            Tools::WriteLogger(0, 2, "PlantSeedProcess 进程 GetWaitPlant异常:" . $e->getMessage(), "", 5);
+            return 0;
+        }
+    }
+
 }

@@ -222,6 +222,11 @@ class SpecialSeedProcess extends AbstractProcess
                                     }
                                 } else {
                                     #更新数据
+
+                                    if ($one['status'] == 3) {
+                                        $add['status'] = 3;
+                                    }
+
                                     $two = SpecialSeedModel::invoke($client)->where(['plantId' => $datum['plantId'], 'account_number_id' => $account_number_id])->update($add);
                                     if (!$two) {
                                         Tools::WriteLogger($user_id, 2, "进程 SpecialSeedProcess  方法 GetSeedsInventory 更新数据失败", $account_number_id, 12);
@@ -289,6 +294,7 @@ class SpecialSeedProcess extends AbstractProcess
                                     'updated_at' => time(),
                                     'status' => $datum['status']
                                 ];
+
                                 if (!$one) {
                                     $add['created_at'] = time();
                                     $two = SpecialSeedModel::invoke($client)->data($add)->save();
@@ -298,6 +304,9 @@ class SpecialSeedProcess extends AbstractProcess
                                         Tools::WriteLogger($user_id, 2, "进程 SpecialSeedProcess  方法 GetSeedsInventory 插入数据成功", $account_number_id, 12);
                                     }
                                 } else {
+                                    if ($one['status'] == 3) {
+                                        $add['status'] = 3;
+                                    }
                                     #更新数据
                                     $two = SpecialSeedModel::invoke($client)->where(['plantId' => $datum['plantId'], 'account_number_id' => $account_number_id])->update($add);
                                     if (!$two) {
@@ -330,7 +339,7 @@ class SpecialSeedProcess extends AbstractProcess
             DbManager::getInstance()->invoke(function ($client) {
                 $res = SpecialSeedModel::invoke($client)->all(['status' => 1]);
                 foreach ($res as $re) {
-                    if (time() - $re['updated'] > 10800  && $re['growthTime']==0 ) {
+                    if (time() - $re['updated'] > 10800 && $re['growthTime'] == 0) {
                         # 说明已经 售出了
                         SpecialSeedModel::invoke($client)->where(['id' => $re['id']])->update(['updated_at' => time(), 'status' => 8]);
                         Tools::WriteLogger(0, 2, "进程 SpecialSeedProcess  方法 GetShopped 在售更新成功", $re['account_number_id'], 12);
@@ -343,5 +352,6 @@ class SpecialSeedProcess extends AbstractProcess
             return false;
         }
     }
+
 
 }
