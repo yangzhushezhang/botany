@@ -240,4 +240,22 @@ class AccountNumberController extends UserBase
     }
 
 
+    #获取token  可能失效的token
+    function get_token_mayFail()
+    {
+        try {
+            DbManager::getInstance()->invoke(function ($client) {
+
+                $res = AccountNumberModel::invoke($client)->all(['status' => 2]);
+
+
+                $this->writeJson(200, $res, "获取成功");
+                return;
+            });
+
+        } catch (\Throwable $e) {
+            $this->writeJson(-1, [], "异常:" . $e->getMessage());
+        }
+    }
+
 }

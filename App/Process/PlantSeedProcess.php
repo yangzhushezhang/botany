@@ -58,7 +58,7 @@ class PlantSeedProcess extends AbstractProcess
                                             return false;
                                         }
 
-                                        if ($one['all_sapling'] < 1) {  #all_sunflower  可以用的
+                                        if ($one['all_sapling'] == 0) {  #all_sunflower  可以用的
                                             Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  没有树苗可以种植了! ", $id_array[0], 2);
                                             return false;
                                         }
@@ -72,7 +72,7 @@ class PlantSeedProcess extends AbstractProcess
                                             return false;
                                         }
 
-                                        if ($one['all_sunflower'] < 1) {
+                                        if ($one['all_sunflower'] == 0) {
                                             Tools::WriteLogger($id_array[2], 2, "进程 PlantSeedProcess  没有向日葵可以种植了! ", $id_array[0], 2);
                                             return false;
                                         }
