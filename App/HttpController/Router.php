@@ -32,6 +32,8 @@ class Router extends AbstractRouter
         $routeCollector->post('/user/get_account_numberInformation', '/User/AccountNumberController/get_account_numberInformation');
         # update_sunflowers
         $routeCollector->post('/user/update_sunflowers', '/User/AccountNumberController/update_sunflowers');
+        # get_token_mayFail
+        $routeCollector->post('/user/get_token_mayFail', '/User/AccountNumberController/get_token_mayFail');
 
 
         /**

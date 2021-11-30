@@ -40,13 +40,13 @@ class MonitorFarmProcess extends AbstractProcess
                             foreach ($res as $k => $re) {
                                 $data = $this->GetFarms($re['token_value'], $re['user_id'], $re['id']);
                                 if ($data) {
-
                                     # 判断 已经种植了植物
-
                                     if (!isset($data['total'])) {
                                         # 说明没有种植植物   ,默认先去种一颗向日葵宝宝
                                         $redis = RedisPool::defer('redis');
                                         $redis->rPush("Seed_Fruit", $re['id'] . "@" . 1 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
+                                        Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 因为是空地,发现需要播种普通种子 并且 把账号推入到 PlantSeedProcess进程', $re['id'], 11);
+                                        $redis->rPush("Seed_Fruit", $re['id'] . "@" . 2 . "@" . $re['user_id']);  # account_number_id  种子类型 user_id
                                         Tools::WriteLogger($re['user_id'], 1, '进程 MonitorFarmProcess 因为是空地,发现需要播种普通种子 并且 把账号推入到 PlantSeedProcess进程', $re['id'], 11);
                                         continue;
                                     }
