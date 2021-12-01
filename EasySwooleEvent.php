@@ -96,6 +96,8 @@ class EasySwooleEvent implements Event
         \EasySwoole\Component\Process\Manager::getInstance()->addProcess($PeriodsProcess);
 
 
+
+
         /**
          * 收获进程 HarvestFruitProcess
          */

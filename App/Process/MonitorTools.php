@@ -35,7 +35,7 @@ class MonitorTools extends AbstractProcess
                 try {
                     Tools::WriteLogger(0, 2, "MonitorTools   开始 ", "", 7);
                     DbManager::getInstance()->invoke(function ($client) {
-                        $fix = AccountNumberModel::invoke($client)->all(['status' => 1]);
+                        $fix = AccountNumberModel::invoke($client)->where('status', 2, '!=')->all();
                         if ($fix) {
                             # 更新 向日葵宝宝 和 向日葵 个数
                             foreach ($fix as $six) {
@@ -97,10 +97,16 @@ class MonitorTools extends AbstractProcess
                                         $update['already_sunflower'] = $datum['total'];  #总数
                                     }
                                 }
+                                var_dump("账号:".$six['id']);
+                                if ($six['id']==170){
+                                    var_dump($update);
+                                }
+
+
                                 #  调整向日葵的优先级
                                 if (!isset($update['all_sapling']) || $update['all_sapling'] == 0) {
                                     if (isset($update['already_sunflower']) && $update['already_sunflower'] > 0) {  #购买向日葵种子
-                                        # var_dump("账号:" . $six['id'] . " 需要购买 向日葵宝宝");
+                                        var_dump("账号:" . $six['id'] . " 需要购买 向日葵宝宝");
                                         $po = $this->shopSeed($token_value, 1, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
                                         if ($po) {
                                             $update['all_sapling'] = 1;
@@ -111,8 +117,7 @@ class MonitorTools extends AbstractProcess
 
                                 # 向日葵 为0  购买  不存在需要购买   不购买向日葵
                                 if (!isset($update['already_sunflower']) || $update['already_sunflower'] == 0) { #购买向日葵
-                                    #  var_dump("账号:" . $six['id'] . " 需要购买 向日葵");  # 购买向日葵
-
+                                    var_dump("账号:" . $six['id'] . " 需要购买 向日葵");  # 购买向日葵
                                     $ten = SpecialSeedModel::invoke($client)->all(['account_number_id' => $six['id'], 'status' => 2]);
                                     $ifShopSunflower = true;
                                     if ($ten) {

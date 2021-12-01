@@ -38,6 +38,7 @@ class MonitorFarmProcess extends AbstractProcess
                             $success = 0;
                             Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 开始,本次检查的账号 总共有 " . count($res) . "个", "", 11);
                             foreach ($res as $k => $re) {
+//                                var_dump("检查账号:".$re['id']);
                                 $data = $this->GetFarms($re['token_value'], $re['user_id'], $re['id']);
                                 if ($data) {
                                     # 判断 已经种植了植物
