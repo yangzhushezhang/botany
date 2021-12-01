@@ -107,7 +107,7 @@ class MonitorTools extends AbstractProcess
                                 if (!isset($update['all_sapling']) || $update['all_sapling'] == 0) {
                                     if (isset($update['already_sunflower']) && $update['already_sunflower'] > 0) {  #购买向日葵种子
 //                                        var_dump("账号:" . $six['id'] . " 需要购买 向日葵宝宝");
-                                        $po = $this->shopSeed($token_value, 1, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
+                                        $po = $this->shopSeed($token_value, 1, $six['user_id'], $six['id'], $six['leWallet']); #$token_value, $sunflowerId,$user_id,$account_number_id
                                         if ($po) {
                                             $update['all_sapling'] = 1;
                                             $update['already_sapling'] = $update['already_sapling'] + 1;
@@ -128,7 +128,7 @@ class MonitorTools extends AbstractProcess
                                         }
                                     }
                                     if ($ifShopSunflower) {
-                                        $po = $this->shopSeed($token_value, 2, $six['user_id'], $six['id']); #$token_value, $sunflowerId,$user_id,$account_number_id
+                                        $po = $this->shopSeed($token_value, 2, $six['user_id'], $six['id'], $six['leWallet']); #$token_value, $sunflowerId,$user_id,$account_number_id
                                         if ($po) {
                                             $update['all_sunflower'] = 1;
                                             $update['already_sunflower'] = $update['already_sunflower'] + 1;
@@ -299,11 +299,21 @@ class MonitorTools extends AbstractProcess
      * @param $sunflowerId
      * @param $user_id
      * @param $account_number_id
+     * @param $leWallet
      * @return bool
-     * @throws InvalidUrl  购买向日葵种子
+     * @throws InvalidUrl 购买向日葵种子
      */
-    function shopSeed($token_value, $sunflowerId, $user_id, $account_number_id)
+    function shopSeed($token_value, $sunflowerId, $user_id, $account_number_id, $leWallet)
     {
+
+        #判断能量是否够
+
+        if ($leWallet < 100) {
+            Tools::WriteLogger($user_id, 2, "类型id :" . $sunflowerId . "购买向日葵/或者向日葵宝宝 失败 能量不够", $account_number_id, 6);
+            return false;
+        }
+
+
         $result = "";
         for ($i = 0; $i < 5; $i++) {
             $client = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/buy-sunflowers');

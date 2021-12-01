@@ -246,7 +246,7 @@ class AccountNumberController extends UserBase
         try {
             DbManager::getInstance()->invoke(function ($client) {
 
-                $res = AccountNumberModel::invoke($client)->all(['status' => 2]);
+                $res = AccountNumberModel::invoke($client)->all(['status' => 3]);
 
 
                 $this->writeJson(200, $res, "获取成功");
