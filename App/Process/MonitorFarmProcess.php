@@ -33,7 +33,7 @@ class MonitorFarmProcess extends AbstractProcess
                 try {
                     DbManager::getInstance()->invoke(function ($client) {
                         # 查询所有 账户
-                        $res = AccountNumberModel::invoke($client)->where('status', 2, '!=')->all();
+                        $res = AccountNumberModel::invoke($client)->all();
                         if ($res) {
                             $success = 0;
                             Tools::WriteLogger(0, 2, "进程 MonitorFarmProcess 开始,本次检查的账号 总共有 " . count($res) . "个", "", 11);

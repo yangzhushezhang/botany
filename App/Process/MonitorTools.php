@@ -35,7 +35,7 @@ class MonitorTools extends AbstractProcess
                 try {
                     Tools::WriteLogger(0, 2, "MonitorTools   开始 ", "", 7);
                     DbManager::getInstance()->invoke(function ($client) {
-                        $fix = AccountNumberModel::invoke($client)->where('status', 2, '!=')->all();
+                        $fix = AccountNumberModel::invoke($client)->all();
                         if ($fix) {
                             # 更新 向日葵宝宝 和 向日葵 个数
                             foreach ($fix as $six) {
@@ -97,8 +97,8 @@ class MonitorTools extends AbstractProcess
                                         $update['already_sunflower'] = $datum['total'];  #总数
                                     }
                                 }
-                                var_dump("账号:".$six['id']);
-                                if ($six['id']==170){
+                                var_dump("账号:" . $six['id']);
+                                if ($six['id'] == 170) {
                                     var_dump($update);
                                 }
 

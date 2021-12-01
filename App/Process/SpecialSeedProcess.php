@@ -26,7 +26,7 @@ class SpecialSeedProcess extends AbstractProcess
         go(function () {
             while (true) {
                 DbManager::getInstance()->invoke(function ($client) {
-                    $res = AccountNumberModel::invoke($client)->where('status', 1, "!=")->all();
+                    $res = AccountNumberModel::invoke($client)->all();
                     if ($res) {
                         foreach ($res as $re) {
                             # 检查是否存在可以 孵化的种子
