@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
+	<link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
+
+	<!-- js部分 -->
+	<script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
+	<script type="text/javascript" src="../../assets/js/common.js?v=318"></script>
+
+	<script type="text/javascript" src="../../assets/js/jquery.min.js"></script>
+	<script type="text/javascript" src="../../assets/js/jquery.cookie.min.js"></script>
+	<script type="text/javascript" src="../../assets/js/config.url.js"></script>
+
+	<style>
+
+		.headtip{
+			color: red;
+			margin-top: 10px;
+			margin-left: 120px;
+		}
+
+		/*.layui-form-label{*/
+		/*	width: 100px !important;*/
+		/*}*/
+
+
+
+	</style>
+</head>
+<body class="childrenBody">
+<form class="layui-form" style="width:80%;margin-top: 20px">
+
+	<div class="layui-form-item layui-row layui-col-xs12">
+		<label class="layui-form-label">remark值</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input " id="remark" placeholder="请在此输入标题">
+		</div>
+	</div>
+	<div class="layui-form-item layui-row layui-col-xs12">
+		<label class="layui-form-label">token值</label>
+		<div class="layui-input-block">
+			<textarea placeholder="请输入内容" class="layui-textarea" id="token_value" rows="9"></textarea>
+		</div>
+	</div>
+
+	<div class="layui-form-item layui-row layui-col-xs12">
+		<label class="layui-form-label">账号开关</label>
+		<div class="layui-input-block">
+			<input type='checkbox' value='' id='status' lay-filter='status'  name='status'  lay-skin='switch' lay-text='开启|关闭' >
+		</div>
+	</div>
+	<div class="layui-form-item layui-row layui-col-xs12">
+		<div class="layui-input-block">
+			<button class="layui-btn layui-btn-lg"  lay-filter="addUser" id="comfireAdd">确认修改</button>
+			<button class="layui-btn layui-btn-lg layui-btn-primary"  lay-filter="cancelAdd" id="cancelAdd">取消</button>
+		</div>
+	</div>
+</form>
+
+
+
+<script>
+
+
+	var mybck= $.cookie('tokenMyb');
+	if(mybck == "" || mybck == null){
+		window.top.location.href="../../login.html";
+
+	}else {
+		global_token = mybck
+		var currParentDatas = eval('('+parent.jsondata+')')
+		var currStatusNum = 0;
+
+		layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect','notice'], function () {
+			var $ = layui.jquery;
+			var layer = layui.layer;
+			// var layer = parent.layer === undefined ? layui.layer : top.layer;
+			var form = layui.form;
+			var table = layui.table;
+			var util = layui.util;
+			var admin = layui.admin;
+			var xmSelect = layui.xmSelect;
+			var notice = layui.notice;
+
+			//监听机器人开关按钮操作
+			form.on('switch(status)', function(obj){
+
+
+				// 获取当前控件
+				var selectIfKey=obj.othis;
+				// 获取当前所在行
+				var parentTr = selectIfKey.parents("tr");
+				// 获取当前所在行的索引
+				// var parentTrIndex = parentTr.attr("data-index");
+
+				//通过相对位置找对应行数据
+				// 获取当前行第一和三列的值
+				var currentwx_id = parentTr.find(('td:eq(1)')).text().trim();
+
+				var currStatusBool = obj.elem.checked;
+
+				var messageTitle = '';
+
+				if(currStatusBool){
+					currStatusNum = 1
+					// messageTitle = '系统将对该机器人进行开启操作,确定对当前机器人进行开启操作吗?'
+
+				}else{
+					currStatusNum = 3
+					// messageTitle = '系统将对该机器人进行关闭操作,确定对当前机器人进行关闭操作吗?'
+
+				}
+
+				// layer.open({
+				// 	// type: 2,
+				// 	area: ['450px', '195px'],
+				// 	fix: false,
+				// 	//不固定
+				// 	maxmin: true,
+				// 	shade: 0.3,
+				// 	skin: 'layui-layer-rim',//加上边框
+				// 	title: "温馨提示",
+				// 	content:messageTitle,
+				// 	// content: `<div>`+messageTitle+`</div>`,
+				// 	btn: ['确定','取消'],
+				// 	// // 弹层外区域关闭
+				// 	shadeClose: true,
+				// 	btn1: function(index, layero) {//确定事件
+				// 		//点击第一个按钮处理逻辑
+				// 		// layer.msg("1");
+				// 		if(currStatusBool){
+				//
+				// 			// messageTitle = '系统将对该机器人进行开启操作,确定对当前机器人进行开启操作吗?'
+				//
+				// 			currStatusNum = 1
+				// 		}else{
+				//
+				// 			// messageTitle = '系统将对该机器人进行关闭操作,确定对当前机器人进行关闭操作吗?'
+				//
+				// 			currStatusNum = 2
+				//
+				// 		}
+				//
+				// 		//进行ajax请求
+				// 		var param={};
+				//
+				// 		param['token']= $.cookie('tokenMyb');
+				// 		param['status']= currStatusNum;
+				// 		// param['remark']= $("#remark").val();
+				// 		param['id']= currentwx_id;
+				// 		param['action'] = 'UPDATE';
+				//
+				// 		$.post(global_request_get_account_numberInformation, param,
+				// 				function(lookResult){
+				//
+				// 					if(lookResult.code === 200 ){
+				//
+				//
+				// 						notice.msg(lookResult.msg, {icon: 1});
+				// 						// setTimeout(function () {
+				// 						//     var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+				// 						//     parent.layer.close(index);
+				// 						//     window.parent.location.reload();
+				// 						// }, 1300)
+				//
+				//
+				// 						insTb.reload();
+				// 						layer.close(index);
+				//
+				//
+				// 					}else{
+				//
+				//
+				// 						notice.msg(lookResult.msg, {icon: 2});
+				// 						insTb.reload();
+				// 						layer.close(index);
+				//
+				// 					}
+				//
+				//
+				// 				});
+				//
+				//
+				//
+				//
+				// 	},
+				// 	btn2: function(index, layero){//取消事件
+				// 		//点击第二个按钮处理逻辑
+				// 		// layer.msg("2");
+				//
+				// 		notice.msg("取消操作", {icon: 5});
+				// 		// $.message({
+				// 		//     message: "取消操作",
+				// 		//     type: 'info',
+				// 		//     showClose: true
+				// 		// });
+				//
+				// 		var x = obj.elem.checked;
+				//
+				// 		obj.elem.checked = !x;
+				// 		form.render();
+				// 		layer.close(index);
+				// 	},
+				// 	cancel: function(index, layero){//取消事件
+				// 		//点击第二个按钮处理逻辑
+				// 		// layer.msg("2");
+				//
+				//
+				// 		notice.msg("取消操作", {icon: 5});
+				//
+				// 		var x = obj.elem.checked;
+				//
+				// 		obj.elem.checked = !x;
+				// 		form.render();
+				// 		layer.close(index);
+				// 	}
+				// })
+
+
+			});
+
+
+			//添加内容点击事件
+			$("#comfireAdd").click(function () {
+
+				if($("#remark").val() == ""){
+
+
+					notice.msg("备注不能为空", {icon: 2});
+
+					return false;
+				}
+
+				if($("#token_value").val() == ""){
+
+
+					notice.msg("token值不能为空", {icon: 2});
+
+					return false;
+				}
+
+
+				// if(pares)
+
+
+				var param = {};
+				// param['token'] = $.cookie('tokenMyb');
+				// param['token'] = ""+global_token
+				param['id'] = currParentDatas.id;
+				param['action'] = "update"
+				param['remark'] = $("#remark").val();
+				param['token_value'] = $("#token_value").val();
+				param['status'] = currStatusNum;
+				param['page'] = 1;
+				param['limit'] = 1;
+
+				$.ajax({
+					url: global_request_get_account_numberInformation+"?token="+global_token,
+					data: param,
+					type: "POST",
+					dataType: "json",
+					success: function (addResult) {
+
+						if (addResult.code === 200) {
+							// layer.msg(addResult.msg);
+							notice.msg(addResult.msg, {icon: 1});
+							setTimeout(function () {
+								var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+								parent.layer.close(index);
+								window.parent.location.reload();
+							}, 1300)
+
+						} else {
+
+							// layer.msg(addResult.msg);
+							notice.msg(addResult.msg, {icon: 2});
+							// setTimeout(function () {
+							// 	var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+							// 	parent.layer.close(index);
+							// 	// window.parent.location.reload();
+							// }, 1300)
+
+						}
+
+
+					},
+
+
+				});
+
+
+				// parent.local.reload();
+
+				return false;
+			})
+
+
+			//取消按钮点击事件
+			$("#cancelAdd").click(function () {
+
+				// layer.msg("取消操作");
+				notice.msg('取消操作!', {icon: 5});
+				setTimeout(function () {
+
+					var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+					parent.layer.close(index);
+					// window.parent.location.reload();
+
+				}, 1300)
+
+
+
+
+				return false;
+
+			})
+
+		})
+	}
+</script>
+</body>
+</html>

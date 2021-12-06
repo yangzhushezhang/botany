@@ -5,60 +5,64 @@ global_requestAddress = "";
 // global_token = "ZQBfdzecQbjkK8DSiGX6Stid7R4JBQez";
 
 //登录接口
-global_request_login="/user/login";
+global_request_login="http://8.136.97.179:9508/user/login";
 
 //添加植物账号接口
-global_request_add_account_number="/user/add_account_number";
+global_request_add_account_number="http://8.136.97.179:9508/user/add_account_number";
+
+//植物账号获取失效接口
+global_request_get_token_mayFail="http://8.136.97.179:9508/user/get_token_mayFail";
+
 
 //查询植物账号列表接口
-global_request_get_account_numberInformation="/user/get_account_numberInformation";
+global_request_get_account_numberInformation="http://8.136.97.179:9508/user/get_account_numberInformation";
 
 //更新能量接口
-global_request_updated_leWallet="/user/updated_leWallet";
+global_request_updated_leWallet="http://8.136.97.179:9508/user/updated_leWallet";
 
 //刷新最新农场信息
-global_request_refresh_botany="/user/refresh_botany";
+global_request_refresh_botany="http://8.136.97.179:9508/user/refresh_botany";
 
 //获取农场信息列表
-global_request_get_farmInformation="/user/get_farmInformation";
+global_request_get_farmInformation="http://8.136.97.179:9508/user/get_farmInformation";
 
 //获取所有农场信息列表
-global_request_get_farmAccountInformation="/user/get_farmAccountInformation";
+global_request_get_farmAccountInformation="http://8.136.97.179:9508/user/get_farmAccountInformation";
 
 //刷新自己工具
-global_request_refresh_tools="/user/refresh_tools";
+global_request_refresh_tools="http://8.136.97.179:9508/user/refresh_tools";
 
 //获取工具内容
-global_request_get_tools="/user/get_tools";
+global_request_get_tools="http://8.136.97.179:9508/user/get_tools";
 
 //获取所有日志列表
-global_request_getLogger="/user/getLogger";
+global_request_getLogger="http://8.136.97.179:9508/user/getLogger";
 
 //更新种子(树苗或向日葵)
-global_request_update_sunflowers="/user/update_sunflowers";
+global_request_update_sunflowers="http://8.136.97.179:9508/user/update_sunflowers";
 
 //首页世界树数据
-global_request_getTodayTheWorldTree="/user/getTodayTheWorldTree";
+global_request_getTodayTheWorldTree="http://8.136.97.179:9508/user/getTodayTheWorldTree";
 
 //获取能量
-global_request_getEnergy="/user/getEnergy";
+global_request_getEnergy="http://8.136.97.179:9508/user/getEnergy";
 
 //执行世界树功能(慎用)
-global_request_TheWorldTree="/user/TheWorldTree";
+global_request_TheWorldTree="http://8.136.97.179:9508/user/TheWorldTree";
 
 //一键浇水
-global_request_yesterdayWatering="/user/yesterdayWatering";
+global_request_yesterdayWatering="http://8.136.97.179:9508/user/yesterdayWatering";
 
 //一键收取
 
 //待孵化请求接口
-global_request_getWaitingToHatch="/user/getWaitingToHatch";
+global_request_getWaitingToHatch="http://8.136.97.179:9508/user/getWaitingToHatch";
 
 //孵化中请求接口
-global_request_getDoingToHatch="/user/getDoingToHatch";
+global_request_getDoingToHatch="http://8.136.97.179:9508/user/getDoingToHatch";
 
 //未种植和种植互相切换的请求接口
-global_request_IfPlanted="/user/IfPlanted";
+global_request_IfPlanted="http://8.136.97.179:9508/user/IfPlanted";
 
 
 

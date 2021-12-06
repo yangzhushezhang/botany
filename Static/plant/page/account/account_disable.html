@@ -49,9 +49,9 @@
             <form class="layui-form toolbar">
                 <div class="layui-form-item" >
                     <div class="layui-inline">&emsp;
-                        <button class="layui-btn icon-btn currSerachBtn" lay-filter="userTbSearch" lay-submit>
-                            <i class="layui-icon layui-icon-add-1"></i>添加账号
-                        </button>
+<!--                        <button class="layui-btn icon-btn currSerachBtn" lay-filter="userTbSearch" lay-submit>-->
+<!--                            <i class="layui-icon layui-icon-add-1"></i>添加账号-->
+<!--                        </button>-->
                         <button class="layui-btn icon-btn currReloadBtn" lay-filter="reloadData" lay-submit style="background-color: #926dde;border-color: #926dde;">
                             <i class="layui-icon layui-icon-refresh"></i>刷新数据
                         </button>
@@ -84,7 +84,7 @@
 
 <!--数据表格操作工具栏-->
 <script type="text/html" id="orderListBar">
-    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="updated_leWallet"><i class="layui-icon layui-icon-refresh"></i>更新能量</a>
+<!--    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="updated_leWallet"><i class="layui-icon layui-icon-refresh"></i>更新能量</a>-->
     <a class="layui-btn layui-btn-sm layui-btn-normal layui-btn-radius " lay-event="changebtn"><i class="layui-icon layui-icon-edit"></i>修改</a>
     <a class="layui-btn layui-btn-sm layui-btn layui-btn layui-btn-danger layui-btn-radius" lay-event="delbtn"><i class="layui-icon">&#x1006;</i>删除</a>
 <!--    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="refresh_tool" style="background-color: #33cabb"><i class="layui-icon layui-icon-refresh"></i>刷新工具</a>-->
@@ -120,7 +120,7 @@
             // log_login_request_param['player_id']= '1';
             // log_login_request_param['token']= $.cookie('tokenMyb');
             log_login_request_param['action']='select';
-            log_login_request_param['status']='1';
+            log_login_request_param['status']='3';
             // log_login_request_param['min_Time']='';
             // log_login_request_param['max_Time']='';
             // log_login_request_param['play_kinds_id']='-1';
@@ -158,10 +158,30 @@
                     {type: 'checkbox'},
                     {field: 'id',title:'ID',sort: true,align:"center",width:130},
                     {field: 'remark', title: '名字', sort: true,align:"center"},
+                    {field: 'status', title: '状态', sort: true,align:"center",width:130,templet:function(d){
+                            var state = "";
+
+                            if(d.status == "1"){//开启
+                                // return '<button class="layui-btn  layui-btn-xs" style="background-color: #33cabb;border-color: #33cabb;">'+'活跃'+'</button>'
+
+
+                                // state = "<input type='checkbox' value='" + d.status + "' id='status' lay-filter='status'  name='status'  lay-skin='switch' lay-text='开启|关闭' checked>";
+                                state = "<button class=\"layui-btn layui-btn-sm\">开启</button>"
+                                return state;
+
+                            }else if(d.status == "3"){//失效
+
+                                // state = "<input type='checkbox' value='" + d.status + "' id='status' lay-filter='status'  name='status'  lay-skin='switch' lay-text='开启|关闭'>";
+                                state = "<button class=\"layui-btn layui-btn-sm layui-btn-danger \" >失效</button>"
+                                return state;
+
+                            }else{
+                                return ''
+                            }
+                    }},
                     {field: 'leWallet', title: '能量', sort: true,align:"center"},
                     {field: 'usagesSunflower', title: '植物币', sort: true,align:"center"},
                     // {field: 'token_md5', title: 'token', sort: true,align:"center"},
-
 
                     // {
                     //     field: 'created_at', title: '创建时间',align:"center", templet: function (d) {
@@ -224,7 +244,7 @@
                         title : "修改当前玩法",
                         skin: 'layui-layer-rim',//加上边框
                         type : 2,
-                        content : "account_edit.html",
+                        content : "account_edit_disable.html",
                         success : function(layero, index){
                             var body = layui.layer.getChildFrame('body', index);
                             if(currDatas) {
@@ -567,7 +587,7 @@
                         param['id']= currentwx_id;
                         param['action'] = 'UPDATE';
 
-                        $.post(js_global_requestAddress_setRobot, param,
+                        $.post(global_request_get_account_numberInformation, param,
                             function(lookResult){
 
                                 if(lookResult.code === 200 ){
