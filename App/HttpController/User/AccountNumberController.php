@@ -68,13 +68,14 @@ class AccountNumberController extends UserBase
             $limit = $this->request()->getParsedBody('limit');
             $page = $this->request()->getParsedBody('page');
             $action = $this->request()->getParsedBody('action');
+            $status = $this->request()->getParsedBody('status');
             if (!$this->check_parameter($limit, "limit") || !$this->check_parameter($page, "page") || !$this->check_parameter($page, "action")) {
                 return false;
             }
-            DbManager::getInstance()->invoke(function ($client) use ($limit, $page, $action) {
+            DbManager::getInstance()->invoke(function ($client) use ($limit, $page, $action,$status) {
                 if ($action == "select") {
                     $model = AccountNumberModel::invoke($client)->limit($limit * ($page - 1), $limit)->withTotalCount();
-                    $list = $model->all(['user_id' => $this->who['id'], "status" => 1]);
+                    $list = $model->all(['user_id' => $this->who['id'], "status" => $status]);
                     $result = $model->lastQueryResult();
                     $total = $result->getTotalCount();
                     $return_data = [
@@ -246,11 +247,21 @@ class AccountNumberController extends UserBase
         try {
             DbManager::getInstance()->invoke(function ($client) {
 
-                $res = AccountNumberModel::invoke($client)->all(['status' => 3]);
+                $limit = $this->request()->getParsedBody('limit');
+                $page = $this->request()->getParsedBody('page');
+                $model = AccountNumberModel::invoke($client)->limit($limit * ($page - 1), $limit)->withTotalCount();
+                $list = $model->all(['user_id' => $this->who['id'], "status" => 3]);
+                $result = $model->lastQueryResult();
+                $total = $result->getTotalCount();
+                $return_data = [
+                    "code" => 0,
+                    "msg" => '',
+                    'count' => $total,
+                    'data' => $list
+                ];
+                $this->response()->write(json_encode($return_data));
+                return true;
 
-
-                $this->writeJson(200, $res, "获取成功");
-                return;
             });
 
         } catch (\Throwable $e) {
