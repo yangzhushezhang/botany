@@ -52,7 +52,6 @@ class MonitorFarmProcess extends AbstractProcess
                                         continue;
                                     }
 
-
                                     $if_add_new = false;
                                     $if_sunflowerId_2 = false;
                                     if (isset($data['total']) && $data['total'] != 6) {
@@ -159,7 +158,7 @@ class MonitorFarmProcess extends AbstractProcess
                                                 Tools::WriteLogger($re['user_id'], 1, "进程 MonitorFarmProcess  需要浇水,将其推出WateringProcess 进程 First", $re['id'], 11, $value['_id']);
                                             }
                                         }
-                                        if ($value['hasSeed']) {
+                                        if (isset($value['hasSeed'])  &&  $value['hasSeed']) {
                                             #需要 放种子
                                             $hasSeed = 1;
                                         }
@@ -227,18 +226,19 @@ class MonitorFarmProcess extends AbstractProcess
         });
     }
 
-
     /**
      * @param $token_value
      * @param $user_id
      * @param $account_number_id
+     * @return bool|mixed
+     *      获取农场信息
      */
     function GetFarms($token_value, $user_id, $account_number_id)
     {
 
         try {
             for ($i = 0; $i < 5; $i++) {
-                $client_http = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farms?limit=10&offset=0');
+                $client_http = new \EasySwoole\HttpClient\HttpClient(GetFarmsInformation);
                 $headers = array(
                     'authority' => 'backend-farm.plantvsundead.com',
                     'sec-ch-ua' => '"Google Chrome";v="93", " Not;A Brand";v="99", "Chromium";v="93"',

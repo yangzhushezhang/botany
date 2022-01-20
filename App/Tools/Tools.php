@@ -10,12 +10,12 @@ use EasySwoole\RedisPool\RedisPool;
 class Tools
 {
 
-
     # 获取账号的 能量
     static function getLeWallet($token_value)
     {
         try {
             for ($i = 0; $i < 5; $i++) {
+
                 $client = new \EasySwoole\HttpClient\HttpClient('https://backend-farm.plantvsundead.com/farming-stats');
                 $headers = array(
                     'authority' => 'backend-farm.plantvsundead.com',
@@ -308,7 +308,6 @@ class Tools
                     'sec-fetch-dest' => 'empty',
                     'referer' => 'https://marketplace.plantvsundead.com/',
                     'accept-language' => 'zh-CN,zh;q=0.9',
-                    #   'if-none-match' => 'W/^\\^32c-sAwO7sU/nng0IT4QwrYVX61WsEY^\\^',
                 );
                 $client->setHeaders($headers, false, false);
                 $client->setTimeout(5);
@@ -325,7 +324,6 @@ class Tools
             return false;
         }
     }
-
 
     #购买  工具
 
